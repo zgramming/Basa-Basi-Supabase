@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="zeffry.reynando.basa_basi_supabase">
    <application
-        android:label="basa_basi_supabase"
+        android:label="Basa Basi Supabase"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"
