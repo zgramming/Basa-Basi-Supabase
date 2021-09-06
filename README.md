@@ -10,6 +10,28 @@
 Mau Ngelindur, Ngelantur, Curhat, PDKT, Pinjam Uang ?
 Diawali dengan Basa-Basi...
 
+# Design Figma
+
+## Onboarding 1-3
+  <img src="screenshot/figma/1.onboarding-1.png" height="400">
+  <img src="screenshot/figma/2.onboarding-2.png" height="400">
+  <img src="screenshot/figma/3.onboarding-3.png" height="400">
+
+## Login
+  <img src="screenshot/figma/4.login.png" height="400">
+
+## Welcome
+  <img src="screenshot/figma/5.welcome-screen.png" height="400">
+
+## Message Screen
+  <img src="screenshot/figma/6.message-screen.png" height="400">
+
+## Account Screen
+  <img src="screenshot/figma/7.account-screen.png" height="400">
+
+  <br><br><br>
+  
+
 # Design Database
 
 <p align="center">
