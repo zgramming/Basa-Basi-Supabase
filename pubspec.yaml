@@ -29,9 +29,10 @@ dependencies:
   firebase_messaging: ^10.0.6
   flutter:
     sdk: flutter
+  flutter_feather_icons: ^2.0.0+1
+  flutter_local_notifications: ^8.1.1+2
   flutter_localizations:
     sdk: flutter
-  flutter_local_notifications: ^8.1.1+2
   flutter_native_timezone: ^2.0.0
   flutter_riverpod: 1.0.0-dev.7
   global_template:
@@ -41,6 +42,7 @@ dependencies:
   json_serializable: null
   path_provider: ^2.0.3
   rxdart: ^0.27.2
+  smooth_page_indicator: ^1.0.0+2
   timezone: ^0.8.0
 
 dev_dependencies:
