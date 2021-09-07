@@ -254,6 +254,7 @@ class LoginScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -288,9 +289,7 @@ class LoginScreen extends StatelessWidget {
                   width: sizes.width(context),
                   padding: const EdgeInsets.symmetric(horizontal: 24.0),
                   child: OutlinedButton(
-                    onPressed: () {
-                      Navigator.of(context).pushReplacementNamed(WelcomeScreen.routeNamed);
-                    },
+                    onPressed: () async {},
                     style: OutlinedButton.styleFrom(
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(60.0),

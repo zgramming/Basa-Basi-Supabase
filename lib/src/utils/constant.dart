@@ -1,10 +1,14 @@
-import 'package:global_template/global_template.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:supabase/supabase.dart';
+
+import 'utils.dart';
 
 class Constant {
   Constant._();
 
   static final Constant instance = Constant._();
+
+  static final supabase = SupabaseClient(supabaseUrl, supabaseKey);
 
   static const onboarding1 = 'assets/images/ob1.png';
   static const onboarding2 = 'assets/images/ob2.png';

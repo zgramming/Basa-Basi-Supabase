@@ -49,3 +49,4 @@ app.*.map.json
 
 # Flutter
 /lib/src/utils/firebase_server_key.dart
+/lib/src/utils/supabase_configuration.dart

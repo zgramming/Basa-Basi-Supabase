@@ -399,6 +399,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.1.0"
+  gotrue:
+    dependency: transitive
+    description:
+      name: gotrue
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.1.0"
   graphs:
     dependency: transitive
     description:
@@ -469,6 +476,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "4.1.4"
+  jwt_decode:
+    dependency: transitive
+    description:
+      name: jwt_decode
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.3.1"
   lint:
     dependency: "direct dev"
     description:
@@ -602,6 +616,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.5.0"
+  postgrest:
+    dependency: transitive
+    description:
+      name: postgrest
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.1.7"
   process:
     dependency: transitive
     description:
@@ -623,6 +644,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.0"
+  realtime_client:
+    dependency: transitive
+    description:
+      name: realtime_client
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.1.10"
   riverpod:
     dependency: transitive
     description:
@@ -637,6 +665,48 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.27.2"
+  shared_preferences:
+    dependency: "direct main"
+    description:
+      name: shared_preferences
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.7"
+  shared_preferences_linux:
+    dependency: transitive
+    description:
+      name: shared_preferences_linux
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.2"
+  shared_preferences_macos:
+    dependency: transitive
+    description:
+      name: shared_preferences_macos
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.2"
+  shared_preferences_platform_interface:
+    dependency: transitive
+    description:
+      name: shared_preferences_platform_interface
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.0"
+  shared_preferences_web:
+    dependency: transitive
+    description:
+      name: shared_preferences_web
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.2"
+  shared_preferences_windows:
+    dependency: transitive
+    description:
+      name: shared_preferences_windows
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.2"
   shelf:
     dependency: transitive
     description:
@@ -705,6 +775,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.7.0"
+  storage_client:
+    dependency: transitive
+    description:
+      name: storage_client
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.0.4"
   stream_channel:
     dependency: transitive
     description:
@@ -726,6 +803,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.1.0"
+  supabase:
+    dependency: "direct main"
+    description:
+      name: supabase
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.2.5"
   synchronized:
     dependency: transitive
     description:
