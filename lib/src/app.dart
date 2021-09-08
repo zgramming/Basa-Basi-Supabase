@@ -1,13 +1,17 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:global_template/global_template.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
-import 'package:basa_basi_supabase/src/utils/constant.dart';
+import './provider/provider.dart';
+import './utils/utils.dart';
+import './screen/splash/splash_screen.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
@@ -31,13 +35,19 @@ class MyApp extends StatelessWidget {
         accentColor: colorPallete.accentColor,
         textTheme: GoogleFonts.comfortaaTextTheme(Theme.of(context).textTheme),
       ),
-      home: OnboardingScreen(),
+      home: const SplashScreen(),
       onGenerateRoute: (settings) {
         final routeAnimation = RouteAnimation();
         switch (settings.name) {
+          case OnboardingScreen.routeNamed:
+            return routeAnimation.fadeTransition(
+                screen: (ctx, animation, secondaryAnimation) => const OnboardingScreen());
           case LoginScreen.routeNamed:
             return routeAnimation.fadeTransition(
                 screen: (ctx, animation, secondaryAnimation) => const LoginScreen());
+          case SetupProfile.routeNamed:
+            return routeAnimation.fadeTransition(
+                screen: (ctx, animation, secondaryAnimation) => const SetupProfile());
           case WelcomeScreen.routeNamed:
             return routeAnimation.fadeTransition(
                 screen: (ctx, animation, secondaryAnimation) => const WelcomeScreen());
@@ -56,6 +66,7 @@ class MyApp extends StatelessWidget {
 }
 
 class OnboardingScreen extends StatefulWidget {
+  static const routeNamed = '/onboarding-screen';
   const OnboardingScreen({Key? key}) : super(key: key);
   @override
   _OnboardingScreenState createState() => _OnboardingScreenState();
@@ -109,8 +120,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             alignment: Alignment.bottomCenter,
             child: Container(
               width: sizes.width(context),
-              // color: Colors.red,
-              padding: EdgeInsets.only(bottom: sizes.height(context) / 10, left: 24.0, right: 24.0),
+              padding: EdgeInsets.only(
+                bottom: sizes.height(context) / 10,
+                left: 24.0,
+                right: 24.0,
+              ),
               child: Row(
                 children: [
                   Expanded(
@@ -133,37 +147,42 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     ),
                   ),
                   Expanded(
-                    child: OutlinedButton(
-                      onPressed: () {
-                        if (_selectedIndex == (_pages.length - 1)) {
-                          Navigator.of(context).pushReplacementNamed(LoginScreen.routeNamed);
-                        } else {
-                          setState(() {
-                            _selectedIndex++;
-                          });
-                          _controller.animateToPage(
-                            _selectedIndex,
-                            duration: const Duration(seconds: 1),
-                            curve: Curves.easeIn,
-                          );
-                        }
-                      },
-                      style: OutlinedButton.styleFrom(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(15.0),
+                    child: Consumer(
+                      builder: (context, ref, child) => OutlinedButton(
+                        onPressed: () {
+                          if (_selectedIndex == (_pages.length - 1)) {
+                            ref
+                                .read(SessionProvider.provider.notifier)
+                                .setOnboardingSession(value: true);
+                            Navigator.of(context).pushReplacementNamed(LoginScreen.routeNamed);
+                          } else {
+                            setState(() {
+                              _selectedIndex++;
+                            });
+                            _controller.animateToPage(
+                              _selectedIndex,
+                              duration: const Duration(seconds: 1),
+                              curve: Curves.easeIn,
+                            );
+                          }
+                        },
+                        style: OutlinedButton.styleFrom(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(15.0),
+                          ),
+                          side: BorderSide(color: colorPallete.accentColor!),
+                          padding: const EdgeInsets.all(16.0),
+                          backgroundColor: _selectedIndex == (_pages.length - 1)
+                              ? colorPallete.accentColor
+                              : Colors.transparent,
                         ),
-                        side: BorderSide(color: colorPallete.accentColor!),
-                        padding: const EdgeInsets.all(16.0),
-                        backgroundColor: _selectedIndex == (_pages.length - 1)
-                            ? colorPallete.accentColor
-                            : Colors.transparent,
-                      ),
-                      child: Text(
-                        _selectedIndex == (_pages.length - 1) ? 'Ayo Mulai' : 'Selanjutnya',
-                        style: Constant.comfortaa.copyWith(
-                          color: _selectedIndex == (_pages.length - 1)
-                              ? Colors.white
-                              : colorPallete.accentColor,
+                        child: Text(
+                          _selectedIndex == (_pages.length - 1) ? 'Ayo Mulai' : 'Selanjutnya',
+                          style: Constant.comfortaa.copyWith(
+                            color: _selectedIndex == (_pages.length - 1)
+                                ? Colors.white
+                                : colorPallete.accentColor,
+                          ),
                         ),
                       ),
                     ),
@@ -247,78 +266,526 @@ class PageItem extends StatelessWidget {
   }
 }
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends ConsumerStatefulWidget {
   static const routeNamed = '/login-screen';
   const LoginScreen({Key? key}) : super(key: key);
 
   @override
+  _LoginScreenState createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends ConsumerState<LoginScreen> {
+  bool isLogin = true;
+  @override
   Widget build(BuildContext context) {
+    ref.listen<StateController<bool>>(isLoading, (loading) {
+      if (loading.state) {
+        GlobalFunction.showDialogLoading(context);
+      } else {
+        Navigator.pop(context);
+      }
+    });
     return Scaffold(
-      resizeToAvoidBottomInset: false,
       body: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Flexible(
-              child: Container(
-                padding: const EdgeInsets.all(14.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Image.asset(
-                      '${appConfig.urlImageAsset}/logo_primary.png',
-                      width: sizes.width(context) / 2,
-                      height: sizes.width(context) / 2,
-                    ),
-                    const SizedBox(height: 20),
-                    Text(
-                      'Ayo mulai jalin kebersamaan dengan berbincang bersama teman kamu',
-                      style: Constant.comfortaa.copyWith(
-                        fontWeight: FontWeight.w300,
-                        fontSize: 12.0,
+        child: SingleChildScrollView(
+          child: SizedBox(
+            height: sizes.screenHeightMinusStatusBar(context),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(14.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Image.asset(
+                        '${appConfig.urlImageAsset}/logo_primary.png',
+                        width: sizes.width(context) / 2.5,
+                        height: sizes.width(context) / 2.5,
                       ),
-                      textAlign: TextAlign.center,
-                    )
-                  ],
-                ),
-              ),
-            ),
-            Expanded(
-              child: Center(
-                child: Container(
-                  width: sizes.width(context),
-                  padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                  child: OutlinedButton(
-                    onPressed: () async {},
-                    style: OutlinedButton.styleFrom(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(60.0),
-                      ),
-                      padding: const EdgeInsets.all(24.0),
-                    ),
-                    child: Row(
-                      children: [
-                        Image.asset(
-                          '${appConfig.urlImageAsset}/ob1.png',
-                          width: 32,
+                      const SizedBox(height: 20),
+                      Text(
+                        'Ayo mulai jalin kebersamaan dengan berbincang bersama teman kamu',
+                        style: Constant.comfortaa.copyWith(
+                          fontWeight: FontWeight.w300,
+                          fontSize: 12.0,
                         ),
-                        Expanded(
-                          child: Text(
-                            'Login with Google',
-                            textAlign: TextAlign.center,
-                            style: Constant.comfortaa.copyWith(fontWeight: FontWeight.bold),
-                          ),
-                        ),
-                      ],
-                    ),
+                        textAlign: TextAlign.center,
+                      )
+                    ],
                   ),
                 ),
+                Container(
+                  // color: Colors.red,
+                  padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 20.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      Expanded(
+                        child: ElevatedButton(
+                          onPressed: () => setState(() => isLogin = true),
+                          style: ElevatedButton.styleFrom(
+                            primary: isLogin ? colorPallete.accentColor : Colors.white,
+                            side: BorderSide(
+                              color: isLogin ? colorPallete.accentColor! : Colors.white,
+                            ),
+                            padding: const EdgeInsets.all(16.0),
+                            shape:
+                                RoundedRectangleBorder(borderRadius: BorderRadius.circular(60.0)),
+                          ),
+                          child: Text(
+                            'Sign In',
+                            style: Constant.comfortaa.copyWith(
+                              color: isLogin ? Colors.white : colorPallete.accentColor,
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 20),
+                      Expanded(
+                        child: ElevatedButton(
+                          onPressed: () => setState(() => isLogin = false),
+                          style: ElevatedButton.styleFrom(
+                            primary: isLogin ? Colors.white : colorPallete.accentColor,
+                            side: BorderSide(
+                              color: isLogin ? Colors.white : colorPallete.accentColor!,
+                            ),
+                            padding: const EdgeInsets.all(16.0),
+                            shape:
+                                RoundedRectangleBorder(borderRadius: BorderRadius.circular(60.0)),
+                          ),
+                          child: Text(
+                            'Sign Up',
+                            style: Constant.comfortaa.copyWith(
+                              color: isLogin ? colorPallete.accentColor : Colors.white,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Expanded(
+                  child: AnimatedCrossFade(
+                    firstChild: const SignInForm(),
+                    secondChild: const SignUpForm(),
+                    crossFadeState: isLogin ? CrossFadeState.showFirst : CrossFadeState.showSecond,
+                    duration: const Duration(milliseconds: 500),
+                    firstCurve: Curves.fastOutSlowIn,
+                    secondCurve: Curves.fastOutSlowIn,
+                  ),
+                ),
+                CopyRightVersion(
+                  decoration: BoxDecoration(color: colorPallete.primaryColor),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class SignInForm extends StatefulWidget {
+  const SignInForm({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  _SignInFormState createState() => _SignInFormState();
+}
+
+class _SignInFormState extends State<SignInForm> {
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 24.0),
+      child: SingleChildScrollView(
+        child: Form(
+          key: _formKey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            // mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              TextFormFieldCustom(
+                controller: _emailController,
+                hintText: 'Masukkan Email',
+                disableOutlineBorder: false,
+                radius: 15.0,
+                borderFocusColor: colorPallete.accentColor,
+                activeColor: colorPallete.accentColor,
+                borderColor: Colors.black.withOpacity(.25),
+                textStyle: Constant.comfortaa.copyWith(fontSize: 12.0),
+                padding: const EdgeInsets.all(24.0),
+                prefixIcon: const Icon(FeatherIcons.mail),
+                validator: (value) => GlobalFunction.validateIsValidEmail(value),
               ),
+              const SizedBox(height: 20),
+              TextFormFieldCustom(
+                controller: _passwordController,
+                hintText: 'Masukkan Password',
+                disableOutlineBorder: false,
+                radius: 15.0,
+                borderFocusColor: colorPallete.accentColor,
+                activeColor: colorPallete.accentColor,
+                borderColor: Colors.black.withOpacity(.25),
+                textStyle: Constant.comfortaa.copyWith(fontSize: 12.0),
+                padding: const EdgeInsets.all(24.0),
+                suffixIconConfiguration: const SuffixIconConfiguration(
+                  bottomPosition: 5,
+                  rightPosition: 5,
+                ),
+                isPassword: true,
+                validator: (value) =>
+                    GlobalFunction.validateIsEmpty(value, 'Password tidak boleh kosong'),
+              ),
+              const SizedBox(height: 20),
+              Consumer(
+                builder: (context, ref, child) {
+                  return ElevatedButton(
+                    onPressed: () async {
+                      final validate = _formKey.currentState?.validate() ?? false;
+                      log('validate $validate');
+                      if (!validate) {
+                        return;
+                      }
+                      try {
+                        ref.read(isLoading).state = true;
+                        await ref.read(ProfileProvider.provider.notifier).signIn(
+                              email: _emailController.text,
+                              password: _passwordController.text,
+                            );
+
+                        if (mounted) {
+                          // Navigator.pushReplacementNamed(
+                          //   context,
+                          //   WelcomeScreen.routeNamed,
+                          // );
+                        }
+                      } catch (e) {
+                        GlobalFunction.showSnackBar(
+                          context,
+                          content: Text(e.toString()),
+                          snackBarType: SnackBarType.error,
+                        );
+                      } finally {
+                        ref.read(isLoading).state = false;
+                      }
+                    },
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.all(16.0),
+                    ),
+                    child: Text(
+                      'Masuk',
+                      style: Constant.comfortaa.copyWith(fontWeight: FontWeight.bold),
+                    ),
+                  );
+                },
+              )
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class SignUpForm extends StatefulWidget {
+  const SignUpForm({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  _SignUpFormState createState() => _SignUpFormState();
+}
+
+class _SignUpFormState extends State<SignUpForm> {
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final _rePasswordController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
+
+  void _resetForm() {
+    _emailController.clear();
+    _passwordController.clear();
+    _rePasswordController.clear();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 24.0),
+      child: SingleChildScrollView(
+        child: Form(
+          key: _formKey,
+          // autovalidateMode: AutovalidateMode.onUserInteraction,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              TextFormFieldCustom(
+                controller: _emailController,
+                hintText: 'Masukkan Email',
+                disableOutlineBorder: false,
+                radius: 15.0,
+                borderFocusColor: colorPallete.accentColor,
+                activeColor: colorPallete.accentColor,
+                borderColor: Colors.black.withOpacity(.25),
+                textStyle: Constant.comfortaa.copyWith(fontSize: 12.0),
+                padding: const EdgeInsets.all(24.0),
+                prefixIcon: const Icon(FeatherIcons.mail),
+                validator: (value) {
+                  String? message;
+                  message = GlobalFunction.validateIsEmpty(value, 'Email tidak boleh kosong');
+                  message = GlobalFunction.validateIsValidEmail(value);
+                  return message;
+                },
+              ),
+              const SizedBox(height: 20),
+              TextFormFieldCustom(
+                controller: _passwordController,
+                hintText: 'Masukkan Password',
+                disableOutlineBorder: false,
+                radius: 15.0,
+                borderFocusColor: colorPallete.accentColor,
+                activeColor: colorPallete.accentColor,
+                borderColor: Colors.black.withOpacity(.25),
+                textStyle: Constant.comfortaa.copyWith(fontSize: 12.0),
+                padding: const EdgeInsets.all(24.0),
+                suffixIconConfiguration: const SuffixIconConfiguration(
+                  bottomPosition: 5,
+                  rightPosition: 5,
+                ),
+                isPassword: true,
+                validator: (value) {
+                  return GlobalFunction.validateIsEmpty(value, 'Password tidak boleh kosong');
+                },
+              ),
+              const SizedBox(height: 20),
+              TextFormFieldCustom(
+                controller: _rePasswordController,
+                hintText: 'Masukkan Password Kembali',
+                disableOutlineBorder: false,
+                radius: 15.0,
+                borderFocusColor: colorPallete.accentColor,
+                activeColor: colorPallete.accentColor,
+                borderColor: Colors.black.withOpacity(.25),
+                textStyle: Constant.comfortaa.copyWith(fontSize: 12.0),
+                padding: const EdgeInsets.all(24.0),
+                suffixIconConfiguration: const SuffixIconConfiguration(
+                  bottomPosition: 5,
+                  rightPosition: 5,
+                ),
+                isPassword: true,
+                validator: (value) {
+                  return GlobalFunction.validateIsEqual(
+                    value?.toLowerCase(),
+                    _passwordController.text.toLowerCase(),
+                    'Konfirmasi Password tidak valid',
+                  );
+                },
+              ),
+              const SizedBox(height: 20),
+              Consumer(
+                builder: (context, ref, child) => ElevatedButton(
+                  onPressed: () async {
+                    final validate = _formKey.currentState?.validate() ?? false;
+                    log('validate $validate');
+                    if (!validate) {
+                      return;
+                    }
+                    try {
+                      ref.read(isLoading).state = true;
+
+                      await SupabaseQuery.instance.signUp(
+                        email: _emailController.text,
+                        password: _passwordController.text,
+                      );
+
+                      _resetForm();
+                      if (mounted) {
+                        Navigator.pushReplacementNamed(context, SetupProfile.routeNamed);
+                      }
+                    } catch (e) {
+                      GlobalFunction.showSnackBar(
+                        context,
+                        content: Text(e.toString()),
+                        snackBarType: SnackBarType.error,
+                      );
+                    } finally {
+                      ref.read(isLoading).state = false;
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.all(16.0),
+                  ),
+                  child: Text(
+                    'Masuk',
+                    style: Constant.comfortaa.copyWith(fontWeight: FontWeight.bold),
+                  ),
+                ),
+              )
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class SetupProfile extends StatefulWidget {
+  static const routeNamed = '/setup-profile';
+  const SetupProfile({Key? key}) : super(key: key);
+
+  @override
+  _SetupProfileState createState() => _SetupProfileState();
+}
+
+class _SetupProfileState extends State<SetupProfile> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        centerTitle: true,
+        title: Text(
+          'Mengatur Profile',
+          style: Constant.comfortaa.copyWith(
+            fontWeight: FontWeight.bold,
+            fontSize: 18.0,
+          ),
+        ),
+      ),
+      body: SingleChildScrollView(
+        child: SizedBox(
+          height: sizes.screenHeightMinusAppBarAndStatusBar(context),
+          child: Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Center(
+                        child: Container(
+                          width: 150,
+                          height: 150,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(10.0),
+                            boxShadow: [
+                              BoxShadow(
+                                blurRadius: 4.0,
+                                color: Colors.black.withOpacity(.25),
+                              ),
+                            ],
+                          ),
+                          child: Stack(
+                            children: [
+                              Image.asset('${appConfig.urlImageAsset}/ob1.png'),
+                              Align(
+                                alignment: Alignment.bottomRight,
+                                child: Container(
+                                  width: 40,
+                                  height: 40,
+                                  decoration: BoxDecoration(
+                                    color: colorPallete.accentColor,
+                                    borderRadius: BorderRadius.circular(10.0),
+                                  ),
+                                  child: const FittedBox(
+                                    child: Padding(
+                                      padding: EdgeInsets.all(8.0),
+                                      child: Icon(
+                                        FeatherIcons.edit2,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 40),
+                      TextFormFieldCustom(
+                        disableOutlineBorder: false,
+                        activeColor: colorPallete.accentColor,
+                        borderColor: Colors.black.withOpacity(.25),
+                        borderFocusColor: colorPallete.accentColor,
+                        padding: const EdgeInsets.all(18.0),
+                        hintText: 'Masukkan username',
+                        textStyle: Constant.comfortaa.copyWith(fontSize: 14.0),
+                        inputFormatter: <TextInputFormatter>[
+                          FilteringTextInputFormatter.allow(RegExp(r'^[a-z0-9_.]+$'))
+                        ],
+                      ),
+                      const SizedBox(height: 20),
+                      Text.rich(
+                        TextSpan(
+                            style: Constant.comfortaa.copyWith(
+                              color: Colors.black.withOpacity(.5),
+                              fontSize: 10.0,
+                            ),
+                            children: [
+                              TextSpan(
+                                text: 'username ',
+                                style: Constant.comfortaa.copyWith(fontWeight: FontWeight.bold),
+                              ),
+                              const TextSpan(
+                                text: 'mempermudah teman kamu untuk mencari kamu loh. ',
+                              ),
+                              TextSpan(
+                                text: 'username ',
+                                style: Constant.comfortaa.copyWith(fontWeight: FontWeight.bold),
+                              ),
+                              const TextSpan(
+                                text: 'bersifat ',
+                              ),
+                              TextSpan(
+                                text: 'unique ',
+                                style: Constant.comfortaa.copyWith(fontWeight: FontWeight.bold),
+                              ),
+                              const TextSpan(
+                                text: 'dan tidak bisa diubah kembali.\n\n',
+                              ),
+                              TextSpan(
+                                text: 'username ',
+                                style: Constant.comfortaa.copyWith(fontWeight: FontWeight.bold),
+                              ),
+                              const TextSpan(
+                                text: 'hanya boleh menggunakan kombinasi ',
+                              ),
+                              TextSpan(
+                                text: 'huruf kecil, angka, underscore ( _ ) dan titik ( . )',
+                                style: Constant.comfortaa.copyWith(fontWeight: FontWeight.bold),
+                              ),
+                            ]),
+                      ),
+                      const SizedBox(height: 20),
+                    ],
+                  ),
+                ),
+                ElevatedButton(
+                  onPressed: () {},
+                  style: ElevatedButton.styleFrom(padding: const EdgeInsets.all(18.0)),
+                  child: Text(
+                    'Simpan',
+                    style: Constant.comfortaa.copyWith(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14.0,
+                    ),
+                  ),
+                )
+              ],
             ),
-            CopyRightVersion(
-              decoration: BoxDecoration(color: colorPallete.primaryColor),
-            ),
-          ],
+          ),
         ),
       ),
     );
@@ -343,9 +810,9 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
   ];
 
   final _screens = <Widget>[
-    InboxScreen(),
-    StoryScreen(),
-    AccountScreen(),
+    const InboxScreen(),
+    const StoryScreen(),
+    const AccountScreen(),
   ];
 
   @override
@@ -363,7 +830,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
           )
         ],
       ),
-      body: IndexedStack(children: _screens, index: _currentIndex),
+      body: IndexedStack(index: _currentIndex, children: _screens),
       bottomNavigationBar: BottomNavigationBar(
         items: _items,
         currentIndex: _currentIndex,
@@ -380,7 +847,7 @@ class StoryScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(color: Colors.white),
+      decoration: const BoxDecoration(color: Colors.white),
     );
   }
 }
@@ -390,9 +857,8 @@ class AccountScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Ink(
-      color: Colors.white,
-      child: Column(
+    return Scaffold(
+      body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Expanded(
@@ -502,9 +968,7 @@ class AccountScreen extends StatelessWidget {
                             color: Colors.black.withOpacity(.1),
                             borderRadius: BorderRadius.circular(5.0),
                           ),
-                          child: Icon(
-                            Icons.chevron_right,
-                          ),
+                          child: const Icon(Icons.chevron_right),
                         ),
                         const SizedBox(width: 10),
                       ],
@@ -814,9 +1278,9 @@ class MessageDetailScreen extends StatelessWidget {
                                           style: Constant.comfortaa
                                               .copyWith(fontWeight: FontWeight.bold),
                                         ),
-                                        Icon(FeatherIcons.smile),
+                                        const Icon(FeatherIcons.smile),
                                       ] else ...[
-                                        Icon(FeatherIcons.smile, color: Colors.white),
+                                        const Icon(FeatherIcons.smile, color: Colors.white),
                                         Text(
                                           '20.00',
                                           style: Constant.comfortaa.copyWith(
@@ -899,7 +1363,7 @@ class MessageDetailScreen extends StatelessWidget {
                     color: colorPallete.accentColor,
                     borderRadius: BorderRadius.circular(15.0),
                   ),
-                  child: Icon(
+                  child: const Icon(
                     FeatherIcons.send,
                     color: Colors.white,
                   ),
