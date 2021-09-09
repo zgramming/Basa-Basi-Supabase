@@ -8,7 +8,7 @@ class ProfileState extends Equatable {
     this.profile = const ProfileModel(),
   });
 
-  ProfileState setUser(ProfileModel value) => copyWith(profile: value);
+  ProfileState setProfile(ProfileModel? value) => copyWith(profile: value);
 
   @override
   List<Object> get props => [profile];

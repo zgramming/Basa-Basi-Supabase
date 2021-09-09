@@ -26,11 +26,17 @@ class SessionProvider extends StateNotifier<SessionState> {
   }
 
   Future<void> setUserSession(ProfileModel user) async {
-    state = await state.setUser(user);
+    state = await state.setUserSession(user);
   }
 
   Future<void> getUserSession() async {
-    state = await state.getUser();
+    final result = await state.getUserSession();
+
+    state = result;
+  }
+
+  Future<void> removeUserSession() async {
+    state = await state.setUserSession(null);
   }
 }
 

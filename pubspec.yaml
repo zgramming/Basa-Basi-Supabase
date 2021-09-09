@@ -38,6 +38,7 @@ dependencies:
   global_template:
     path: global_template
   google_fonts: ^2.1.0
+  image_picker: ^0.8.4
   json_annotation: null
   json_serializable: null
   path_provider: ^2.0.3

@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../network/model/network.dart';
@@ -12,6 +14,10 @@ class ProfileProvider extends StateNotifier<ProfileState> {
 
   final _sessionProvider = SessionProvider();
 
+  void setProfile(ProfileModel? value) {
+    state = state.setProfile(value);
+  }
+
   Future<void> signIn({
     required String email,
     required String password,
@@ -25,8 +31,26 @@ class ProfileProvider extends StateNotifier<ProfileState> {
 
     /// Set User Session
     await _sessionProvider.setUserSession(user);
-    state = state.setUser(user);
+    state = state.setProfile(user);
   }
 
-  Future<void> signUp() async {}
+  Future<void> signUp({
+    required String email,
+    required String password,
+  }) async {
+    final result = await SupabaseQuery.instance.signUp(email: email, password: password);
+    final data = List.from(result.data as List).first;
+    final user = ProfileModel.fromJson(Map<String, dynamic>.from(data as Map));
+
+    await _sessionProvider.setUserSession(user);
+    state = state.setProfile(user);
+  }
+
+  Future<void> signOut() async {
+    final result = await SupabaseQuery.instance.signOut();
+    if (result) {
+      await _sessionProvider.removeUserSession();
+      state = state.setProfile(null);
+    }
+  }
 }

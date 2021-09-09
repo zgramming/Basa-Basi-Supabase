@@ -3,8 +3,10 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../app.dart';
 import '../../provider/provider.dart';
+import '../login/login_screen.dart';
+import '../onboarding/onboarding_screen.dart';
+import '../setup_profile/setup_profile_screen.dart';
 
 class SplashScreen extends ConsumerStatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);
@@ -28,7 +30,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
       } else if (result.session.user == null) {
         Navigator.pushReplacementNamed(context, LoginScreen.routeNamed);
       } else if (result.session.user != null) {
-        Navigator.pushReplacementNamed(context, WelcomeScreen.routeNamed);
+        Navigator.pushReplacementNamed(context, SetupProfileScreen.routeNamed);
       }
     }).onError((error, stackTrace) {
       setState(() {
@@ -44,8 +46,11 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: isError ? Text(message ?? '') : const CircularProgressIndicator(),
+      body: Padding(
+        padding: const EdgeInsets.all(24.0),
+        child: Center(
+          child: isError ? Text(message ?? '') : const CircularProgressIndicator(),
+        ),
       ),
     );
   }

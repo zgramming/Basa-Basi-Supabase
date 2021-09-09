@@ -1,8 +1,9 @@
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:global_template/global_template.dart';
 import 'package:supabase/supabase.dart';
-
+import 'package:path/path.dart' as path;
 import 'utils.dart';
 
 class SupabaseQuery {
@@ -10,6 +11,7 @@ class SupabaseQuery {
 
   static final SupabaseQuery instance = SupabaseQuery._();
   static final _supabase = Constant.supabase;
+
   Future<PostgrestResponse> signUp({
     required String email,
     required String password,
@@ -21,8 +23,16 @@ class SupabaseQuery {
       }
 
       /// Insert Profile
-      final result =
-          await _insertProfile(email: email, password: password, idUser: auth.user?.id ?? '');
+      final result = await _insertProfile(
+        email: email,
+        password: password,
+        idUser: auth.user?.id ?? '',
+      );
+
+      log('insertProfile 1. ${result.count}');
+      log('insertProfile 2. ${result.data} this return List instead of single object');
+      log('insertProfile 3. ${result.error?.toJson()}');
+      log('insertProfile 4. ${result.status}');
       return result;
     } catch (e) {
       rethrow;
@@ -38,9 +48,11 @@ class SupabaseQuery {
         email: email,
         password: password,
       );
+
       if (result.error?.message != null) {
         throw Exception(result.error!.message);
       }
+
       final getUser = await Constant.supabase
           .from(Constant.tableProfile)
           .select()
@@ -51,6 +63,16 @@ class SupabaseQuery {
     } catch (e) {
       rethrow;
     }
+  }
+
+  Future<bool> signOut() async {
+    final result = await _supabase.auth.signOut();
+    final error = result.error?.message;
+    if (error != null) {
+      throw Exception(error);
+    }
+
+    return true;
   }
 
   /// Profile Section
@@ -73,19 +95,41 @@ class SupabaseQuery {
 
     final result = await _supabase.from(Constant.tableProfile).insert({
       'email': email,
-      'password': 'password',
+      'password': password,
       'id_user': idUser,
       'username': randomUsername,
       'created_at': DateTime.now().millisecondsSinceEpoch,
     }).execute();
-    log('insertProfile 1. ${result.count}');
-    log('insertProfile 2. ${result.data}');
-    log('insertProfile 3. ${result.error?.toJson()}');
-    log('insertProfile 4. ${result.status}');
+
     return result;
   }
 
-  Future<void> updateUsernameAndProfileImage() async {
-    // final result = _supabase.
+  Future<PostgrestResponse> setupProfileWhenFirstRegister(
+    String idUser, {
+    required String username,
+    File? file,
+  }) async {
+    String? pictureProfileUrl;
+    if (file != null) {
+      final generateRandomString = GlobalFunction.generateRandomString(20);
+      final storage = _supabase.storage.from('avatars');
+      final filename = "$generateRandomString${path.extension(file.path)}";
+      await storage.upload(filename, file);
+      final getUrl = storage.getPublicUrl(filename);
+      pictureProfileUrl = getUrl.data;
+    }
+    log('pcutre profile $pictureProfileUrl || iduser $idUser');
+    final result = await _supabase
+        .from('profile')
+        .update({'username': username, 'picture_profile': pictureProfileUrl})
+        .eq('id_user', idUser)
+        .execute();
+
+    log('result ${result.data}');
+
+    if (result.error != null) {
+      throw Exception(result.error!.message);
+    }
+    return result;
   }
 }
