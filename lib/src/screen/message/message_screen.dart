@@ -68,7 +68,7 @@ class MessageScreen extends StatelessWidget {
                     physics: const BouncingScrollPhysics(),
                     reverse: true,
                     itemBuilder: (context, index) {
-                      final isEven = index.floor().isEven;
+                      final isEven = index.isEven;
                       return Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 8.0),
                         child: Align(

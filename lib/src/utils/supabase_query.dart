@@ -2,8 +2,9 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:global_template/global_template.dart';
-import 'package:supabase/supabase.dart';
 import 'package:path/path.dart' as path;
+import 'package:supabase/supabase.dart';
+
 import 'utils.dart';
 
 class SupabaseQuery {

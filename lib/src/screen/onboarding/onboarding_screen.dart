@@ -3,10 +3,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:global_template/global_template.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
+import './widgets/onboarding_page_item.dart';
+
 import '../../provider/provider.dart';
 import '../../utils/utils.dart';
+
 import '../login/login_screen.dart';
-import './widgets/onboarding_page_item.dart';
 
 class OnboardingScreen extends StatefulWidget {
   static const routeNamed = '/onboarding-screen';

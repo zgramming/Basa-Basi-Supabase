@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:global_template/global_template.dart';
 
-import '../../provider/provider.dart';
-import '../../utils/utils.dart';
-
 import './widgets/signin_form.dart';
 import './widgets/signup_form.dart';
+
+import '../../provider/provider.dart';
+import '../../utils/utils.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   static const routeNamed = '/login-screen';

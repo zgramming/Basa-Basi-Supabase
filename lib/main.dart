@@ -27,7 +27,8 @@ Future<void> main() async {
   // Set the background messaging handler early on, as a named top-level function
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
-  SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.bottom, SystemUiOverlay.top]);
+  await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+
   colorPallete.configuration(
     primaryColor: const Color(0xFF0A4969),
     accentColor: const Color(0xFF00C6B2),

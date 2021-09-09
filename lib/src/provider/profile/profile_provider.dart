@@ -1,11 +1,9 @@
-import 'dart:developer';
-
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import './profile_state.dart';
 import '../../network/model/network.dart';
 import '../../utils/utils.dart';
 import '../provider.dart';
-import './profile_state.dart';
 
 class ProfileProvider extends StateNotifier<ProfileState> {
   ProfileProvider() : super(const ProfileState());

@@ -5,11 +5,11 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:global_template/global_template.dart';
 
-import '../../provider/provider.dart';
-import '../../utils/utils.dart';
-
 import './widgets/setup_profile_image.dart';
 import './widgets/setup_profile_username_info_rules.dart';
+
+import '../../provider/provider.dart';
+import '../../utils/utils.dart';
 
 class SetupProfileScreen extends ConsumerStatefulWidget {
   static const routeNamed = '/setup-profile';

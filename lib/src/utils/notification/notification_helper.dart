@@ -83,24 +83,25 @@ class NotificationHelperRevision {
     /// Note: permissions aren't requested here just to demonstrate that can be
     /// done later
     final IOSInitializationSettings initializationSettingsIOS = IOSInitializationSettings(
-        requestAlertPermission: false,
-        requestBadgePermission: false,
-        requestSoundPermission: false,
-        onDidReceiveLocalNotification: (
-          int id,
-          String? title,
-          String? body,
-          String? payload,
-        ) async {
-          didReceiveLocalNotificationSubject.add(
-            ReceivedNotification(
-              id: id,
-              title: title,
-              body: body,
-              payload: payload,
-            ),
-          );
-        });
+      requestAlertPermission: false,
+      requestBadgePermission: false,
+      requestSoundPermission: false,
+      onDidReceiveLocalNotification: (
+        int id,
+        String? title,
+        String? body,
+        String? payload,
+      ) async {
+        didReceiveLocalNotificationSubject.add(
+          ReceivedNotification(
+            id: id,
+            title: title,
+            body: body,
+            payload: payload,
+          ),
+        );
+      },
+    );
     const MacOSInitializationSettings initializationSettingsMacOS = MacOSInitializationSettings(
       requestAlertPermission: false,
       requestBadgePermission: false,
@@ -112,13 +113,15 @@ class NotificationHelperRevision {
       iOS: initializationSettingsIOS,
       macOS: initializationSettingsMacOS,
     );
-    await flutterLocalNotificationsPlugin.initialize(initializationSettings,
-        onSelectNotification: (String? payload) async {
-      if (payload != null) {
-        debugPrint('notification payload: $payload');
-      }
-      selectNotificationSubject.add(payload);
-    });
+    await flutterLocalNotificationsPlugin.initialize(
+      initializationSettings,
+      onSelectNotification: (String? payload) async {
+        if (payload != null) {
+          debugPrint('notification payload: $payload');
+        }
+        selectNotificationSubject.add(payload);
+      },
+    );
   }
 
   Future<void> _configureLocalTimeZone() async {

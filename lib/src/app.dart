@@ -22,15 +22,14 @@ class MyApp extends StatelessWidget {
       supportedLocales: const [Locale('id', 'ID')],
       color: Colors.white,
       theme: ThemeData(
+        primaryColor: colorPallete.primaryColor,
+        textTheme: GoogleFonts.comfortaaTextTheme(Theme.of(context).textTheme),
         colorScheme: ThemeData().colorScheme.copyWith(
               primary: colorPallete.primaryColor,
               onPrimary: Colors.white,
               secondary: colorPallete.accentColor,
               onSecondary: Colors.white,
             ),
-        primaryColor: colorPallete.primaryColor,
-        accentColor: colorPallete.accentColor,
-        textTheme: GoogleFonts.comfortaaTextTheme(Theme.of(context).textTheme),
       ),
       home: const SplashScreen(),
       onGenerateRoute: (settings) {
@@ -38,16 +37,20 @@ class MyApp extends StatelessWidget {
         switch (settings.name) {
           case OnboardingScreen.routeNamed:
             return routeAnimation.fadeTransition(
-                screen: (ctx, animation, secondaryAnimation) => const OnboardingScreen());
+              screen: (ctx, animation, secondaryAnimation) => const OnboardingScreen(),
+            );
           case LoginScreen.routeNamed:
             return routeAnimation.fadeTransition(
-                screen: (ctx, animation, secondaryAnimation) => const LoginScreen());
+              screen: (ctx, animation, secondaryAnimation) => const LoginScreen(),
+            );
           case SetupProfileScreen.routeNamed:
             return routeAnimation.fadeTransition(
-                screen: (ctx, animation, secondaryAnimation) => const SetupProfileScreen());
+              screen: (ctx, animation, secondaryAnimation) => const SetupProfileScreen(),
+            );
           case WelcomeScreen.routeNamed:
             return routeAnimation.fadeTransition(
-                screen: (ctx, animation, secondaryAnimation) => const WelcomeScreen());
+              screen: (ctx, animation, secondaryAnimation) => const WelcomeScreen(),
+            );
           case MessageScreen.routeNamed:
             return routeAnimation.slideTransition(
               screen: (ctx, animation, secondaryAnimation) => const MessageScreen(),
