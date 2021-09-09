@@ -123,10 +123,12 @@ class _SignUpFormState extends State<SignUpForm> {
                     try {
                       ref.read(isLoading).state = true;
 
-                      await ref.read(ProfileProvider.provider.notifier).signUp(
+                      final user = await ref.read(ProfileProvider.provider.notifier).signUp(
                             email: _emailController.text,
                             password: _passwordController.text,
                           );
+
+                      await ref.read(SessionProvider.provider.notifier).setUserSession(user);
 
                       _resetForm();
                       if (mounted) {

@@ -103,10 +103,7 @@ class _SetupProfileImageState extends ConsumerState<SetupProfileImage> {
                             borderRadius: BorderRadius.circular(15.0),
                             child: Image.file(
                               _pickedImage!,
-                              // width: 500,
-                              // height: 500,
                               fit: BoxFit.cover,
-                              // fit: BoxFit.fill,
                             ),
                           )
                         : const Padding(

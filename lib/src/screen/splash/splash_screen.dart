@@ -4,9 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../provider/provider.dart';
+
 import '../login/login_screen.dart';
 import '../onboarding/onboarding_screen.dart';
-import '../setup_profile/setup_profile_screen.dart';
+import '../welcome/welcome_screen.dart';
 
 class SplashScreen extends ConsumerStatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);
@@ -30,7 +31,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
       } else if (result.session.user == null) {
         Navigator.pushReplacementNamed(context, LoginScreen.routeNamed);
       } else if (result.session.user != null) {
-        Navigator.pushReplacementNamed(context, SetupProfileScreen.routeNamed);
+        Navigator.pushReplacementNamed(context, WelcomeScreen.routeNamed);
       }
     }).onError((error, stackTrace) {
       setState(() {

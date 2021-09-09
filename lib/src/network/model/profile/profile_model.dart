@@ -10,6 +10,7 @@ part 'profile_model.g.dart';
 class ProfileModel extends Equatable {
   final int id;
   final String? idUser;
+  final String? fullname;
   final String email;
   final String password;
   final String? username;
@@ -31,6 +32,7 @@ class ProfileModel extends Equatable {
   const ProfileModel({
     this.id = 0,
     this.idUser,
+    this.fullname,
     this.email = 'zeffry.reynando@gmail.com',
     this.password = 'akutampansekali',
     this.username,
@@ -50,6 +52,7 @@ class ProfileModel extends Equatable {
     return [
       id,
       idUser,
+      fullname,
       email,
       password,
       username,
@@ -68,6 +71,7 @@ class ProfileModel extends Equatable {
   ProfileModel copyWith({
     int? id,
     String? idUser,
+    String? fullname,
     String? email,
     String? password,
     String? username,
@@ -81,6 +85,7 @@ class ProfileModel extends Equatable {
     return ProfileModel(
       id: id ?? this.id,
       idUser: idUser ?? this.idUser,
+      fullname: fullname ?? this.fullname,
       email: email ?? this.email,
       password: password ?? this.password,
       username: username ?? this.username,

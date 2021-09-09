@@ -1,7 +1,10 @@
+import 'dart:developer';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import './session_state.dart';
+
 import '../../network/model/network.dart';
-import 'session_state.dart';
 
 class SessionProvider extends StateNotifier<SessionState> {
   SessionProvider() : super(const SessionState());
@@ -30,13 +33,13 @@ class SessionProvider extends StateNotifier<SessionState> {
   }
 
   Future<void> getUserSession() async {
-    final result = await state.getUserSession();
-
-    state = result;
+    state = await state.getUserSession();
+    log('getUserSession ${state.session.user?.toJson()}');
   }
 
   Future<void> removeUserSession() async {
-    state = await state.setUserSession(null);
+    ProfileModel? user;
+    state = await state.setUserSession(user);
   }
 }
 

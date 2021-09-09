@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:developer';
 
 import 'package:equatable/equatable.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -51,11 +50,12 @@ class SessionState extends Equatable {
   Future<SessionState> getUserSession() async {
     final sp = await SharedPreferences.getInstance();
     final result = sp.getString(Constant.spUserKey);
-    log('result $result');
-    ProfileModel? user;
-    if (result == null) {
-      return copyWith(session: session.copyWith(user: user));
+
+    if (result == null || result == "null") {
+      return copyWith(session: session.copyWith());
     }
+
+    ProfileModel? user;
     final decode = json.decode(result);
     user = ProfileModel.fromJson(Map<String, dynamic>.from(decode as Map));
     return copyWith(session: session.copyWith(user: user));

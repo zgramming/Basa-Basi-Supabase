@@ -126,10 +126,11 @@ class SupabaseQuery {
         .eq('id_user', idUser)
         .execute();
 
-    log('result ${result.data}');
+    log('SetupProfileQuery Data: ${result.data} || IdUser $idUser');
+    log('SetupProfileQuery Error: ${result.error}');
 
-    if (result.error != null) {
-      throw Exception(result.error!.message);
+    if (result.error?.message != null) {
+      throw Exception(result.error?.message);
     }
     return result;
   }

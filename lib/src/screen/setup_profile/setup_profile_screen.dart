@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -10,6 +11,8 @@ import './widgets/setup_profile_username_info_rules.dart';
 
 import '../../provider/provider.dart';
 import '../../utils/utils.dart';
+
+import '../welcome/welcome_screen.dart';
 
 class SetupProfileScreen extends ConsumerStatefulWidget {
   static const routeNamed = '/setup-profile';
@@ -26,8 +29,8 @@ class _SetupProfileScreenState extends ConsumerState<SetupProfileScreen> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance?.addPostFrameCallback((_) {});
     final user = ref.read(SessionProvider.provider).session.user;
+    log('Initstate SetupProfileUser ${user?.toJson()}');
     _usernameController = TextEditingController(text: user?.username);
   }
 
@@ -42,8 +45,10 @@ class _SetupProfileScreenState extends ConsumerState<SetupProfileScreen> {
   @override
   Widget build(BuildContext context) {
     final user = ref.watch(SessionProvider.provider).session.user;
+    log('user ${user?.toJson()}');
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         centerTitle: true,
         title: Text(
           'Mengatur Profile',
@@ -101,11 +106,16 @@ class _SetupProfileScreenState extends ConsumerState<SetupProfileScreen> {
                     }
                     try {
                       ref.read(isLoading).state = true;
-                      await SupabaseQuery.instance.setupProfileWhenFirstRegister(
-                        user?.idUser ?? '',
-                        username: _usernameController.text,
-                        file: _pickedImage,
-                      );
+                      final result =
+                          await ref.read(ProfileProvider.provider.notifier).setupUsernameAndImage(
+                                user?.idUser ?? '',
+                                username: _usernameController.text,
+                                file: _pickedImage,
+                              );
+                      await ref.read(SessionProvider.provider.notifier).setUserSession(result);
+                      if (mounted) {
+                        await Navigator.pushReplacementNamed(context, WelcomeScreen.routeNamed);
+                      }
                     } catch (e) {
                       GlobalFunction.showSnackBar(
                         context,

@@ -1,3 +1,6 @@
+import 'dart:developer';
+import 'dart:io';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import './profile_state.dart';
@@ -10,13 +13,11 @@ class ProfileProvider extends StateNotifier<ProfileState> {
   static final provider =
       StateNotifierProvider<ProfileProvider, ProfileState>((ref) => ProfileProvider());
 
-  final _sessionProvider = SessionProvider();
-
   void setProfile(ProfileModel? value) {
     state = state.setProfile(value);
   }
 
-  Future<void> signIn({
+  Future<ProfileModel> signIn({
     required String email,
     required String password,
   }) async {
@@ -28,11 +29,12 @@ class ProfileProvider extends StateNotifier<ProfileState> {
     final user = ProfileModel.fromJson(Map<String, dynamic>.from(result.data as Map));
 
     /// Set User Session
-    await _sessionProvider.setUserSession(user);
     state = state.setProfile(user);
+
+    return user;
   }
 
-  Future<void> signUp({
+  Future<ProfileModel> signUp({
     required String email,
     required String password,
   }) async {
@@ -40,15 +42,35 @@ class ProfileProvider extends StateNotifier<ProfileState> {
     final data = List.from(result.data as List).first;
     final user = ProfileModel.fromJson(Map<String, dynamic>.from(data as Map));
 
-    await _sessionProvider.setUserSession(user);
     state = state.setProfile(user);
+    return user;
   }
 
   Future<void> signOut() async {
+    final sessionProvider_ = SessionProvider();
     final result = await SupabaseQuery.instance.signOut();
     if (result) {
-      await _sessionProvider.removeUserSession();
-      state = state.setProfile(null);
+      log('masuk sini dong');
+      ProfileModel? user;
+      await sessionProvider_.removeUserSession();
+      state = state.setProfile(user);
     }
+  }
+
+  Future<ProfileModel> setupUsernameAndImage(
+    String idUser, {
+    required String username,
+    File? file,
+  }) async {
+    final result = await SupabaseQuery.instance.setupProfileWhenFirstRegister(
+      idUser,
+      username: username,
+      file: file,
+    );
+    final data = List.from(result.data as List).first;
+    final user = ProfileModel.fromJson(Map<String, dynamic>.from(data as Map));
+
+    state = state.setProfile(user);
+    return user;
   }
 }

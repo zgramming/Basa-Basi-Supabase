@@ -84,10 +84,12 @@ class _SignInFormState extends State<SignInForm> {
                       }
                       try {
                         ref.read(isLoading).state = true;
-                        await ref.read(ProfileProvider.provider.notifier).signIn(
+                        final user = await ref.read(ProfileProvider.provider.notifier).signIn(
                               email: _emailController.text,
                               password: _passwordController.text,
                             );
+
+                        await ref.read(SessionProvider.provider.notifier).setUserSession(user);
 
                         if (mounted) {
                           log('done');

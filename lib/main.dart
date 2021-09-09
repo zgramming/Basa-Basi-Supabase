@@ -39,5 +39,9 @@ Future<void> main() async {
     error: const Color(0xFF00BBFF),
   );
 
-  runApp(const ProviderScope(child: MyApp()));
+  runApp(
+    const ProviderScope(
+      child: MyApp(),
+    ),
+  );
 }
