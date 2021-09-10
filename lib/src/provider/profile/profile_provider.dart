@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -6,7 +5,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import './profile_state.dart';
 import '../../network/model/network.dart';
 import '../../utils/utils.dart';
-import '../provider.dart';
 
 class ProfileProvider extends StateNotifier<ProfileState> {
   ProfileProvider() : super(const ProfileState());
@@ -47,12 +45,9 @@ class ProfileProvider extends StateNotifier<ProfileState> {
   }
 
   Future<void> signOut() async {
-    final sessionProvider_ = SessionProvider();
     final result = await SupabaseQuery.instance.signOut();
     if (result) {
-      log('masuk sini dong');
       ProfileModel? user;
-      await sessionProvider_.removeUserSession();
       state = state.setProfile(user);
     }
   }
