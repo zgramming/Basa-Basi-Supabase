@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:global_template/global_template.dart';
 
 import './widgets/inbox_archived.dart';
@@ -7,16 +8,16 @@ import './widgets/inbox_item_image.dart';
 import './widgets/inbox_item_message.dart';
 import './widgets/inbox_item_name.dart';
 import './widgets/inbox_item_unread_message.dart';
-
+import '../../network/model/network.dart';
+import '../../provider/provider.dart';
 import '../message/message_screen.dart';
 
-class InboxScreen extends StatelessWidget {
+class InboxScreen extends ConsumerWidget {
   const InboxScreen({
     Key? key,
   }) : super(key: key);
-
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -26,12 +27,27 @@ class InboxScreen extends StatelessWidget {
           const SizedBox(height: 20),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 24.0),
-            child: ListView.builder(
-              shrinkWrap: true,
-              itemCount: 100,
-              physics: const NeverScrollableScrollPhysics(),
-              itemBuilder: (context, index) {
-                return const InboxItem();
+            child: Builder(
+              builder: (context) {
+                final _streamInbox = ref.watch(getAllInbox);
+                return _streamInbox.when(
+                  data: (_) {
+                    final inboxes = ref.watch(InboxProvider.provider).items;
+                    return ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: inboxes.length,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemBuilder: (context, index) {
+                        final inbox = inboxes[index];
+                        return InboxItem(inbox: inbox);
+                      },
+                    );
+                  },
+                  loading: () => const Center(child: CircularProgressIndicator()),
+                  error: (error, stackTrace) => Center(
+                    child: Text(error.toString()),
+                  ),
+                );
               },
             ),
           ),
@@ -41,17 +57,23 @@ class InboxScreen extends StatelessWidget {
   }
 }
 
-class InboxItem extends StatelessWidget {
+class InboxItem extends ConsumerWidget {
+  final InboxModel inbox;
   const InboxItem({
     Key? key,
+    required this.inbox,
   }) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final _streamListenInbox = ref.watch(listenYourInbox(inbox.sender?.id ?? 0));
     return Column(
       children: [
         InkWell(
-          onTap: () => Navigator.pushNamed(context, MessageScreen.routeNamed),
+          onTap: () {
+            ref.read(sender).state = inbox.sender;
+            Navigator.pushNamed(context, MessageScreen.routeNamed);
+          },
           splashColor: colorPallete.primaryColor,
           borderRadius: BorderRadius.circular(10.0),
           child: Ink(
@@ -69,7 +91,7 @@ class InboxItem extends StatelessWidget {
               padding: const EdgeInsets.all(16.0),
               child: Row(
                 children: [
-                  const InboxItemImage(),
+                  InboxItemImage(inbox: inbox),
                   const SizedBox(width: 15.0),
                   Expanded(
                     child: Column(
@@ -77,15 +99,15 @@ class InboxItem extends StatelessWidget {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Row(
-                          children: const [
-                            InboxItemName(),
-                            InboxItemDateAndStatus(),
+                          children: [
+                            InboxItemName(inbox: inbox),
+                            InboxItemDateAndStatus(inbox: inbox),
                           ],
                         ),
                         const SizedBox(height: 10),
-                        const InboxItemMessage(),
+                        InboxItemMessage(inbox: inbox),
                         const SizedBox(height: 20),
-                        const InboxItemUnreadMessage(),
+                        InboxItemUnreadMessage(inbox: inbox),
                       ],
                     ),
                   ),

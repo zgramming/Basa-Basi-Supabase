@@ -45,7 +45,6 @@ class _SignUpFormState extends State<SignUpForm> {
       child: SingleChildScrollView(
         child: Form(
           key: _formKey,
-          // autovalidateMode: AutovalidateMode.onUserInteraction,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
@@ -57,7 +56,7 @@ class _SignUpFormState extends State<SignUpForm> {
                 borderFocusColor: colorPallete.accentColor,
                 activeColor: colorPallete.accentColor,
                 borderColor: Colors.black.withOpacity(.25),
-                textStyle: Constant.comfortaa.copyWith(fontSize: 12.0),
+                textStyle: Constant.comfortaa.copyWith(fontSize: 14.0),
                 padding: const EdgeInsets.all(24.0),
                 prefixIcon: const Icon(FeatherIcons.mail),
                 validator: (value) {
@@ -76,7 +75,7 @@ class _SignUpFormState extends State<SignUpForm> {
                 borderFocusColor: colorPallete.accentColor,
                 activeColor: colorPallete.accentColor,
                 borderColor: Colors.black.withOpacity(.25),
-                textStyle: Constant.comfortaa.copyWith(fontSize: 12.0),
+                textStyle: Constant.comfortaa.copyWith(fontSize: 14.0),
                 padding: const EdgeInsets.all(24.0),
                 suffixIconConfiguration: const SuffixIconConfiguration(
                   bottomPosition: 5,
@@ -96,7 +95,7 @@ class _SignUpFormState extends State<SignUpForm> {
                 borderFocusColor: colorPallete.accentColor,
                 activeColor: colorPallete.accentColor,
                 borderColor: Colors.black.withOpacity(.25),
-                textStyle: Constant.comfortaa.copyWith(fontSize: 12.0),
+                textStyle: Constant.comfortaa.copyWith(fontSize: 14.0),
                 padding: const EdgeInsets.all(24.0),
                 suffixIconConfiguration: const SuffixIconConfiguration(
                   bottomPosition: 5,

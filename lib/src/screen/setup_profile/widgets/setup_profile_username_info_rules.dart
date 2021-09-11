@@ -17,40 +17,28 @@ class SetupProfileUsernameInfoRules extends StatelessWidget {
           fontSize: 10.0,
         ),
         children: [
-          TextSpan(
-            text: 'username ',
-            style: Constant.comfortaa.copyWith(fontWeight: FontWeight.bold),
+          const TextSpan(
+            text: 'username mempermudah teman kamu untuk mencari kamu loh. ',
           ),
           const TextSpan(
-            text: 'mempermudah teman kamu untuk mencari kamu loh. ',
-          ),
-          TextSpan(
-            text: 'username ',
-            style: Constant.comfortaa.copyWith(fontWeight: FontWeight.bold),
-          ),
-          const TextSpan(
-            text: 'bersifat ',
+            text: 'username bersifat ',
           ),
           TextSpan(
             text: 'unique ',
             style: Constant.comfortaa.copyWith(fontWeight: FontWeight.bold),
           ),
           const TextSpan(
-            text: 'dan tidak bisa diubah kembali.\n\n',
-          ),
-          TextSpan(
-            text: 'username ',
-            style: Constant.comfortaa.copyWith(fontWeight: FontWeight.bold),
+            text: 'dan hanya bisa diubah 1 kali saja.\n\n',
           ),
           const TextSpan(
-            text: 'hanya boleh menggunakan kombinasi ',
+            text: 'username hanya boleh menggunakan kombinasi ',
           ),
           TextSpan(
             text: 'huruf kecil, angka, underscore ( _ ) dan titik ( . )\n\n',
             style: Constant.comfortaa.copyWith(fontWeight: FontWeight.bold),
           ),
           TextSpan(
-            text: 'Contoh : aku.tampan, aku_ganteng123, why_im_so_handsome123',
+            text: 'Contoh : aku.tampan.sekali, aku_ganteng123, why_im_so_handsome123',
             style: Constant.comfortaa.copyWith(
               fontWeight: FontWeight.bold,
               color: colorPallete.accentColor,

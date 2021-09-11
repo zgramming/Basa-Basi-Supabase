@@ -33,6 +33,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: Image.asset(
           '${appConfig.urlImageAsset}/logo_white.png',
           width: 40.0,

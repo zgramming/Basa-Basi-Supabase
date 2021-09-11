@@ -54,13 +54,15 @@ class ProfileProvider extends StateNotifier<ProfileState> {
 
   Future<ProfileModel> setupUsernameAndImage(
     String idUser, {
-    required String username,
+    String? username,
+    String? fullname,
     File? file,
   }) async {
     final result = await SupabaseQuery.instance.setupProfileWhenFirstRegister(
       idUser,
       username: username,
       file: file,
+      fullname: fullname,
     );
     final data = List.from(result.data as List).first;
     final user = ProfileModel.fromJson(Map<String, dynamic>.from(data as Map));

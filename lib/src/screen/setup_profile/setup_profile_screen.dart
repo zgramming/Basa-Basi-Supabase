@@ -24,6 +24,7 @@ class SetupProfileScreen extends ConsumerStatefulWidget {
 
 class _SetupProfileScreenState extends ConsumerState<SetupProfileScreen> {
   late final TextEditingController _usernameController;
+  late final TextEditingController _fullnameController;
   final _formKey = GlobalKey<FormState>();
 
   @override
@@ -32,11 +33,13 @@ class _SetupProfileScreenState extends ConsumerState<SetupProfileScreen> {
     final user = ref.read(SessionProvider.provider).session.user;
     log('Initstate SetupProfileUser ${user?.toJson()}');
     _usernameController = TextEditingController(text: user?.username);
+    _fullnameController = TextEditingController(text: user?.fullname);
   }
 
   @override
   void dispose() {
     _usernameController.dispose();
+    _fullnameController.dispose();
     super.dispose();
   }
 
@@ -45,7 +48,6 @@ class _SetupProfileScreenState extends ConsumerState<SetupProfileScreen> {
   @override
   Widget build(BuildContext context) {
     final user = ref.watch(SessionProvider.provider).session.user;
-    log('user ${user?.toJson()}');
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
@@ -67,18 +69,32 @@ class _SetupProfileScreenState extends ConsumerState<SetupProfileScreen> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      SetupProfileImage(
-                        onPickImage: (file) => setState(() => _pickedImage = file),
-                      ),
-                      const SizedBox(height: 40),
-                      Form(
-                        key: _formKey,
-                        child: TextFormFieldCustom(
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        SetupProfileImage(
+                          onPickImage: (file) => setState(() => _pickedImage = file),
+                        ),
+                        const SizedBox(height: 40),
+                        TextFormFieldCustom(
+                          controller: _fullnameController,
+                          labelText: 'Nama Lengkap',
+                          disableOutlineBorder: false,
+                          activeColor: colorPallete.accentColor,
+                          borderColor: Colors.black.withOpacity(.25),
+                          borderFocusColor: colorPallete.accentColor,
+                          padding: const EdgeInsets.all(18.0),
+                          hintText: 'Masukkan Nama Lengkap',
+                          textStyle: Constant.comfortaa.copyWith(fontSize: 14.0),
+                          validator: (value) => GlobalFunction.validateIsEmpty(value),
+                        ),
+                        const SizedBox(height: 20),
+                        TextFormFieldCustom(
                           controller: _usernameController,
+                          labelText: 'Username',
                           disableOutlineBorder: false,
                           activeColor: colorPallete.accentColor,
                           borderColor: Colors.black.withOpacity(.25),
@@ -91,11 +107,11 @@ class _SetupProfileScreenState extends ConsumerState<SetupProfileScreen> {
                           ],
                           validator: (value) => GlobalFunction.validateIsEmpty(value),
                         ),
-                      ),
-                      const SizedBox(height: 20),
-                      const SetupProfileUsernameInfoRules(),
-                      const SizedBox(height: 20),
-                    ],
+                        const SizedBox(height: 20),
+                        const SetupProfileUsernameInfoRules(),
+                        const SizedBox(height: 20),
+                      ],
+                    ),
                   ),
                 ),
                 ElevatedButton(
@@ -110,6 +126,7 @@ class _SetupProfileScreenState extends ConsumerState<SetupProfileScreen> {
                           await ref.read(ProfileProvider.provider.notifier).setupUsernameAndImage(
                                 user?.idUser ?? '',
                                 username: _usernameController.text,
+                                fullname: _fullnameController.text,
                                 file: _pickedImage,
                               );
                       await ref.read(SessionProvider.provider.notifier).setUserSession(result);
@@ -126,7 +143,7 @@ class _SetupProfileScreenState extends ConsumerState<SetupProfileScreen> {
                       ref.read(isLoading).state = false;
                     }
                   },
-                  style: ElevatedButton.styleFrom(padding: const EdgeInsets.all(18.0)),
+                  style: ElevatedButton.styleFrom(padding: const EdgeInsets.all(16.0)),
                   child: Text(
                     'Simpan',
                     style: Constant.comfortaa.copyWith(
@@ -134,7 +151,30 @@ class _SetupProfileScreenState extends ConsumerState<SetupProfileScreen> {
                       fontSize: 14.0,
                     ),
                   ),
-                )
+                ),
+                const SizedBox(height: 10),
+                OutlinedButton(
+                  onPressed: () async {
+                    if (mounted) {
+                      await Navigator.pushNamedAndRemoveUntil(
+                        context,
+                        WelcomeScreen.routeNamed,
+                        (route) => false,
+                      );
+                    }
+                  },
+                  style: OutlinedButton.styleFrom(
+                    padding: const EdgeInsets.all(16.0),
+                    side: BorderSide(color: colorPallete.accentColor!),
+                  ),
+                  child: Text(
+                    'Lewati',
+                    style: Constant.comfortaa.copyWith(
+                      color: colorPallete.accentColor,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
               ],
             ),
           ),

@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import './session_state.dart';
@@ -34,7 +32,6 @@ class SessionProvider extends StateNotifier<SessionState> {
 
   Future<void> getUserSession() async {
     state = await state.getUserSession();
-    log('getUserSession ${state.session.user?.toJson()}');
   }
 
   Future<void> removeUserSession() async {

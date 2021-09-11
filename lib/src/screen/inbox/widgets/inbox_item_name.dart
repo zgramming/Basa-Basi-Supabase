@@ -1,16 +1,19 @@
 import 'package:flutter/material.dart';
 
+import '../../../network/model/network.dart';
 import '../../../utils/utils.dart';
 
 class InboxItemName extends StatelessWidget {
+  final InboxModel inbox;
   const InboxItemName({
     Key? key,
+    required this.inbox,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Text(
-      'Zeffry Reynando',
+      inbox.sender?.fullname ?? '-',
       style: Constant.comfortaa.copyWith(
         fontWeight: FontWeight.bold,
         fontSize: 16.0,

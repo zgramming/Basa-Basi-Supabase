@@ -1,6 +1,8 @@
 import 'dart:developer';
 import 'dart:io';
 
+import 'package:basa_basi_supabase/src/network/model/inbox/inbox_model.dart';
+import 'package:basa_basi_supabase/src/network/model/network.dart';
 import 'package:global_template/global_template.dart';
 import 'package:path/path.dart' as path;
 import 'package:supabase/supabase.dart';
@@ -76,7 +78,7 @@ class SupabaseQuery {
     return true;
   }
 
-  /// Profile Section
+  ///* START Profile Section
   Future<PostgrestResponse> _insertProfile({
     required String email,
     required String password,
@@ -86,19 +88,13 @@ class SupabaseQuery {
       10,
       rules: GenerateRandomStringRules.combineNumberAlphabetLowercase,
     );
-    // final ProfileModel profile = ProfileModel(
-    //   email: email,
-    //   password: password,
-    //   idUser: idUser,
-    //   username: randomUsername,
-    //   createdAt: DateTime.now(),
-    // );
 
     final result = await _supabase.from(Constant.tableProfile).insert({
       'email': email,
       'password': password,
       'id_user': idUser,
       'username': randomUsername,
+      'fullname': email,
       'created_at': DateTime.now().millisecondsSinceEpoch,
     }).execute();
 
@@ -107,7 +103,8 @@ class SupabaseQuery {
 
   Future<PostgrestResponse> setupProfileWhenFirstRegister(
     String idUser, {
-    required String username,
+    String? username,
+    String? fullname,
     File? file,
   }) async {
     String? pictureProfileUrl;
@@ -119,10 +116,14 @@ class SupabaseQuery {
       final getUrl = storage.getPublicUrl(filename);
       pictureProfileUrl = getUrl.data;
     }
-    log('pcutre profile $pictureProfileUrl || iduser $idUser');
+    log('picture profile $pictureProfileUrl || iduser $idUser');
     final result = await _supabase
         .from('profile')
-        .update({'username': username, 'picture_profile': pictureProfileUrl})
+        .update({
+          'username': username,
+          'picture_profile': pictureProfileUrl,
+          'fullname': fullname,
+        })
         .eq('id_user', idUser)
         .execute();
 
@@ -134,4 +135,80 @@ class SupabaseQuery {
     }
     return result;
   }
+
+  ///* END Profile Section
+
+  ///* START Inbox Section
+
+  ///? Get All inbox by idUser
+  Future<PostgrestResponse> getAllInboxByIdUser(int idUser) async {
+    /**
+     * SELECT * FROM inbox as inbox 
+     * JOIN profile as user ON (inbox.id_user = user.id)
+     * JOIN profile as sender ON (inbox.id_sender = sender.id)
+     * WHERE inbox.id_user = $idUser
+     * 
+     */
+    final result = await _supabase
+        .from("inbox")
+        .select("*, user:id_user(*), sender:id_sender(*)")
+        .eq('id_user', idUser)
+        .execute();
+
+    if (result.error?.message != null) {
+      throw Exception(result.error?.message);
+    }
+    return result;
+  }
+
+  Future<void> insertOrUpdate(int you) async {
+    final isExists =
+        await _supabase.from('inbox').select('id').eq('id_user', you).single().execute();
+    if ((isExists.count ?? 0) <= 0) {
+      /// Insert
+      final insert = await _supabase.from('inbox').insert(
+        {},
+      ).execute();
+    } else {
+      /// Update
+      final update = await _supabase.from('inbox').update(
+        {},
+      ).execute();
+    }
+  }
+
+  ///* END Inbox Section
+
+  ///* START Message Section
+  Future<PostgrestResponse> getAllMessageByInboxChannel(String inboxChannel) async {
+    final result = await _supabase
+        .from('message')
+        .select()
+        .eq('inbox_channel', inboxChannel)
+        .order(
+          'message_date',
+        )
+        .execute();
+
+    if (result.error?.message != null) {
+      throw Exception(result.error?.message);
+    }
+    return result;
+  }
+
+  Future<MessageModel> sendMessage({
+    required MessagePost post,
+  }) async {
+    final result = await _supabase.from('message').insert(post.toJson()).execute();
+
+    if (result.error?.message != null) {
+      throw Exception(result.error?.message);
+    }
+
+    final data = List.from(result.data as List).first;
+    final message = MessageModel.fromJson(Map<String, dynamic>.from(data as Map));
+    return message;
+  }
+
+  ///* END Message Section
 }

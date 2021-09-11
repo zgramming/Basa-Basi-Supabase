@@ -1,16 +1,20 @@
 import 'package:flutter/material.dart';
 
+import '../../../network/model/network.dart';
+
 import '../../../utils/utils.dart';
 
 class InboxItemMessage extends StatelessWidget {
+  final InboxModel inbox;
   const InboxItemMessage({
     Key? key,
+    required this.inbox,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Text(
-      'Lagi dimana lu bro? udah ditungguin sama anak-anak yang lain nih...',
+      '${inbox.inboxLastMessage}',
       maxLines: 2,
       overflow: TextOverflow.ellipsis,
       style: Constant.comfortaa.copyWith(

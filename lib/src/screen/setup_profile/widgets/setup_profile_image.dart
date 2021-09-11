@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -27,7 +28,6 @@ class _SetupProfileImageState extends ConsumerState<SetupProfileImage> {
   Future<File?> pickImage(ImageSource source) async {
     final result = await _imagePicker.pickImage(
       source: source,
-      imageQuality: 50,
       maxHeight: 400,
       maxWidth: 400,
       preferredCameraDevice: CameraDevice.front,
@@ -41,6 +41,7 @@ class _SetupProfileImageState extends ConsumerState<SetupProfileImage> {
   @override
   Widget build(BuildContext context) {
     final user = ref.watch(SessionProvider.provider).session.user;
+    log('setupprofile ${user?.pictureProfile}');
     return Center(
       child: InkWell(
         onTap: () async {
@@ -106,11 +107,13 @@ class _SetupProfileImageState extends ConsumerState<SetupProfileImage> {
                               fit: BoxFit.cover,
                             ),
                           )
-                        : const Padding(
-                            padding: EdgeInsets.all(8.0),
-                            child: Icon(
-                              FeatherIcons.image,
-                              color: Colors.white,
+                        : const FittedBox(
+                            child: Padding(
+                              padding: EdgeInsets.all(8.0),
+                              child: Icon(
+                                FeatherIcons.image,
+                                color: Colors.white,
+                              ),
                             ),
                           ),
                   ),
