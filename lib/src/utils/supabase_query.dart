@@ -1,12 +1,11 @@
 import 'dart:developer';
 import 'dart:io';
 
-import 'package:basa_basi_supabase/src/network/model/inbox/inbox_model.dart';
-import 'package:basa_basi_supabase/src/network/model/network.dart';
 import 'package:global_template/global_template.dart';
 import 'package:path/path.dart' as path;
 import 'package:supabase/supabase.dart';
 
+import '../network/model/network.dart';
 import 'utils.dart';
 
 class SupabaseQuery {
