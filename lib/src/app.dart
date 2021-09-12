@@ -9,6 +9,8 @@ import './screen/onboarding/onboarding_screen.dart';
 import './screen/setup_profile/setup_profile_screen.dart';
 import './screen/splash/splash_screen.dart';
 import './screen/welcome/welcome_screen.dart';
+import './screen/welcome/widgets/search_message.dart';
+import './screen/welcome/widgets/search_new_friend.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
@@ -55,6 +57,14 @@ class MyApp extends StatelessWidget {
             return routeAnimation.slideTransition(
               screen: (ctx, animation, secondaryAnimation) => const MessageScreen(),
               slidePosition: SlidePosition.fromLeft,
+            );
+          case SearchMessage.routeNamed:
+            return routeAnimation.slideTransition(
+              screen: (ctx, animation, secondaryAnimation) => const SearchMessage(),
+            );
+          case SearchNewFriend.routeNamed:
+            return routeAnimation.fadeTransition(
+              screen: (ctx, animation, secondaryAnimation) => const SearchNewFriend(),
             );
 
           default:
