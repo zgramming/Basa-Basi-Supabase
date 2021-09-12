@@ -70,6 +70,9 @@ class _MessageFooterState extends ConsumerState<MessageFooter> {
                     messageType: MessageType.text,
                   );
 
+                  /// Reset textfield
+                  widget.messageController.clear();
+
                   await ref.read(MessageProvider.provider.notifier).sendMessage(
                         you: user?.id ?? 0,
                         post: data,

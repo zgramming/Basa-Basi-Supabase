@@ -52,15 +52,19 @@ class MessageItem extends ConsumerWidget {
                       if (message.isLiked) const Icon(FeatherIcons.smile, color: Colors.white),
                       Text(
                         '20.00',
-                        style: Constant.comfortaa.copyWith(
+                        style: Constant.maitree.copyWith(
                           fontWeight: FontWeight.bold,
+                          fontSize: 10.0,
                           color: Colors.white,
                         ),
                       ),
                     ] else ...[
                       Text(
                         '20.00',
-                        style: Constant.comfortaa.copyWith(fontWeight: FontWeight.bold),
+                        style: Constant.maitree.copyWith(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 10.0,
+                        ),
                       ),
                       if (message.isLiked) const Icon(FeatherIcons.smile),
                     ]

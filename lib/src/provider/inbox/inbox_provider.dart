@@ -84,7 +84,14 @@ class InboxState extends Equatable {
   }
 }
 
-final listenYourInbox = StreamProvider.family.autoDispose<void, int>((ref, senderId) async* {
+final getAllInbox = StreamProvider.autoDispose((ref) {
+  final user = ref.watch(SessionProvider.provider).session.user;
+  final future = ref.watch(InboxProvider.provider.notifier)._getInboxes(user?.id ?? 0);
+
+  return Stream.fromFuture(future);
+});
+
+final listenYourInbox = StreamProvider.family.autoDispose<bool, int>((ref, senderId) async* {
   final user = ref.read(SessionProvider.provider).session.user;
   final inboxes = ref.read(InboxProvider.provider).items;
 
@@ -120,11 +127,6 @@ final listenYourInbox = StreamProvider.family.autoDispose<void, int>((ref, sende
     log('on dispose subscription');
     Constant.supabase.removeSubscription(subscription);
   });
-});
 
-final getAllInbox = StreamProvider.autoDispose((ref) {
-  final user = ref.watch(SessionProvider.provider).session.user;
-  final future = ref.watch(InboxProvider.provider.notifier)._getInboxes(user?.id ?? 0);
-
-  return Stream.fromFuture(future);
+  yield true;
 });
