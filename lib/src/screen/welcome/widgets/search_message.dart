@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -6,6 +7,7 @@ import 'package:global_template/global_template.dart';
 import './search_new_friend.dart';
 import '../../../provider/provider.dart';
 import '../../../utils/utils.dart';
+import '../../message/message_screen.dart';
 
 class SearchMessage extends StatefulWidget {
   static const routeNamed = '/search-message';
@@ -88,47 +90,98 @@ class _SearchMessageState extends State<SearchMessage> {
                         itemCount: inboxes.length,
                         physics: const NeverScrollableScrollPhysics(),
                         shrinkWrap: true,
-                        itemBuilder: (context, index) => InkWell(
-                          onTap: () {},
-                          child: Ink(
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(10.0),
-                              boxShadow: [
-                                BoxShadow(color: Colors.black.withOpacity(.25), blurRadius: 2.0),
-                              ],
-                            ),
-                            child: ListTile(
-                              title: Text(
-                                'Zeffry Reynando $index',
-                                style: Constant.comfortaa.copyWith(
-                                  fontSize: 12.0,
-                                  fontWeight: FontWeight.bold,
-                                ),
+                        itemBuilder: (context, index) {
+                          final inbox = inboxes[index];
+                          return InkWell(
+                            onTap: () async {
+                              ref.read(sender).state = inbox.sender;
+                              await Navigator.pushNamed(context, MessageScreen.routeNamed);
+                            },
+                            child: Ink(
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(10.0),
+                                boxShadow: [
+                                  BoxShadow(color: Colors.black.withOpacity(.25), blurRadius: 2.0),
+                                ],
                               ),
-                              subtitle: Text.rich(
-                                TextSpan(
-                                  text: 'Username : ',
-                                  children: [
-                                    TextSpan(
-                                      text: 'zeffry.reynando',
-                                      style: Constant.comfortaa.copyWith(
-                                        fontWeight: FontWeight.bold,
-                                        color: colorPallete.accentColor,
+                              child: ListTile(
+                                title: Text(
+                                  '${inbox.sender?.fullname}',
+                                  style: Constant.comfortaa.copyWith(
+                                    fontSize: 14.0,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                subtitle: Text.rich(
+                                  TextSpan(
+                                    text: 'Username : ',
+                                    children: [
+                                      TextSpan(
+                                        text: '${inbox.sender?.username}',
+                                        style: Constant.comfortaa.copyWith(
+                                          fontWeight: FontWeight.bold,
+                                          color: colorPallete.accentColor,
+                                        ),
                                       ),
-                                    ),
-                                  ],
+                                    ],
+                                  ),
+                                  style: Constant.comfortaa.copyWith(
+                                    fontSize: 10.0,
+                                    color: Colors.black.withOpacity(.5),
+                                  ),
                                 ),
-                                style: Constant.comfortaa.copyWith(
-                                  fontSize: 10.0,
-                                  color: Colors.black.withOpacity(.5),
+                                contentPadding: const EdgeInsets.all(12.0),
+                                leading: InkWell(
+                                  onTap: () async {
+                                    late String url;
+                                    late ImageViewType imageViewType;
+                                    if (inbox.sender?.pictureProfile == null ||
+                                        (inbox.sender?.pictureProfile?.isEmpty ?? true)) {
+                                      url = '${appConfig.urlImageAsset}/ob1.png';
+                                      imageViewType = ImageViewType.asset;
+                                    } else {
+                                      url = inbox.sender?.pictureProfile ?? '';
+                                      imageViewType = ImageViewType.network;
+                                    }
+                                    await GlobalFunction.showDetailSingleImage(
+                                      context,
+                                      url: url,
+                                      imageViewType: imageViewType,
+                                    );
+                                  },
+                                  child: Container(
+                                    height: 50,
+                                    width: 50,
+                                    padding: const EdgeInsets.all(8.0),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      boxShadow: [
+                                        BoxShadow(
+                                          blurRadius: 2.0,
+                                          color: Colors.black.withOpacity(.25),
+                                        )
+                                      ],
+                                      shape: BoxShape.circle,
+                                    ),
+                                    child: ClipOval(
+                                      child: (inbox.sender?.pictureProfile == null ||
+                                              (inbox.sender?.pictureProfile?.isEmpty ?? true))
+                                          ? Image.asset(
+                                              '${appConfig.urlImageAsset}/ob1.png',
+                                              fit: BoxFit.cover,
+                                            )
+                                          : CachedNetworkImage(
+                                              imageUrl: inbox.sender?.pictureProfile ?? '',
+                                              fit: BoxFit.cover,
+                                            ),
+                                    ),
+                                  ),
                                 ),
                               ),
-                              contentPadding: const EdgeInsets.all(12.0),
-                              leading: const CircleAvatar(),
                             ),
-                          ),
-                        ),
+                          );
+                        },
                       );
                     },
                     loading: () => const Center(child: CircularProgressIndicator()),
