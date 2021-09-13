@@ -131,7 +131,11 @@ class _SetupProfileScreenState extends ConsumerState<SetupProfileScreen> {
                               );
                       await ref.read(SessionProvider.provider.notifier).setUserSession(result);
                       if (mounted) {
-                        await Navigator.pushReplacementNamed(context, WelcomeScreen.routeNamed);
+                        await Navigator.pushNamedAndRemoveUntil(
+                          context,
+                          WelcomeScreen.routeNamed,
+                          (route) => false,
+                        );
                       }
                     } catch (e) {
                       GlobalFunction.showSnackBar(

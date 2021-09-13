@@ -73,9 +73,9 @@ class InboxItem extends ConsumerWidget {
         return Column(
           children: [
             InkWell(
-              onTap: () {
+              onTap: () async {
                 ref.read(sender).state = inbox.sender;
-                Navigator.pushNamed(context, MessageScreen.routeNamed);
+                await Navigator.pushNamed(context, MessageScreen.routeNamed);
               },
               splashColor: colorPallete.primaryColor,
               borderRadius: BorderRadius.circular(10.0),

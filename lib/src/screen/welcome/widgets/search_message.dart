@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:global_template/global_template.dart';
 
 import './search_new_friend.dart';
+import '../../../provider/provider.dart';
 import '../../../utils/utils.dart';
 
 class SearchMessage extends StatefulWidget {
@@ -75,52 +77,66 @@ class _SearchMessageState extends State<SearchMessage> {
                 ),
               ),
               const SizedBox(height: 20),
-              ListView.separated(
-                separatorBuilder: (context, index) => const SizedBox(height: 10),
-                itemCount: 100,
-                physics: const NeverScrollableScrollPhysics(),
-                shrinkWrap: true,
-                itemBuilder: (context, index) => InkWell(
-                  onTap: () {},
-                  child: Ink(
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(10.0),
-                      boxShadow: [
-                        BoxShadow(color: Colors.black.withOpacity(.25), blurRadius: 2.0),
-                      ],
-                    ),
-                    child: ListTile(
-                      title: Text(
-                        'Zeffry Reynando $index',
-                        style: Constant.comfortaa.copyWith(
-                          fontSize: 12.0,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      subtitle: Text.rich(
-                        TextSpan(
-                          text: 'Username : ',
-                          children: [
-                            TextSpan(
-                              text: 'zeffry.reynando',
-                              style: Constant.comfortaa.copyWith(
-                                fontWeight: FontWeight.bold,
-                                color: colorPallete.accentColor,
-                              ),
+              Consumer(
+                builder: (context, ref, child) {
+                  final _streamInbox = ref.watch(getAllInbox);
+                  return _streamInbox.when(
+                    data: (_) {
+                      final inboxes = ref.watch(InboxProvider.provider).items;
+                      return ListView.separated(
+                        separatorBuilder: (context, index) => const SizedBox(height: 10),
+                        itemCount: inboxes.length,
+                        physics: const NeverScrollableScrollPhysics(),
+                        shrinkWrap: true,
+                        itemBuilder: (context, index) => InkWell(
+                          onTap: () {},
+                          child: Ink(
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(10.0),
+                              boxShadow: [
+                                BoxShadow(color: Colors.black.withOpacity(.25), blurRadius: 2.0),
+                              ],
                             ),
-                          ],
+                            child: ListTile(
+                              title: Text(
+                                'Zeffry Reynando $index',
+                                style: Constant.comfortaa.copyWith(
+                                  fontSize: 12.0,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              subtitle: Text.rich(
+                                TextSpan(
+                                  text: 'Username : ',
+                                  children: [
+                                    TextSpan(
+                                      text: 'zeffry.reynando',
+                                      style: Constant.comfortaa.copyWith(
+                                        fontWeight: FontWeight.bold,
+                                        color: colorPallete.accentColor,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                style: Constant.comfortaa.copyWith(
+                                  fontSize: 10.0,
+                                  color: Colors.black.withOpacity(.5),
+                                ),
+                              ),
+                              contentPadding: const EdgeInsets.all(12.0),
+                              leading: const CircleAvatar(),
+                            ),
+                          ),
                         ),
-                        style: Constant.comfortaa.copyWith(
-                          fontSize: 10.0,
-                          color: Colors.black.withOpacity(.5),
-                        ),
-                      ),
-                      contentPadding: const EdgeInsets.all(12.0),
-                      leading: const CircleAvatar(),
+                      );
+                    },
+                    loading: () => const Center(child: CircularProgressIndicator()),
+                    error: (error, stackTrace) => Center(
+                      child: Text('Errror ${error.toString()}'),
                     ),
-                  ),
-                ),
+                  );
+                },
               ),
             ],
           ),

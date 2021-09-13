@@ -20,7 +20,6 @@ class MessageFooter extends ConsumerStatefulWidget {
 class _MessageFooterState extends ConsumerState<MessageFooter> {
   @override
   Widget build(BuildContext context) {
-    final user = ref.watch(SessionProvider.provider).session.user;
     final _sender = ref.watch(sender).state;
     return Ink(
       height: sizes.height(context) / 8,
@@ -74,7 +73,6 @@ class _MessageFooterState extends ConsumerState<MessageFooter> {
                   widget.messageController.clear();
 
                   await ref.read(MessageProvider.provider.notifier).sendMessage(
-                        you: user?.id ?? 0,
                         post: data,
                       );
                 } catch (e) {

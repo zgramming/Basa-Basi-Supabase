@@ -24,12 +24,45 @@ class InboxProvider extends StateNotifier<InboxState> {
     return inboxes;
   }
 
-  void updateInbox(InboxModel value) {
-    state = state.update(value);
+  Future<void> insertInbox({
+    required ProfileModel you,
+    required ProfileModel sender,
+    required String inboxChannel,
+    required String inboxLastMessage,
+    required DateTime inboxLastMessageDate,
+    required MessageStatus inboxLastMessageStatus,
+    required MessageType inboxLastMessageType,
+  }) async {
+    final result = await SupabaseQuery.instance.insertOrUpdateInbox(
+      you: you.id,
+      idSender: sender.id,
+      inboxChannel: inboxChannel,
+      inboxLastMessage: inboxLastMessage,
+      inboxLastMessageDate: inboxLastMessageDate.millisecondsSinceEpoch,
+      inboxLastMessageStatus: messageStatusValues[inboxLastMessageStatus] ?? '',
+      inboxLastMessageType: messageTypeValues[inboxLastMessageType] ?? '',
+      totalUnreadMessage: 100,
+    );
+
+    await SupabaseQuery.instance.insertOrUpdateInbox(
+      you: sender.id,
+      idSender: you.id,
+      inboxChannel: inboxChannel,
+      inboxLastMessage: inboxLastMessage,
+      inboxLastMessageDate: inboxLastMessageDate.millisecondsSinceEpoch,
+      inboxLastMessageStatus: messageStatusValues[inboxLastMessageStatus] ?? '',
+      inboxLastMessageType: messageTypeValues[inboxLastMessageType] ?? '',
+      totalUnreadMessage: 100,
+    );
+
+    final data = List.from(result.data as List).first;
+    final inbox = InboxModel.fromJson(Map<String, dynamic>.from(data as Map));
+
+    state = state.updateOrInsert(inbox.copyWith(sender: sender));
   }
 
-  void addInbox(InboxModel value) {
-    state = state.add(value);
+  void updateOrInsertInbox(InboxModel value) {
+    state = state.updateOrInsert(value);
   }
 
   void deleteAllInbox() {
@@ -45,13 +78,13 @@ class InboxState extends Equatable {
 
   InboxState addAll(List<InboxModel> values) => copyWith(items: [...values]);
 
-  InboxState add(InboxModel value) => copyWith(items: [...items, value]);
-
   InboxState delete() => copyWith(items: []);
 
-  InboxState update(InboxModel value) {
+  InboxState updateOrInsert(InboxModel value) {
     final index = items.indexWhere((element) => element.id == value.id);
     final oldRecord = items.firstWhereOrNull((element) => element.id == value.id);
+
+    /// Jika
     if (oldRecord != null) {
       items[index] = oldRecord.copyWith(
         totalUnreadMessage: value.totalUnreadMessage,
@@ -65,8 +98,10 @@ class InboxState extends Equatable {
         isDeleted: value.isDeleted,
         updatedAt: value.updatedAt,
       );
+      return copyWith(items: items);
+    } else {
+      return copyWith(items: [...items, value]);
     }
-    return copyWith(items: items);
   }
 
   @override
@@ -112,7 +147,7 @@ final listenYourInbox = StreamProvider.family.autoDispose<bool, int>((ref, sende
 
       final isExists = inboxes.firstWhereOrNull((element) => element.id == value.id);
       if (isExists != null) {
-        ref.read(InboxProvider.provider.notifier).updateInbox(value);
+        ref.read(InboxProvider.provider.notifier).updateOrInsertInbox(value);
       }
     }
   }).on(SupabaseEventTypes.delete, (eventDeleted) {

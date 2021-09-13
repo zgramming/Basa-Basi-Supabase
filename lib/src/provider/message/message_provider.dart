@@ -9,10 +9,27 @@ import '../../utils/utils.dart';
 import '../provider.dart';
 
 class MessageProvider extends StateNotifier<MessageState> {
-  MessageProvider() : super(const MessageState());
+  final InboxProvider inboxProvider;
+  final ProfileModel you;
+  final ProfileModel theSender;
 
-  static final provider =
-      StateNotifierProvider<MessageProvider, MessageState>((ref) => MessageProvider());
+  MessageProvider({
+    required this.inboxProvider,
+    required this.you,
+    required this.theSender,
+  }) : super(const MessageState());
+
+  static final provider = StateNotifierProvider<MessageProvider, MessageState>((ref) {
+    final inboxProvider = ref.read(InboxProvider.provider.notifier);
+    final you = ref.watch(SessionProvider.provider).session.user;
+    final _sender = ref.watch(sender).state;
+
+    return MessageProvider(
+      inboxProvider: inboxProvider,
+      theSender: _sender!,
+      you: you!,
+    );
+  });
 
   void addMessage(MessageModel value) {
     state = state.add(value);
@@ -38,24 +55,34 @@ class MessageProvider extends StateNotifier<MessageState> {
   }
 
   Future<MessageModel> sendMessage({
-    required int you,
     required MessagePost post,
   }) async {
     final now = DateTime.now();
     final inboxChannel = getConversationID(
-      you: you,
+      you: you.id,
       senderId: post.idSender ?? 0,
     );
-
     final yourPost = post.copyWith(
       createdAt: now,
       messageDate: now,
       inboxChannel: inboxChannel,
-      idSender: you,
+      idSender: you.id,
     );
 
     /// Insert for your inbox
     final sendYourPost = await SupabaseQuery.instance.sendMessage(post: yourPost);
+
+    /// After insert message
+    /// Then insert to inbox
+    await inboxProvider.insertInbox(
+      you: you,
+      sender: theSender,
+      inboxChannel: inboxChannel,
+      inboxLastMessage: post.messageContent ?? '',
+      inboxLastMessageDate: post.messageDate ?? DateTime.now(),
+      inboxLastMessageStatus: post.messageStatus,
+      inboxLastMessageType: post.messageType,
+    );
 
     state = state.add(sendYourPost);
     return sendYourPost;
@@ -145,8 +172,8 @@ class MessageState extends Equatable {
 
   MessageState addAll(List<MessageModel> values) => copyWith(items: [...values]);
   MessageState add(MessageModel value) {
-    final result = copyWith(items: [...items, value]).items
-      ..sort((a, b) => b.messageDate!.compareTo(a.messageDate!));
+    final result = copyWith(items: [value, ...items]).items;
+    // ..sort((a, b) => b.messageDate!.compareTo(a.messageDate!));
     return copyWith(items: result);
   }
 

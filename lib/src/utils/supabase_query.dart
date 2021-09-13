@@ -135,6 +135,23 @@ class SupabaseQuery {
     return result;
   }
 
+  Future<PostgrestResponse> searchUserByEmailOrUsername({
+    required int idUser,
+    required String query,
+  }) async {
+    final result = await _supabase
+        .from('profile')
+        .select()
+        .neq('id', '$idUser')
+        .or('email.ilike.%$query%, username.ilike.%$query%')
+        .execute();
+
+    if (result.error?.message != null) {
+      throw Exception(result.error?.message);
+    }
+    return result;
+  }
+
   ///* END Profile Section
 
   ///* START Inbox Section
@@ -160,20 +177,57 @@ class SupabaseQuery {
     return result;
   }
 
-  Future<void> insertOrUpdate(int you) async {
-    final isExists =
-        await _supabase.from('inbox').select('id').eq('id_user', you).single().execute();
-    if ((isExists.count ?? 0) <= 0) {
+  Future<PostgrestResponse> insertOrUpdateInbox({
+    required int you,
+    required int idSender,
+    required String inboxChannel,
+    required String inboxLastMessage,
+    required int inboxLastMessageDate,
+    required String inboxLastMessageStatus,
+    required String inboxLastMessageType,
+    required int totalUnreadMessage,
+  }) async {
+    final query = await _supabase
+        .from('inbox')
+        .select('id')
+        .filter('id_user', 'eq', you)
+        .filter('inbox_channel', 'eq', inboxChannel)
+        .single()
+        .execute(count: CountOption.exact);
+
+    final data = {
+      'id_sender': '$idSender',
+      'id_user': '$you',
+      'inbox_channel': inboxChannel,
+      'inbox_last_message': inboxLastMessage,
+      'inbox_last_message_date': '$inboxLastMessageDate',
+      'inbox_last_message_status': inboxLastMessageStatus,
+      'inbox_last_message_type': inboxLastMessageType,
+      'total_unread_message': totalUnreadMessage,
+    };
+
+    log('execute ${query.data}');
+
+    final isNotExists = (query.data ?? 0) == 0;
+    PostgrestResponse response;
+    if (isNotExists) {
       /// Insert
-      final insert = await _supabase.from('inbox').insert(
-        {},
-      ).execute();
+      response = await _supabase.from('inbox').insert(data).execute();
     } else {
       /// Update
-      final update = await _supabase.from('inbox').update(
-        {},
-      ).execute();
+      response = await _supabase
+          .from('inbox')
+          .update(data)
+          .eq('id_user', you)
+          .eq('inbox_channel', inboxChannel)
+          .execute();
     }
+
+    if (response.error?.message != null) {
+      throw Exception(response.error?.message);
+    }
+
+    return response;
   }
 
   ///* END Inbox Section

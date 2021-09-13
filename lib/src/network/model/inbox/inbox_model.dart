@@ -23,8 +23,8 @@ enum MessageType {
 }
 
 const messageTypeValues = {
-  MessageType.text: 'only_text',
-  MessageType.image: 'only_image',
+  MessageType.text: 'text',
+  MessageType.image: 'image',
   MessageType.imageWithText: 'image_with_text',
   MessageType.file: 'file',
   MessageType.voice: 'voice',

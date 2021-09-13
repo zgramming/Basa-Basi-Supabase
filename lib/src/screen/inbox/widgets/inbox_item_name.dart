@@ -16,7 +16,7 @@ class InboxItemName extends StatelessWidget {
       inbox.sender?.fullname ?? '-',
       style: Constant.comfortaa.copyWith(
         fontWeight: FontWeight.bold,
-        fontSize: 16.0,
+        fontSize: 14.0,
       ),
       maxLines: 1,
       overflow: TextOverflow.ellipsis,
