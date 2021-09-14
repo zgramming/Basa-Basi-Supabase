@@ -152,6 +152,17 @@ class SupabaseQuery {
     return result;
   }
 
+  Future<ProfileModel> getUserById(int id) async {
+    final result =
+        await _supabase.from(Constant.tableProfile).select().eq('id', id).single().execute();
+    if (result.error?.message != null) {
+      throw Exception(result.error?.message);
+    }
+    log('result ${result.data}');
+
+    return ProfileModel.fromJson(Map<String, dynamic>.from(result.data as Map));
+  }
+
   ///* END Profile Section
 
   ///* START Inbox Section

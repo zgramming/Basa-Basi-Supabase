@@ -26,4 +26,7 @@ class Constant {
   static const tableProfile = 'profile';
   static const tableInbox = 'inbox';
   static const tableMessage = 'message';
+
+  /// Hive key box
+  static const hiveKeyBoxProfile = 'profile';
 }

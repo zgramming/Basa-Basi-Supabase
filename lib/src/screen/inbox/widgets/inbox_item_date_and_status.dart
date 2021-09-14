@@ -13,25 +13,23 @@ class InboxItemDateAndStatus extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          CircleAvatar(
-            radius: sizes.width(context) * 0.015,
-            backgroundColor: const Color(0xFfC4C4C4),
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: [
+        CircleAvatar(
+          radius: sizes.width(context) * 0.015,
+          backgroundColor: const Color(0xFfC4C4C4),
+        ),
+        const SizedBox(width: 5.0),
+        Text(
+          GlobalFunction.formatHM(inbox.inboxLastMessageDate ?? DateTime.now()),
+          style: Constant.maitree.copyWith(
+            fontSize: 8.0,
+            color: const Color(0xFFC4C4C4),
+            fontWeight: FontWeight.bold,
           ),
-          const SizedBox(width: 5.0),
-          Text(
-            GlobalFunction.formatHM(inbox.inboxLastMessageDate ?? DateTime.now()),
-            style: Constant.maitree.copyWith(
-              fontSize: 8.0,
-              color: const Color(0xFFC4C4C4),
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

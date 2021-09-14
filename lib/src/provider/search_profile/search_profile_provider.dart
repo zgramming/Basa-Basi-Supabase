@@ -1,6 +1,7 @@
-import 'package:equatable/equatable.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:hive/hive.dart';
 
+import './search_profile_state.dart';
 import '../../network/model/network.dart';
 import '../../utils/utils.dart';
 import '../provider.dart';
@@ -30,6 +31,8 @@ class SearchProfileProvider extends StateNotifier<SearchProfileState> {
 }
 
 final searchUserByEmailOrUsername = AutoDisposeFutureProvider<List<ProfileModel>?>((ref) async {
+  final boxProfile = Hive.box<ProfileHiveModel>(Constant.hiveKeyBoxProfile);
+
   final query = ref.watch(querySearch).state;
   final user = ref.watch(SessionProvider.provider).session.user;
 
@@ -37,38 +40,21 @@ final searchUserByEmailOrUsername = AutoDisposeFutureProvider<List<ProfileModel>
     return null;
   }
 
-  final result = await ref.watch(SearchProfileProvider.provider.notifier).searchUsers(
+  final profiles = await ref.watch(SearchProfileProvider.provider.notifier).searchUsers(
         idUser: user?.id ?? 0,
         query: query!,
       );
 
-  return result;
+  /// We should cached profile user when success search
+  /// it usefull when listening sender in inbox
+  /// if sender already exists in local database (hive)
+  /// then we should use from local database otherwise call API
+  for (final profile in profiles) {
+    if (!boxProfile.containsKey(profile.id)) {
+      /// We save to local when in local database not found the sender
+      boxProfile.put(profile.id, const ProfileHiveModel().convertFromProfileModel(profile));
+    }
+  }
+
+  return profiles;
 });
-
-class SearchProfileState extends Equatable {
-  final List<ProfileModel> items;
-  const SearchProfileState({
-    this.items = const [],
-  });
-
-  int get totalItems => items.length;
-
-  SearchProfileState addAll(List<ProfileModel> values) => copyWith(items: [...values]);
-  SearchProfileState reset() {
-    return copyWith(items: [...items.where((element) => element.id == 0).toList()]);
-  }
-
-  @override
-  List<Object> get props => [items];
-
-  @override
-  bool get stringify => true;
-
-  SearchProfileState copyWith({
-    List<ProfileModel>? items,
-  }) {
-    return SearchProfileState(
-      items: items ?? this.items,
-    );
-  }
-}

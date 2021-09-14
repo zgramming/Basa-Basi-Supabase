@@ -35,7 +35,7 @@ class MessageItem extends ConsumerWidget {
               Padding(
                 padding: const EdgeInsets.all(20.0),
                 child: Text(
-                  message.messageContent,
+                  message.messageContent ?? '',
                   style: Constant.comfortaa.copyWith(
                     color: meIsSender ? Colors.white : Colors.black.withOpacity(.5),
                     fontWeight: FontWeight.w400,
@@ -49,7 +49,8 @@ class MessageItem extends ConsumerWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     if (meIsSender) ...[
-                      if (message.isLiked) const Icon(FeatherIcons.smile, color: Colors.white),
+                      if (message.isLiked ?? false)
+                        const Icon(FeatherIcons.smile, color: Colors.white),
                       Text(
                         '20.00',
                         style: Constant.maitree.copyWith(
@@ -66,7 +67,7 @@ class MessageItem extends ConsumerWidget {
                           fontSize: 10.0,
                         ),
                       ),
-                      if (message.isLiked) const Icon(FeatherIcons.smile),
+                      if (message.isLiked ?? false) const Icon(FeatherIcons.smile),
                     ]
                   ],
                 ),

@@ -10,20 +10,20 @@ part 'message_model.g.dart';
 @immutable
 @JsonSerializable(fieldRename: FieldRename.snake)
 class MessageModel extends Equatable {
-  final int id;
-  final int idSender;
-  final String inboxChannel;
-  final bool isDeleted;
-  final bool isLiked;
-  final String messageContent;
+  final int? id;
+  final int? idSender;
+  final String? inboxChannel;
+  final bool? isDeleted;
+  final bool? isLiked;
+  final String? messageContent;
   @JsonKey(
     fromJson: GlobalFunction.fromJsonMilisecondToDateTime,
     toJson: GlobalFunction.toJsonMilisecondFromDateTime,
   )
   final DateTime? messageDate;
   final String? messageFileUrl;
-  final MessageStatus messageStatus;
-  final MessageType messageType;
+  final MessageStatus? messageStatus;
+  final MessageType? messageType;
 
   @JsonKey(
     fromJson: GlobalFunction.fromJsonMilisecondToDateTime,

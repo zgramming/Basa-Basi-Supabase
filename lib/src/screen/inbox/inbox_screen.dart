@@ -8,8 +8,10 @@ import './widgets/inbox_item_image.dart';
 import './widgets/inbox_item_message.dart';
 import './widgets/inbox_item_name.dart';
 import './widgets/inbox_item_unread_message.dart';
+
 import '../../network/model/network.dart';
 import '../../provider/provider.dart';
+
 import '../message/message_screen.dart';
 
 class InboxScreen extends ConsumerWidget {
@@ -66,69 +68,57 @@ class InboxItem extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final _streamListenInbox = ref.watch(listenYourInbox(inbox.sender?.id ?? 0));
-
-    return _streamListenInbox.when(
-      data: (_) {
-        return Column(
-          children: [
-            InkWell(
-              onTap: () async {
-                ref.read(sender).state = inbox.sender;
-                await Navigator.pushNamed(context, MessageScreen.routeNamed);
-              },
-              splashColor: colorPallete.primaryColor,
+    return Column(
+      children: [
+        InkWell(
+          onTap: () async {
+            ref.read(sender).state = inbox.sender;
+            await Navigator.pushNamed(context, MessageScreen.routeNamed);
+          },
+          splashColor: colorPallete.primaryColor,
+          borderRadius: BorderRadius.circular(10.0),
+          child: Ink(
+            decoration: BoxDecoration(
+              color: Colors.white,
               borderRadius: BorderRadius.circular(10.0),
-              child: Ink(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(10.0),
-                  boxShadow: [
-                    BoxShadow(
-                      blurRadius: 2.0,
-                      color: Colors.black.withOpacity(0.25),
-                    ),
-                  ],
+              boxShadow: [
+                BoxShadow(
+                  blurRadius: 2.0,
+                  color: Colors.black.withOpacity(0.25),
                 ),
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Row(
-                    children: [
-                      InboxItemImage(inbox: inbox),
-                      const SizedBox(width: 15.0),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisSize: MainAxisSize.min,
+              ],
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Row(
+                children: [
+                  InboxItemImage(inbox: inbox),
+                  const SizedBox(width: 15.0),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        InboxItemName(inbox: inbox),
+                        const SizedBox(height: 10),
+                        InboxItemMessage(inbox: inbox),
+                        const SizedBox(height: 20),
+                        Row(
                           children: [
-                            Row(
-                              children: [
-                                InboxItemName(inbox: inbox),
-                                InboxItemDateAndStatus(inbox: inbox),
-                              ],
-                            ),
-                            const SizedBox(height: 10),
-                            InboxItemMessage(inbox: inbox),
-                            const SizedBox(height: 20),
                             InboxItemUnreadMessage(inbox: inbox),
+                            InboxItemDateAndStatus(inbox: inbox),
                           ],
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
+                ],
               ),
             ),
-            const SizedBox(height: 24),
-          ],
-        );
-      },
-      loading: () => const Center(child: CircularProgressIndicator()),
-      error: (error, stackTrace) => Center(
-        child: Text(
-          error.toString(),
+          ),
         ),
-      ),
+        const SizedBox(height: 24),
+      ],
     );
   }
 }

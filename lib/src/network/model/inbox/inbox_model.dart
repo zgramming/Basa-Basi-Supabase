@@ -55,23 +55,23 @@ class InboxModel extends Equatable {
   final int id;
   final ProfileModel? user;
   final ProfileModel? sender;
-  final String inboxChannel;
+  final String? inboxChannel;
   final String? inboxLastMessage;
   @JsonKey(
     toJson: GlobalFunction.toJsonMilisecondFromDateTime,
     fromJson: GlobalFunction.fromJsonMilisecondToDateTime,
   )
   final DateTime? inboxLastMessageDate;
-  final MessageStatus inboxLastMessageStatus;
-  final MessageType inboxLastMessageType;
-  final bool isArchived;
-  final bool isDeleted;
+  final MessageStatus? inboxLastMessageStatus;
+  final MessageType? inboxLastMessageType;
+  final bool? isArchived;
+  final bool? isDeleted;
   @JsonKey(
     toJson: GlobalFunction.toJsonMilisecondFromDateTime,
     fromJson: GlobalFunction.fromJsonMilisecondToDateTime,
   )
   final DateTime? lastTypingDate;
-  final int totalUnreadMessage;
+  final int? totalUnreadMessage;
 
   @JsonKey(
     toJson: GlobalFunction.toJsonMilisecondFromDateTime,

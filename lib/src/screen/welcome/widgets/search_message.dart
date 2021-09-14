@@ -4,10 +4,10 @@ import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:global_template/global_template.dart';
 
-import './search_new_friend.dart';
 import '../../../provider/provider.dart';
 import '../../../utils/utils.dart';
 import '../../message/message_screen.dart';
+import '../../search_new_friend/search_new_friend.dart';
 
 class SearchMessage extends StatefulWidget {
   static const routeNamed = '/search-message';
@@ -41,7 +41,7 @@ class _SearchMessageState extends State<SearchMessage> {
             children: [
               InkWell(
                 onTap: () async {
-                  await Navigator.pushNamed(context, SearchNewFriend.routeNamed);
+                  await Navigator.pushNamed(context, SearchNewFriendScreen.routeNamed);
                 },
                 child: Ink(
                   decoration: BoxDecoration(

@@ -40,7 +40,6 @@ class AccountScreen extends StatelessWidget {
                       backgroundColor: Colors.red,
                       onTap: () async {
                         await ref.read(ProfileProvider.provider.notifier).signOut();
-                        await ref.read(SessionProvider.provider.notifier).removeUserSession();
                         await Future.delayed(Duration.zero, () {
                           Navigator.pushReplacementNamed(context, LoginScreen.routeNamed);
                         });

@@ -20,7 +20,7 @@ class MessageProvider extends StateNotifier<MessageState> {
   }) : super(const MessageState());
 
   static final provider = StateNotifierProvider<MessageProvider, MessageState>((ref) {
-    final inboxProvider = ref.read(InboxProvider.provider.notifier);
+    final inboxProvider = ref.watch(InboxProvider.provider.notifier);
     final you = ref.watch(SessionProvider.provider).session.user;
     final _sender = ref.watch(sender).state;
 
@@ -59,9 +59,10 @@ class MessageProvider extends StateNotifier<MessageState> {
   }) async {
     final now = DateTime.now();
     final inboxChannel = getConversationID(
-      you: you.id,
+      you: you.id ?? 0,
       senderId: post.idSender ?? 0,
     );
+
     final yourPost = post.copyWith(
       createdAt: now,
       messageDate: now,
@@ -93,16 +94,8 @@ final _listenMessage = StreamProvider.autoDispose.family<void, String>((ref, inb
   final subscription = Constant.supabase
       .from('message:inbox_channel=eq.$inboxChannel')
       .on(SupabaseEventTypes.insert, (eventInsert) {
-    // log('Listen Realtime Insert Message CommitTimeStamp ${eventInsert.commitTimestamp}');
-    // log('Listen Realtime Insert Message EventType ${eventInsert.eventType}');
+    log('Listen Realtime Insert Message EventType ${eventInsert.eventType}');
     log('Listen Realtime Insert Message NewRecord ${eventInsert.newRecord}');
-    log('Listen Realtime Insert Message OldRecord ${eventInsert.oldRecord}');
-    // log('Listen Realtime Insert Message PrimaryKeys ${eventInsert.primaryKeys}');
-    // log('Listen Realtime Insert Message Schema ${eventInsert.schema}');
-    // log('Listen Realtime Insert Message Table ${eventInsert.table}');
-    // log('Listen Realtime Insert Message HashCode ${eventInsert.hashCode}');
-    // log('Listen Realtime Insert Message RunType ${eventInsert.runtimeType}');
-    // log('Listen Realtime Insert Message ToString() ${eventInsert.toString()}');
 
     /// Insert Message
     if (eventInsert.newRecord != null) {
@@ -116,32 +109,17 @@ final _listenMessage = StreamProvider.autoDispose.family<void, String>((ref, inb
       }
     }
   }).on(SupabaseEventTypes.delete, (eventDeleted) {
-    // log('Listen Realtime Deleted Message CommitTimeStamp ${eventDeleted.commitTimestamp}');
-    // log('Listen Realtime Deleted Message EventType ${eventDeleted.eventType}');
+    log('Listen Realtime Deleted Message EventType ${eventDeleted.eventType}');
     log('Listen Realtime Deleted Message NewRecord ${eventDeleted.newRecord}');
-    log('Listen Realtime Deleted Message OldRecord ${eventDeleted.oldRecord}');
-    // log('Listen Realtime Deleted Message PrimaryKeys ${eventDeleted.primaryKeys}');
-    // log('Listen Realtime Deleted Message Schema ${eventDeleted.schema}');
-    // log('Listen Realtime Deleted Message Table ${eventDeleted.table}');
-    // log('Listen Realtime Deleted Message HashCode ${eventDeleted.hashCode}');
-    // log('Listen Realtime Deleted Message RunType ${eventDeleted.runtimeType}');
-    // log('Listen Realtime Deleted Message ToString() ${eventDeleted.toString()}');
+
     if (eventDeleted.oldRecord != null) {
       final MessageModel value =
           MessageModel.fromJson(Map<String, dynamic>.from(eventDeleted.oldRecord!));
-      ref.read(MessageProvider.provider.notifier).deleteMessage(value.id);
+      ref.read(MessageProvider.provider.notifier).deleteMessage(value.id ?? 0);
     }
   }).on(SupabaseEventTypes.update, (eventUpdated) {
-    // log('Listen Realtime Updated Message CommitTimeStamp ${eventUpdated.commitTimestamp}');
     log('Listen Realtime Updated Message EventType ${eventUpdated.eventType}');
     log('Listen Realtime Updated Message NewRecord ${eventUpdated.newRecord}');
-    log('Listen Realtime Updated Message OldRecord ${eventUpdated.oldRecord}');
-    // log('Listen Realtime Updated Message PrimaryKeys ${eventUpdated.primaryKeys}');
-    // log('Listen Realtime Updated Message Schema ${eventUpdated.schema}');
-    // log('Listen Realtime Updated Message Table ${eventUpdated.table}');
-    // log('Listen Realtime Updated Message HashCode ${eventUpdated.hashCode}');
-    // log('Listen Realtime Updated Message RunType ${eventUpdated.runtimeType}');
-    // log('Listen Realtime Updated Message ToString() ${eventUpdated.toString()}');
 
     /// Insert Message
     if (eventUpdated.newRecord != null) {
@@ -173,7 +151,6 @@ class MessageState extends Equatable {
   MessageState addAll(List<MessageModel> values) => copyWith(items: [...values]);
   MessageState add(MessageModel value) {
     final result = copyWith(items: [value, ...items]).items;
-    // ..sort((a, b) => b.messageDate!.compareTo(a.messageDate!));
     return copyWith(items: result);
   }
 

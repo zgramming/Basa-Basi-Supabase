@@ -1,5 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="zeffry.reynando.basa_basi_supabase">
+   <uses-permission android:name="android.permission.INTERNET"/>
    <application
         android:label="Basa Basi Supabase"
         android:icon="@mipmap/ic_launcher">

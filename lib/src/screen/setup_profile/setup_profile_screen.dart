@@ -122,14 +122,14 @@ class _SetupProfileScreenState extends ConsumerState<SetupProfileScreen> {
                     }
                     try {
                       ref.read(isLoading).state = true;
-                      final result =
-                          await ref.read(ProfileProvider.provider.notifier).setupUsernameAndImage(
-                                user?.idUser ?? '',
-                                username: _usernameController.text,
-                                fullname: _fullnameController.text,
-                                file: _pickedImage,
-                              );
-                      await ref.read(SessionProvider.provider.notifier).setUserSession(result);
+
+                      await ref.read(ProfileProvider.provider.notifier).setupUsernameAndImage(
+                            user?.idUser ?? '',
+                            username: _usernameController.text,
+                            fullname: _fullnameController.text,
+                            file: _pickedImage,
+                          );
+
                       if (mounted) {
                         await Navigator.pushNamedAndRemoveUntil(
                           context,

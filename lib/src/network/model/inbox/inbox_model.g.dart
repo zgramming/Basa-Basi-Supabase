@@ -15,19 +15,19 @@ InboxModel _$InboxModelFromJson(Map<String, dynamic> json) {
     sender: json['sender'] == null
         ? null
         : ProfileModel.fromJson(json['sender'] as Map<String, dynamic>),
-    inboxChannel: json['inbox_channel'] as String,
+    inboxChannel: json['inbox_channel'] as String?,
     inboxLastMessage: json['inbox_last_message'] as String?,
     inboxLastMessageDate: GlobalFunction.fromJsonMilisecondToDateTime(
         json['inbox_last_message_date'] as int?),
-    inboxLastMessageStatus:
-        _$enumDecode(_$MessageStatusEnumMap, json['inbox_last_message_status']),
-    inboxLastMessageType:
-        _$enumDecode(_$MessageTypeEnumMap, json['inbox_last_message_type']),
-    isArchived: json['is_archived'] as bool,
-    isDeleted: json['is_deleted'] as bool,
+    inboxLastMessageStatus: _$enumDecodeNullable(
+        _$MessageStatusEnumMap, json['inbox_last_message_status']),
+    inboxLastMessageType: _$enumDecodeNullable(
+        _$MessageTypeEnumMap, json['inbox_last_message_type']),
+    isArchived: json['is_archived'] as bool?,
+    isDeleted: json['is_deleted'] as bool?,
     lastTypingDate: GlobalFunction.fromJsonMilisecondToDateTime(
         json['last_typing_date'] as int?),
-    totalUnreadMessage: json['total_unread_message'] as int,
+    totalUnreadMessage: json['total_unread_message'] as int?,
     createdAt:
         GlobalFunction.fromJsonMilisecondToDateTime(json['created_at'] as int?),
     updatedAt:
@@ -87,6 +87,17 @@ K _$enumDecode<K, V>(
       return MapEntry(unknownValue, enumValues.values.first);
     },
   ).key;
+}
+
+K? _$enumDecodeNullable<K, V>(
+  Map<K, V> enumValues,
+  dynamic source, {
+  K? unknownValue,
+}) {
+  if (source == null) {
+    return null;
+  }
+  return _$enumDecode<K, V>(enumValues, source, unknownValue: unknownValue);
 }
 
 const _$MessageStatusEnumMap = {

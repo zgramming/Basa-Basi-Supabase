@@ -8,15 +8,15 @@ part 'profile_model.g.dart';
 @immutable
 @JsonSerializable(fieldRename: FieldRename.snake)
 class ProfileModel extends Equatable {
-  final int id;
+  final int? id;
   final String? idUser;
   final String? fullname;
-  final String email;
-  final String password;
+  final String? email;
+  final String? password;
   final String? username;
   final String? pictureProfile;
-  final bool isOnline;
-  final bool isNewUser;
+  final bool? isOnline;
+  final bool? isNewUser;
   @JsonKey(
     toJson: GlobalFunction.toJsonMilisecondFromDateTime,
     fromJson: GlobalFunction.fromJsonMilisecondToDateTime,
