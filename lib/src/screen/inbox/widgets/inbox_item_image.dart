@@ -1,6 +1,3 @@
-import 'dart:developer';
-
-import 'package:basa_basi_supabase/src/provider/provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
@@ -8,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:global_template/global_template.dart';
 
 import '../../../network/model/network.dart';
+import '../../../provider/provider.dart';
 import '../../../utils/utils.dart';
 
 class InboxItemImage extends ConsumerWidget {

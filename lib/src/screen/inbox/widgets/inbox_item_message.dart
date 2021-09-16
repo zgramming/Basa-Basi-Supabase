@@ -1,12 +1,10 @@
-import 'package:basa_basi_supabase/src/provider/provider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/painting.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:global_template/global_template.dart';
 
 import '../../../network/model/network.dart';
-
+import '../../../provider/provider.dart';
 import '../../../utils/utils.dart';
 
 class InboxItemMessage extends ConsumerWidget {

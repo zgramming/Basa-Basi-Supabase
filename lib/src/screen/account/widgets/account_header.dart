@@ -5,6 +5,7 @@ import 'package:global_template/global_template.dart';
 
 import '../../../provider/provider.dart';
 import '../../../utils/utils.dart';
+import '../../update_profile/update_profile_screen.dart';
 
 class AccountHeader extends ConsumerWidget {
   const AccountHeader({Key? key}) : super(key: key);
@@ -82,7 +83,9 @@ class AccountHeader extends ConsumerWidget {
                 const SizedBox(height: 10),
                 Flexible(
                   child: OutlinedButton(
-                    onPressed: () {},
+                    onPressed: () async {
+                      await Navigator.pushNamed(context, UpdateProfileScreen.routeNamed);
+                    },
                     child: Text(
                       'Ubah Profile',
                       style: Constant.comfortaa.copyWith(

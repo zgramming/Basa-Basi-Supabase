@@ -84,8 +84,9 @@ class _SetupProfileScreenState extends ConsumerState<SetupProfileScreen> {
                           labelText: 'Nama Lengkap',
                           disableOutlineBorder: false,
                           activeColor: colorPallete.accentColor,
-                          borderColor: Colors.black.withOpacity(.25),
-                          borderFocusColor: colorPallete.accentColor,
+                          focusedBorderStyle: InputBorderStyle(color: colorPallete.accentColor),
+                          defaultBorderStyle:
+                              InputBorderStyle(color: Colors.black.withOpacity(.25)),
                           padding: const EdgeInsets.all(18.0),
                           hintText: 'Masukkan Nama Lengkap',
                           textStyle: Constant.comfortaa.copyWith(fontSize: 14.0),
@@ -97,8 +98,9 @@ class _SetupProfileScreenState extends ConsumerState<SetupProfileScreen> {
                           labelText: 'Username',
                           disableOutlineBorder: false,
                           activeColor: colorPallete.accentColor,
-                          borderColor: Colors.black.withOpacity(.25),
-                          borderFocusColor: colorPallete.accentColor,
+                          focusedBorderStyle: InputBorderStyle(color: colorPallete.accentColor),
+                          defaultBorderStyle:
+                              InputBorderStyle(color: Colors.black.withOpacity(.25)),
                           padding: const EdgeInsets.all(18.0),
                           hintText: 'Masukkan username',
                           textStyle: Constant.comfortaa.copyWith(fontSize: 14.0),
@@ -123,7 +125,7 @@ class _SetupProfileScreenState extends ConsumerState<SetupProfileScreen> {
                     try {
                       ref.read(isLoading).state = true;
 
-                      await ref.read(ProfileProvider.provider.notifier).setupUsernameAndImage(
+                      await ref.read(ProfileProvider.provider.notifier).setupProfile(
                             user?.idUser ?? '',
                             username: _usernameController.text,
                             fullname: _fullnameController.text,

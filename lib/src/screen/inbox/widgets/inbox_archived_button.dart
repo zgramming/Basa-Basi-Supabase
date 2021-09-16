@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import './inbox_archived.dart';
 import '../../../provider/provider.dart';
 import '../../../utils/utils.dart';
-import 'inbox_archived.dart';
 
 class InboxArchivedButton extends ConsumerWidget {
   const InboxArchivedButton({

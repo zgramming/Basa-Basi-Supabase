@@ -1,15 +1,14 @@
 import 'dart:developer';
 
-import 'package:basa_basi_supabase/src/utils/supabase_query.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive/hive.dart';
 import 'package:supabase/supabase.dart';
 
+import './inbox_state.dart';
 import '../../network/model/network.dart';
 import '../../utils/utils.dart';
 import '../provider.dart';
-import 'inbox_state.dart';
 
 class InboxProvider extends StateNotifier<InboxState> {
   final SessionProvider session;

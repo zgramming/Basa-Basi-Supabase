@@ -15,6 +15,7 @@ class ProfileModel extends Equatable {
   final String? password;
   final String? username;
   final String? pictureProfile;
+  final String? description;
   final bool? isOnline;
   final bool? isNewUser;
   @JsonKey(
@@ -37,6 +38,7 @@ class ProfileModel extends Equatable {
     this.password = 'akutampansekali',
     this.username,
     this.pictureProfile,
+    this.description,
     this.isOnline = false,
     this.isNewUser = false,
     this.createdAt,
@@ -57,6 +59,7 @@ class ProfileModel extends Equatable {
       password,
       username,
       pictureProfile,
+      description,
       isOnline,
       isNewUser,
       createdAt,
@@ -76,6 +79,7 @@ class ProfileModel extends Equatable {
     String? password,
     String? username,
     String? pictureProfile,
+    String? description,
     bool? isOnline,
     bool? isNewUser,
     DateTime? createdAt,
@@ -90,6 +94,7 @@ class ProfileModel extends Equatable {
       password: password ?? this.password,
       username: username ?? this.username,
       pictureProfile: pictureProfile ?? this.pictureProfile,
+      description: description ?? this.description,
       isOnline: isOnline ?? this.isOnline,
       isNewUser: isNewUser ?? this.isNewUser,
       createdAt: createdAt ?? this.createdAt,

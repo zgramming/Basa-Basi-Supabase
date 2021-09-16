@@ -9,9 +9,9 @@ import 'package:global_template/global_template.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 
-import 'src/app.dart';
-import 'src/network/model/network.dart';
-import 'src/utils/utils.dart';
+import './src/app.dart';
+import './src/network/model/network.dart';
+import './src/utils/utils.dart';
 
 /// Define a top-level named handler which background/terminated messages will
 /// call.

@@ -15,6 +15,7 @@ ProfileModel _$ProfileModelFromJson(Map<String, dynamic> json) {
     password: json['password'] as String?,
     username: json['username'] as String?,
     pictureProfile: json['picture_profile'] as String?,
+    description: json['description'] as String?,
     isOnline: json['is_online'] as bool?,
     isNewUser: json['is_new_user'] as bool?,
     createdAt:
@@ -36,6 +37,7 @@ Map<String, dynamic> _$ProfileModelToJson(ProfileModel instance) =>
       'password': instance.password,
       'username': instance.username,
       'picture_profile': instance.pictureProfile,
+      'description': instance.description,
       'is_online': instance.isOnline,
       'is_new_user': instance.isNewUser,
       'created_at':

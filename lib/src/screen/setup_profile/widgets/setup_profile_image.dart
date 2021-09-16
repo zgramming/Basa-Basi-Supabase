@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -41,7 +40,6 @@ class _SetupProfileImageState extends ConsumerState<SetupProfileImage> {
   @override
   Widget build(BuildContext context) {
     final user = ref.watch(SessionProvider.provider).session.user;
-    log('setupprofile ${user?.pictureProfile}');
     return Center(
       child: InkWell(
         onTap: () async {

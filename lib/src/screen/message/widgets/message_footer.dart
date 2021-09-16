@@ -1,10 +1,10 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:global_template/global_template.dart';
 import 'package:image_picker/image_picker.dart';
+
+import './message_preview_image.dart';
 
 import '../../../network/model/network.dart';
 import '../../../provider/provider.dart';
@@ -32,8 +32,6 @@ class _MessageFooterState extends ConsumerState<MessageFooter> {
 
   @override
   Widget build(BuildContext context) {
-    log('referes');
-    final _pairing = ref.watch(pairing).state;
     return Ink(
       height: sizes.height(context) / 8,
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -54,9 +52,9 @@ class _MessageFooterState extends ConsumerState<MessageFooter> {
               hintText: 'Tulis Pesan...',
               disableOutlineBorder: false,
               radius: 10.0,
-              borderFocusColor: colorPallete.accentColor,
               activeColor: colorPallete.accentColor,
-              borderColor: Colors.black.withOpacity(.25),
+              focusedBorderStyle: InputBorderStyle(color: colorPallete.accentColor),
+              defaultBorderStyle: InputBorderStyle(color: Colors.black.withOpacity(.25)),
               textStyle: Constant.comfortaa.copyWith(fontSize: 14.0),
               padding: const EdgeInsets.only(
                 left: 20.0,
@@ -91,7 +89,16 @@ class _MessageFooterState extends ConsumerState<MessageFooter> {
                 if (_showButtonImage)
                   InkWell(
                     onTap: () async {
-                      await uploadImage(context, source: ImageSource.camera);
+                      final result = await uploadImage(source: ImageSource.camera);
+                      if (result != null) {
+                        await Future.delayed(Duration.zero, () {
+                          Navigator.pushNamed(
+                            context,
+                            MessagePreviewImage.routeNamed,
+                            arguments: result,
+                          );
+                        });
+                      }
                     },
                     child: const Icon(FeatherIcons.camera),
                   ),
@@ -108,7 +115,16 @@ class _MessageFooterState extends ConsumerState<MessageFooter> {
                             backgroundColor: colorPallete.primaryColor,
                             foregroundColor: Colors.white,
                             onTap: () async {
-                              await uploadImage(context, source: ImageSource.camera);
+                              final result = await uploadImage(source: ImageSource.camera);
+                              if (result != null) {
+                                await Future.delayed(Duration.zero, () {
+                                  Navigator.pushNamed(
+                                    context,
+                                    MessagePreviewImage.routeNamed,
+                                    arguments: result,
+                                  );
+                                });
+                              }
                             },
                           ),
                           ActionCircleButton(
@@ -116,7 +132,16 @@ class _MessageFooterState extends ConsumerState<MessageFooter> {
                             backgroundColor: colorPallete.success,
                             foregroundColor: Colors.white,
                             onTap: () async {
-                              await uploadImage(context);
+                              final result = await uploadImage();
+                              if (result != null) {
+                                await Future.delayed(Duration.zero, () {
+                                  Navigator.pushNamed(
+                                    context,
+                                    MessagePreviewImage.routeNamed,
+                                    arguments: result,
+                                  );
+                                });
+                              }
                             },
                           ),
                         ],

@@ -5,8 +5,8 @@ import 'package:global_template/global_template.dart';
 import 'package:path/path.dart' as path;
 import 'package:supabase/supabase.dart';
 
+import './utils.dart';
 import '../network/model/network.dart';
-import 'utils.dart';
 
 class SupabaseQuery {
   SupabaseQuery._();
@@ -119,10 +119,11 @@ class SupabaseQuery {
     return result;
   }
 
-  Future<ProfileModel> setupProfileWhenFirstRegister(
+  Future<ProfileModel> setupProfile(
     String idUser, {
     String? username,
     String? fullname,
+    String? description,
     File? file,
   }) async {
     String? pictureProfileUrl;
@@ -139,8 +140,9 @@ class SupabaseQuery {
         .from('profile')
         .update({
           'username': username,
-          'picture_profile': pictureProfileUrl,
+          if (pictureProfileUrl != null) 'picture_profile': pictureProfileUrl,
           'fullname': fullname,
+          'description': description,
         })
         .eq('id_user', idUser)
         .execute();
