@@ -1,7 +1,10 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:global_template/global_template.dart';
+import 'package:image_picker/image_picker.dart';
 
 import '../../../network/model/network.dart';
 import '../../../provider/provider.dart';
@@ -18,9 +21,19 @@ class MessageFooter extends ConsumerStatefulWidget {
 }
 
 class _MessageFooterState extends ConsumerState<MessageFooter> {
+  final debounce = Debouncer(milliseconds: 500);
+  bool _showButtonImage = true;
+  int _flagShowButtonImage = 0;
+  @override
+  void dispose() {
+    super.dispose();
+    debounce.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
-    final _sender = ref.watch(sender).state;
+    log('referes');
+    final _pairing = ref.watch(pairing).state;
     return Ink(
       height: sizes.height(context) / 8,
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -40,16 +53,79 @@ class _MessageFooterState extends ConsumerState<MessageFooter> {
               controller: widget.messageController,
               hintText: 'Tulis Pesan...',
               disableOutlineBorder: false,
-              radius: 60.0,
+              radius: 10.0,
               borderFocusColor: colorPallete.accentColor,
               activeColor: colorPallete.accentColor,
               borderColor: Colors.black.withOpacity(.25),
               textStyle: Constant.comfortaa.copyWith(fontSize: 14.0),
-              padding: const EdgeInsets.all(18.0),
+              padding: const EdgeInsets.only(
+                left: 20.0,
+                top: 20.0,
+                bottom: 20.0,
+                right: 40.0,
+              ),
               hintStyle: Constant.comfortaa.copyWith(
                 fontWeight: FontWeight.w300,
                 fontSize: 10.0,
               ),
+              onChanged: (value) {
+                if (value.isNotEmpty) {
+                  if (_flagShowButtonImage == 0) {
+                    setState(() {});
+                  }
+                  _showButtonImage = false;
+                  _flagShowButtonImage = 1;
+                }
+                if (value.isEmpty) {
+                  _showButtonImage = true;
+                  _flagShowButtonImage = 0;
+                  setState(() {});
+                }
+                // debounce.run(() {});
+              },
+              suffixIconConfiguration: const SuffixIconConfiguration(
+                rightPosition: 15,
+                bottomPosition: 10,
+              ),
+              suffixIcon: [
+                if (_showButtonImage)
+                  InkWell(
+                    onTap: () async {
+                      await uploadImage(context, source: ImageSource.camera);
+                    },
+                    child: const Icon(FeatherIcons.camera),
+                  ),
+                InkWell(
+                  onTap: () async {
+                    await showModalBottomSheet(
+                      context: context,
+                      builder: (context) => ActionModalBottomSheet(
+                        typeAction: TypeAction.none,
+                        align: WrapAlignment.center,
+                        children: [
+                          ActionCircleButton(
+                            icon: FeatherIcons.camera,
+                            backgroundColor: colorPallete.primaryColor,
+                            foregroundColor: Colors.white,
+                            onTap: () async {
+                              await uploadImage(context, source: ImageSource.camera);
+                            },
+                          ),
+                          ActionCircleButton(
+                            icon: FeatherIcons.image,
+                            backgroundColor: colorPallete.success,
+                            foregroundColor: Colors.white,
+                            onTap: () async {
+                              await uploadImage(context);
+                            },
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                  child: const Icon(Icons.attach_file),
+                ),
+              ],
             ),
           ),
           const SizedBox(width: 10),
@@ -58,23 +134,28 @@ class _MessageFooterState extends ConsumerState<MessageFooter> {
               borderRadius: BorderRadius.circular(15.0),
               splashColor: Colors.black,
               onTap: () async {
+                if (widget.messageController.text.isEmpty) {
+                  return;
+                }
+
                 try {
                   ref.read(isLoading).state = true;
 
-                  final data = MessagePost(
-                    messageContent: widget.messageController.text,
-                    idSender: _sender?.id ?? 0,
-                    messageFileUrl: '',
-                    messageStatus: MessageStatus.send,
-                    messageType: MessageType.text,
-                  );
+                  final messageContent = widget.messageController.text;
 
                   /// Reset textfield
                   widget.messageController.clear();
 
                   await ref.read(MessageProvider.provider.notifier).sendMessage(
-                        post: data,
+                        messageContent: messageContent,
+                        status: MessageStatus.send,
+                        type: MessageType.text,
                       );
+
+                  setState(() {
+                    _showButtonImage = true;
+                    _flagShowButtonImage = 0;
+                  });
                 } catch (e) {
                   GlobalFunction.showSnackBar(
                     context,
@@ -86,8 +167,8 @@ class _MessageFooterState extends ConsumerState<MessageFooter> {
                 }
               },
               child: Ink(
-                height: sizes.width(context) / 8,
-                width: sizes.width(context) / 8,
+                height: sizes.width(context) / 9,
+                width: sizes.width(context) / 9,
                 decoration: BoxDecoration(
                   color: colorPallete.accentColor,
                   borderRadius: BorderRadius.circular(15.0),

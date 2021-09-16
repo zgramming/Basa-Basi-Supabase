@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:global_template/global_template.dart';
 
 import './widgets/search_message.dart';
-
+import './widgets/welcome_navbar.dart';
+import '../../provider/provider.dart';
 import '../account/account_screen.dart';
 import '../inbox/inbox_screen.dart';
 import '../story/story_screen.dart';
 
-class WelcomeScreen extends StatefulWidget {
+class WelcomeScreen extends ConsumerStatefulWidget {
   static const routeNamed = '/welcome-screen';
   const WelcomeScreen({Key? key}) : super(key: key);
 
@@ -16,7 +18,7 @@ class WelcomeScreen extends StatefulWidget {
   _WelcomeScreenState createState() => _WelcomeScreenState();
 }
 
-class _WelcomeScreenState extends State<WelcomeScreen> {
+class _WelcomeScreenState extends ConsumerState<WelcomeScreen> {
   int _currentIndex = 0;
 
   final _items = <BottomNavigationBarItem>[
@@ -30,6 +32,11 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
     const StoryScreen(),
     const AccountScreen(),
   ];
+
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -51,20 +58,16 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
       );
     }
 
+    ref.listen<StateController<bool>>(isLoadingArchived, (loading) {
+      if (loading.state) {
+        GlobalFunction.showDialogLoading(context);
+      } else {
+        Navigator.pop(context);
+      }
+    });
+
     return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        title: Image.asset(
-          '${appConfig.urlImageAsset}/logo_white.png',
-          width: 40.0,
-        ),
-        actions: [
-          IconButton(
-            onPressed: () {},
-            icon: const Icon(FeatherIcons.search),
-          )
-        ],
-      ),
+      appBar: WelcomeNavbar(),
       body: IndexedStack(index: _currentIndex, children: _screens),
       bottomNavigationBar: BottomNavigationBar(
         items: _items,

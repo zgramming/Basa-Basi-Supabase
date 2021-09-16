@@ -90,7 +90,6 @@ class _SignInFormState extends State<SignInForm> {
                             );
 
                         if (mounted) {
-                          log('done');
                           await Navigator.pushReplacementNamed(
                             context,
                             SetupProfileScreen.routeNamed,

@@ -22,8 +22,12 @@ class SearchNewFriendItem extends ConsumerWidget {
       padding: const EdgeInsets.symmetric(horizontal: 24.0),
       child: InkWell(
         onTap: () async {
-          ref.read(sender).state = user;
-          await Navigator.pushNamed(context, MessageScreen.routeNamed);
+          /// Initialize pairing;
+          ref.read(pairing).state = user;
+          await Navigator.pushNamed(
+            context,
+            MessageScreen.routeNamed,
+          );
         },
         child: Ink(
           decoration: BoxDecoration(

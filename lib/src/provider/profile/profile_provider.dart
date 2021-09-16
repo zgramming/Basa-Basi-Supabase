@@ -35,15 +35,13 @@ class ProfileProvider extends StateNotifier<ProfileState> {
       password: password,
     );
 
-    final user = ProfileModel.fromJson(Map<String, dynamic>.from(result.data as Map));
-
     /// Save Session
-    await session.setUserSession(user);
+    await session.setUserSession(result);
 
     /// Set User Session
-    state = state.setProfile(user);
+    state = state.setProfile(result);
 
-    return user;
+    return result;
   }
 
   Future<ProfileModel> signUp({
@@ -51,14 +49,12 @@ class ProfileProvider extends StateNotifier<ProfileState> {
     required String password,
   }) async {
     final result = await SupabaseQuery.instance.signUp(email: email, password: password);
-    final data = List.from(result.data as List).first;
-    final user = ProfileModel.fromJson(Map<String, dynamic>.from(data as Map));
 
     /// Save Session
-    await session.setUserSession(user);
+    await session.setUserSession(result);
 
-    state = state.setProfile(user);
-    return user;
+    state = state.setProfile(result);
+    return result;
   }
 
   Future<void> signOut() async {
@@ -82,13 +78,11 @@ class ProfileProvider extends StateNotifier<ProfileState> {
       file: file,
       fullname: fullname,
     );
-    final data = List.from(result.data as List).first;
-    final user = ProfileModel.fromJson(Map<String, dynamic>.from(data as Map));
 
     /// Save Session
-    await session.setUserSession(user);
+    await session.setUserSession(result);
 
-    state = state.setProfile(user);
-    return user;
+    state = state.setProfile(result);
+    return result;
   }
 }

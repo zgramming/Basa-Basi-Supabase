@@ -27,6 +27,10 @@ class Constant {
   static const tableInbox = 'inbox';
   static const tableMessage = 'message';
 
+  /// Bucket File Supabase
+  static const imageChatBucket = 'chat-image';
+  static const avatarsBucket = 'avatars';
+
   /// Hive key box
   static const hiveKeyBoxProfile = 'profile';
 }

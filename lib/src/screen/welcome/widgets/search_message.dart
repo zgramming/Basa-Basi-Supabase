@@ -94,8 +94,13 @@ class _SearchMessageState extends State<SearchMessage> {
                           final inbox = inboxes[index];
                           return InkWell(
                             onTap: () async {
-                              ref.read(sender).state = inbox.sender;
-                              await Navigator.pushNamed(context, MessageScreen.routeNamed);
+                              /// Initialize pairing;
+                              ref.read(pairing).state = inbox.user;
+
+                              await Navigator.pushNamed(
+                                context,
+                                MessageScreen.routeNamed,
+                              );
                             },
                             child: Ink(
                               decoration: BoxDecoration(
@@ -107,7 +112,7 @@ class _SearchMessageState extends State<SearchMessage> {
                               ),
                               child: ListTile(
                                 title: Text(
-                                  '${inbox.sender?.fullname}',
+                                  '${inbox.user?.fullname}',
                                   style: Constant.comfortaa.copyWith(
                                     fontSize: 14.0,
                                     fontWeight: FontWeight.bold,
@@ -118,7 +123,7 @@ class _SearchMessageState extends State<SearchMessage> {
                                     text: 'Username : ',
                                     children: [
                                       TextSpan(
-                                        text: '${inbox.sender?.username}',
+                                        text: '${inbox.user?.username}',
                                         style: Constant.comfortaa.copyWith(
                                           fontWeight: FontWeight.bold,
                                           color: colorPallete.accentColor,
@@ -136,12 +141,12 @@ class _SearchMessageState extends State<SearchMessage> {
                                   onTap: () async {
                                     late String url;
                                     late ImageViewType imageViewType;
-                                    if (inbox.sender?.pictureProfile == null ||
-                                        (inbox.sender?.pictureProfile?.isEmpty ?? true)) {
+                                    if (inbox.user?.pictureProfile == null ||
+                                        (inbox.user?.pictureProfile?.isEmpty ?? true)) {
                                       url = '${appConfig.urlImageAsset}/ob1.png';
                                       imageViewType = ImageViewType.asset;
                                     } else {
-                                      url = inbox.sender?.pictureProfile ?? '';
+                                      url = inbox.user?.pictureProfile ?? '';
                                       imageViewType = ImageViewType.network;
                                     }
                                     await GlobalFunction.showDetailSingleImage(
@@ -165,14 +170,14 @@ class _SearchMessageState extends State<SearchMessage> {
                                       shape: BoxShape.circle,
                                     ),
                                     child: ClipOval(
-                                      child: (inbox.sender?.pictureProfile == null ||
-                                              (inbox.sender?.pictureProfile?.isEmpty ?? true))
+                                      child: (inbox.user?.pictureProfile == null ||
+                                              (inbox.user?.pictureProfile?.isEmpty ?? true))
                                           ? Image.asset(
                                               '${appConfig.urlImageAsset}/ob1.png',
                                               fit: BoxFit.cover,
                                             )
                                           : CachedNetworkImage(
-                                              imageUrl: inbox.sender?.pictureProfile ?? '',
+                                              imageUrl: inbox.user?.pictureProfile ?? '',
                                               fit: BoxFit.cover,
                                             ),
                                     ),

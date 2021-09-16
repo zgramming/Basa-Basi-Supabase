@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:basa_basi_supabase/src/utils/constant.dart';
 import 'package:equatable/equatable.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

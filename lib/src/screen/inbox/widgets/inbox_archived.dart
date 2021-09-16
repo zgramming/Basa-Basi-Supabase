@@ -1,36 +1,41 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../utils/utils.dart';
+import './inbox_archived_appbar.dart';
+import '../../../provider/provider.dart';
+import '../inbox_screen.dart';
 
 class InboxArchived extends StatelessWidget {
-  const InboxArchived({
-    Key? key,
-  }) : super(key: key);
+  static const routeNamed = '/inbox-archived';
+  const InboxArchived({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24.0),
-      child: OutlinedButton(
-        onPressed: () {},
-        style: OutlinedButton.styleFrom(
-          padding: const EdgeInsets.all(16.0),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(60.0),
-          ),
-        ),
-        child: Row(
-          children: [
-            const Icon(Icons.archive_outlined),
-            Expanded(
-              child: Center(
-                child: Text(
-                  '1 Pesan diarsipkan',
-                  style: Constant.comfortaa.copyWith(fontWeight: FontWeight.bold),
+    return Scaffold(
+      appBar: InboxArchiveAppBar(),
+      body: Padding(
+        padding: const EdgeInsets.only(top: 20.0),
+        child: Consumer(
+          builder: (context, ref, child) {
+            final inboxes = ref.watch(archivedInbox(true)).state;
+            if (inboxes.isEmpty) {
+              return const Center(
+                child: Padding(
+                  padding: EdgeInsets.all(24.0),
+                  child: Text('Pesan-pesan yang kamu arsipkan akan muncul disini'),
                 ),
-              ),
-            ),
-          ],
+              );
+            }
+            return ListView.builder(
+              shrinkWrap: true,
+              itemCount: inboxes.length,
+              physics: const NeverScrollableScrollPhysics(),
+              itemBuilder: (context, index) {
+                final inbox = inboxes[index];
+                return InboxItem(inbox: inbox);
+              },
+            );
+          },
         ),
       ),
     );

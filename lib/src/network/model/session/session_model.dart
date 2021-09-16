@@ -32,6 +32,7 @@ class SessionModel extends Equatable {
     bool? alreadyOnboarding,
     bool? isDarkMode,
     ProfileModel? user,
+    List<ProfileModel?>? senders,
   }) {
     return SessionModel(
       alreadyOnboarding: alreadyOnboarding ?? this.alreadyOnboarding,

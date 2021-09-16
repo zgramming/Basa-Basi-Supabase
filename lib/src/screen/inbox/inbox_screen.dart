@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:global_template/global_template.dart';
 
-import './widgets/inbox_archived.dart';
+import './widgets/inbox_archived_button.dart';
 import './widgets/inbox_item_date_and_status.dart';
 import './widgets/inbox_item_image.dart';
 import './widgets/inbox_item_message.dart';
@@ -20,41 +20,46 @@ class InboxScreen extends ConsumerWidget {
   }) : super(key: key);
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          const SizedBox(height: 20),
-          const InboxArchived(),
-          const SizedBox(height: 20),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24.0),
-            child: Builder(
-              builder: (context) {
-                final _streamInbox = ref.watch(getAllInbox);
-                return _streamInbox.when(
-                  data: (_) {
-                    final inboxes = ref.watch(InboxProvider.provider).items;
-                    return ListView.builder(
-                      shrinkWrap: true,
-                      itemCount: inboxes.length,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemBuilder: (context, index) {
-                        final inbox = inboxes[index];
-                        return InboxItem(inbox: inbox);
-                      },
-                    );
-                  },
-                  loading: () => const Center(child: CircularProgressIndicator()),
-                  error: (error, stackTrace) => Center(
-                    child: Text(error.toString()),
+    return ListView(
+      physics: const BouncingScrollPhysics(),
+      children: [
+        const InboxArchivedButton(),
+        Consumer(
+          builder: (context, ref, child) {
+            final _streamInbox = ref.watch(getAllInbox);
+            return _streamInbox.when(
+              data: (_) {
+                final inboxes = ref.watch(archivedInbox(false)).state;
+                if (inboxes.isEmpty) {
+                  return const Center(
+                    child: Padding(
+                      padding: EdgeInsets.all(24.0),
+                      child: Text('Nantinya pesan-pesan kamu akan bermunculan disini'),
+                    ),
+                  );
+                }
+                return Padding(
+                  padding: const EdgeInsets.only(top: 20.0),
+                  child: ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: inboxes.length,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemBuilder: (context, index) {
+                      final inbox = inboxes[index];
+                      return InboxItem(inbox: inbox);
+                    },
                   ),
                 );
               },
-            ),
-          ),
-        ],
-      ),
+              loading: () => const Center(child: CircularProgressIndicator()),
+              error: (error, stackTrace) => Center(
+                child: Text(error.toString()),
+              ),
+            );
+          },
+        ),
+        const SizedBox(height: 80)
+      ],
     );
   }
 }
@@ -72,10 +77,22 @@ class InboxItem extends ConsumerWidget {
       children: [
         InkWell(
           onTap: () async {
-            ref.read(sender).state = inbox.sender;
-            await Navigator.pushNamed(context, MessageScreen.routeNamed);
+            final totalSelectedInbox = ref.read(SelectedInboxProvider.provider).total;
+            if (totalSelectedInbox == 0) {
+              /// Initialize pairing
+              ref.read(pairing).state = inbox.user;
+              await Navigator.pushNamed(
+                context,
+                MessageScreen.routeNamed,
+              );
+            } else {
+              ref.read(SelectedInboxProvider.provider.notifier).add(inbox);
+            }
           },
-          splashColor: colorPallete.primaryColor,
+          onLongPress: () {
+            ref.read(SelectedInboxProvider.provider.notifier).add(inbox);
+          },
+          splashColor: colorPallete.primaryColor!.withOpacity(.25),
           borderRadius: BorderRadius.circular(10.0),
           child: Ink(
             decoration: BoxDecoration(

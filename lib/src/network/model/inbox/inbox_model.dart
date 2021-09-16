@@ -54,7 +54,8 @@ const messageStatusValues = {
 class InboxModel extends Equatable {
   final int id;
   final ProfileModel? user;
-  final ProfileModel? sender;
+  final int? idSender;
+  final ProfileModel? pairing;
   final String? inboxChannel;
   final String? inboxLastMessage;
   @JsonKey(
@@ -64,8 +65,12 @@ class InboxModel extends Equatable {
   final DateTime? inboxLastMessageDate;
   final MessageStatus? inboxLastMessageStatus;
   final MessageType? inboxLastMessageType;
+  @JsonKey(defaultValue: false)
   final bool? isArchived;
+  @JsonKey(defaultValue: false)
   final bool? isDeleted;
+  @JsonKey(defaultValue: false)
+  final bool? isPinned;
   @JsonKey(
     toJson: GlobalFunction.toJsonMilisecondFromDateTime,
     fromJson: GlobalFunction.fromJsonMilisecondToDateTime,
@@ -94,7 +99,8 @@ class InboxModel extends Equatable {
   const InboxModel({
     this.id = 0,
     this.user,
-    this.sender,
+    this.idSender,
+    this.pairing,
     this.inboxChannel = 'default_inbox_channel',
     this.inboxLastMessage,
     this.inboxLastMessageDate,
@@ -102,6 +108,7 @@ class InboxModel extends Equatable {
     this.inboxLastMessageType = MessageType.none,
     this.isArchived = false,
     this.isDeleted = false,
+    this.isPinned,
     this.lastTypingDate,
     this.totalUnreadMessage = 0,
     this.createdAt,
@@ -117,7 +124,8 @@ class InboxModel extends Equatable {
     return [
       id,
       user,
-      sender,
+      idSender,
+      pairing,
       inboxChannel,
       inboxLastMessage,
       inboxLastMessageDate,
@@ -125,6 +133,7 @@ class InboxModel extends Equatable {
       inboxLastMessageType,
       isArchived,
       isDeleted,
+      isPinned,
       lastTypingDate,
       totalUnreadMessage,
       createdAt,
@@ -139,7 +148,8 @@ class InboxModel extends Equatable {
   InboxModel copyWith({
     int? id,
     ProfileModel? user,
-    ProfileModel? sender,
+    int? idSender,
+    ProfileModel? pairing,
     String? inboxChannel,
     String? inboxLastMessage,
     DateTime? inboxLastMessageDate,
@@ -147,6 +157,7 @@ class InboxModel extends Equatable {
     MessageType? inboxLastMessageType,
     bool? isArchived,
     bool? isDeleted,
+    bool? isPinned,
     DateTime? lastTypingDate,
     int? totalUnreadMessage,
     DateTime? createdAt,
@@ -156,7 +167,8 @@ class InboxModel extends Equatable {
     return InboxModel(
       id: id ?? this.id,
       user: user ?? this.user,
-      sender: sender ?? this.sender,
+      idSender: idSender ?? this.idSender,
+      pairing: pairing ?? this.pairing,
       inboxChannel: inboxChannel ?? this.inboxChannel,
       inboxLastMessage: inboxLastMessage ?? this.inboxLastMessage,
       inboxLastMessageDate: inboxLastMessageDate ?? this.inboxLastMessageDate,
@@ -164,6 +176,7 @@ class InboxModel extends Equatable {
       inboxLastMessageType: inboxLastMessageType ?? this.inboxLastMessageType,
       isArchived: isArchived ?? this.isArchived,
       isDeleted: isDeleted ?? this.isDeleted,
+      isPinned: isPinned ?? this.isPinned,
       lastTypingDate: lastTypingDate ?? this.lastTypingDate,
       totalUnreadMessage: totalUnreadMessage ?? this.totalUnreadMessage,
       createdAt: createdAt ?? this.createdAt,

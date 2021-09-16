@@ -27,6 +27,7 @@ MessageModel _$MessageModelFromJson(Map<String, dynamic> json) {
         GlobalFunction.fromJsonMilisecondToDateTime(json['updated_at'] as int?),
     deletedAt:
         GlobalFunction.fromJsonMilisecondToDateTime(json['deleted_at'] as int?),
+    deletedIdUser: json['deleted_id_user'] as int?,
   );
 }
 
@@ -49,6 +50,7 @@ Map<String, dynamic> _$MessageModelToJson(MessageModel instance) =>
           GlobalFunction.toJsonMilisecondFromDateTime(instance.updatedAt),
       'deleted_at':
           GlobalFunction.toJsonMilisecondFromDateTime(instance.deletedAt),
+      'deleted_id_user': instance.deletedIdUser,
     };
 
 K _$enumDecode<K, V>(

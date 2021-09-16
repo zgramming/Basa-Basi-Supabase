@@ -9,7 +9,9 @@ import './widgets/message_footer.dart';
 class MessageScreen extends ConsumerStatefulWidget {
   static const routeNamed = '/message-screen';
 
-  const MessageScreen({Key? key}) : super(key: key);
+  const MessageScreen({
+    Key? key,
+  }) : super(key: key);
 
   @override
   _MessageScreenState createState() => _MessageScreenState();

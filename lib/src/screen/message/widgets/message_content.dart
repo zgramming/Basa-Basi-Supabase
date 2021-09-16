@@ -40,8 +40,6 @@ class MessageContent extends StatelessWidget {
               },
             ),
           ),
-
-          ///TODO: Lakukan sesuatu saat ada yang mengetik
           const MessageContentFloatingTyping()
         ],
       ),

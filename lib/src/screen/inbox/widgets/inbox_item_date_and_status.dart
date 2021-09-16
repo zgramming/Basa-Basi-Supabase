@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:global_template/global_template.dart';
 
 import '../../../network/model/network.dart';
+import '../../../provider/provider.dart';
 import '../../../utils/utils.dart';
 
-class InboxItemDateAndStatus extends StatelessWidget {
+class InboxItemDateAndStatus extends ConsumerWidget {
   final InboxModel inbox;
   const InboxItemDateAndStatus({
     Key? key,
@@ -12,14 +14,16 @@ class InboxItemDateAndStatus extends StatelessWidget {
   }) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final user = ref.watch(SessionProvider.provider).session.user;
     return Row(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
-        CircleAvatar(
-          radius: sizes.width(context) * 0.015,
-          backgroundColor: const Color(0xFfC4C4C4),
-        ),
+        if (inbox.idSender == user?.id)
+          CircleAvatar(
+            radius: sizes.width(context) * 0.015,
+            backgroundColor: const Color(0xFfC4C4C4),
+          ),
         const SizedBox(width: 5.0),
         Text(
           GlobalFunction.formatHM(inbox.inboxLastMessageDate ?? DateTime.now()),

@@ -12,9 +12,10 @@ InboxModel _$InboxModelFromJson(Map<String, dynamic> json) {
     user: json['user'] == null
         ? null
         : ProfileModel.fromJson(json['user'] as Map<String, dynamic>),
-    sender: json['sender'] == null
+    idSender: json['id_sender'] as int?,
+    pairing: json['pairing'] == null
         ? null
-        : ProfileModel.fromJson(json['sender'] as Map<String, dynamic>),
+        : ProfileModel.fromJson(json['pairing'] as Map<String, dynamic>),
     inboxChannel: json['inbox_channel'] as String?,
     inboxLastMessage: json['inbox_last_message'] as String?,
     inboxLastMessageDate: GlobalFunction.fromJsonMilisecondToDateTime(
@@ -23,8 +24,9 @@ InboxModel _$InboxModelFromJson(Map<String, dynamic> json) {
         _$MessageStatusEnumMap, json['inbox_last_message_status']),
     inboxLastMessageType: _$enumDecodeNullable(
         _$MessageTypeEnumMap, json['inbox_last_message_type']),
-    isArchived: json['is_archived'] as bool?,
-    isDeleted: json['is_deleted'] as bool?,
+    isArchived: json['is_archived'] as bool? ?? false,
+    isDeleted: json['is_deleted'] as bool? ?? false,
+    isPinned: json['is_pinned'] as bool? ?? false,
     lastTypingDate: GlobalFunction.fromJsonMilisecondToDateTime(
         json['last_typing_date'] as int?),
     totalUnreadMessage: json['total_unread_message'] as int?,
@@ -41,7 +43,8 @@ Map<String, dynamic> _$InboxModelToJson(InboxModel instance) =>
     <String, dynamic>{
       'id': instance.id,
       'user': instance.user,
-      'sender': instance.sender,
+      'id_sender': instance.idSender,
+      'pairing': instance.pairing,
       'inbox_channel': instance.inboxChannel,
       'inbox_last_message': instance.inboxLastMessage,
       'inbox_last_message_date': GlobalFunction.toJsonMilisecondFromDateTime(
@@ -52,6 +55,7 @@ Map<String, dynamic> _$InboxModelToJson(InboxModel instance) =>
           _$MessageTypeEnumMap[instance.inboxLastMessageType],
       'is_archived': instance.isArchived,
       'is_deleted': instance.isDeleted,
+      'is_pinned': instance.isPinned,
       'last_typing_date':
           GlobalFunction.toJsonMilisecondFromDateTime(instance.lastTypingDate),
       'total_unread_message': instance.totalUnreadMessage,

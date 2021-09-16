@@ -40,6 +40,7 @@ class MessageModel extends Equatable {
     toJson: GlobalFunction.toJsonMilisecondFromDateTime,
   )
   final DateTime? deletedAt;
+  final int? deletedIdUser;
 
   const MessageModel({
     this.id = 0,
@@ -55,6 +56,7 @@ class MessageModel extends Equatable {
     this.createdAt,
     this.updatedAt,
     this.deletedAt,
+    this.deletedIdUser,
   });
 
   factory MessageModel.fromJson(Map<String, dynamic> json) => _$MessageModelFromJson(json);
@@ -76,6 +78,7 @@ class MessageModel extends Equatable {
       createdAt,
       updatedAt,
       deletedAt,
+      deletedIdUser,
     ];
   }
 
@@ -96,6 +99,7 @@ class MessageModel extends Equatable {
     DateTime? createdAt,
     DateTime? updatedAt,
     DateTime? deletedAt,
+    int? deletedIdUser,
   }) {
     return MessageModel(
       id: id ?? this.id,
@@ -111,6 +115,7 @@ class MessageModel extends Equatable {
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       deletedAt: deletedAt ?? this.deletedAt,
+      deletedIdUser: deletedIdUser ?? this.deletedIdUser,
     );
   }
 }

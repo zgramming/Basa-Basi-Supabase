@@ -14,7 +14,7 @@ class SupabaseQuery {
   static final SupabaseQuery instance = SupabaseQuery._();
   static final _supabase = Constant.supabase;
 
-  Future<PostgrestResponse> signUp({
+  Future<ProfileModel> signUp({
     required String email,
     required String password,
   }) async {
@@ -35,13 +35,21 @@ class SupabaseQuery {
       log('insertProfile 2. ${result.data} this return List instead of single object');
       log('insertProfile 3. ${result.error?.toJson()}');
       log('insertProfile 4. ${result.status}');
-      return result;
+
+      if (result.error?.message != null) {
+        throw Exception(result.error?.message);
+      }
+
+      final data = List.from(result.data as List).first;
+      final user = ProfileModel.fromJson(Map<String, dynamic>.from(data as Map));
+
+      return user;
     } catch (e) {
       rethrow;
     }
   }
 
-  Future<PostgrestResponse> signIn({
+  Future<ProfileModel> signIn({
     required String email,
     required String password,
   }) async {
@@ -61,7 +69,14 @@ class SupabaseQuery {
           .eq('id_user', result.user!.id)
           .single()
           .execute();
-      return getUser;
+
+      if (getUser.error?.message != null) {
+        throw Exception(result.error?.message);
+      }
+
+      final user = ProfileModel.fromJson(Map<String, dynamic>.from(getUser.data as Map));
+
+      return user;
     } catch (e) {
       rethrow;
     }
@@ -97,10 +112,14 @@ class SupabaseQuery {
       'created_at': DateTime.now().millisecondsSinceEpoch,
     }).execute();
 
+    if (result.error?.message != null) {
+      throw Exception(result.error?.message);
+    }
+
     return result;
   }
 
-  Future<PostgrestResponse> setupProfileWhenFirstRegister(
+  Future<ProfileModel> setupProfileWhenFirstRegister(
     String idUser, {
     String? username,
     String? fullname,
@@ -132,10 +151,14 @@ class SupabaseQuery {
     if (result.error?.message != null) {
       throw Exception(result.error?.message);
     }
-    return result;
+
+    final data = List.from(result.data as List).first;
+    final user = ProfileModel.fromJson(Map<String, dynamic>.from(data as Map));
+
+    return user;
   }
 
-  Future<PostgrestResponse> searchUserByEmailOrUsername({
+  Future<List<ProfileModel>> searchUserByEmailOrUsername({
     required int idUser,
     required String query,
   }) async {
@@ -149,16 +172,22 @@ class SupabaseQuery {
     if (result.error?.message != null) {
       throw Exception(result.error?.message);
     }
-    return result;
+
+    final data = result.data as List;
+
+    final users =
+        data.map((e) => ProfileModel.fromJson(Map<String, dynamic>.from(e as Map))).toList();
+
+    return users;
   }
 
   Future<ProfileModel> getUserById(int id) async {
     final result =
         await _supabase.from(Constant.tableProfile).select().eq('id', id).single().execute();
+
     if (result.error?.message != null) {
       throw Exception(result.error?.message);
     }
-    log('result ${result.data}');
 
     return ProfileModel.fromJson(Map<String, dynamic>.from(result.data as Map));
   }
@@ -168,7 +197,7 @@ class SupabaseQuery {
   ///* START Inbox Section
 
   ///? Get All inbox by idUser
-  Future<PostgrestResponse> getAllInboxByIdUser(int idUser) async {
+  Future<List<InboxModel>> getAllInboxByIdUser(int me) async {
     /**
      * SELECT * FROM inbox as inbox 
      * JOIN profile as user ON (inbox.id_user = user.id)
@@ -178,19 +207,24 @@ class SupabaseQuery {
      */
     final result = await _supabase
         .from("inbox")
-        .select("*, user:id_user(*), sender:id_sender(*)")
-        .eq('id_user', idUser)
+        .select("*, user:id_user(*), pairing:id_pairing(*)")
+        .eq('id_pairing', me)
         .execute();
 
     if (result.error?.message != null) {
       throw Exception(result.error?.message);
     }
-    return result;
+
+    final data = List.from(result.data as List);
+    final inboxes =
+        data.map((e) => InboxModel.fromJson(Map<String, dynamic>.from(e as Map))).toList();
+    return inboxes;
   }
 
-  Future<PostgrestResponse> insertOrUpdateInbox({
-    required int you,
+  Future<InboxModel> insertOrUpdateInbox({
+    required int idUser,
     required int idSender,
+    required int idPairing,
     required String inboxChannel,
     required String inboxLastMessage,
     required int inboxLastMessageDate,
@@ -201,14 +235,14 @@ class SupabaseQuery {
     final query = await _supabase
         .from('inbox')
         .select('id')
-        .filter('id_user', 'eq', you)
+        .filter('id_user', 'eq', idUser)
         .filter('inbox_channel', 'eq', inboxChannel)
         .single()
         .execute(count: CountOption.exact);
 
     final data = {
       'id_sender': '$idSender',
-      'id_user': '$you',
+      'id_user': '$idUser',
       'inbox_channel': inboxChannel,
       'inbox_last_message': inboxLastMessage,
       'inbox_last_message_date': '$inboxLastMessageDate',
@@ -217,19 +251,21 @@ class SupabaseQuery {
       'total_unread_message': totalUnreadMessage,
     };
 
-    log('execute ${query.data}');
-
     final isNotExists = (query.data ?? 0) == 0;
     PostgrestResponse response;
     if (isNotExists) {
       /// Insert
+      data['id_pairing'] = idPairing;
+      data['created_at'] = DateTime.now().millisecondsSinceEpoch;
+
       response = await _supabase.from('inbox').insert(data).execute();
     } else {
       /// Update
+      data['updated_at'] = DateTime.now().millisecondsSinceEpoch;
       response = await _supabase
           .from('inbox')
           .update(data)
-          .eq('id_user', you)
+          .eq('id_user', idUser)
           .eq('inbox_channel', inboxChannel)
           .execute();
     }
@@ -238,13 +274,37 @@ class SupabaseQuery {
       throw Exception(response.error?.message);
     }
 
-    return response;
+    final datas = List.from(response.data as List).first;
+    final inboxes = InboxModel.fromJson(Map<String, dynamic>.from(datas as Map));
+    return inboxes;
+  }
+
+  Future<PostgrestResponse> upsertArchiveInbox(List<InboxModel> values) async {
+    if (values.isEmpty) {
+      throw Exception('Data tidak boleh kosong');
+    }
+    final data = <Map<String, dynamic>>[];
+    for (final value in values) {
+      data.add({
+        'id': value.id,
+        'is_archived': value.isArchived,
+      });
+    }
+
+    final result = await _supabase.from(Constant.tableInbox).upsert(data).execute();
+    if (result.error?.message != null) {
+      throw Exception(result.error?.message);
+    }
+
+    log('result ${result.data}');
+
+    return result;
   }
 
   ///* END Inbox Section
 
   ///* START Message Section
-  Future<PostgrestResponse> getAllMessageByInboxChannel(String inboxChannel) async {
+  Future<List<MessageModel>> getAllMessageByInboxChannel(String inboxChannel) async {
     final result = await _supabase
         .from('message')
         .select()
@@ -257,7 +317,12 @@ class SupabaseQuery {
     if (result.error?.message != null) {
       throw Exception(result.error?.message);
     }
-    return result;
+
+    final data = List.from(result.data as List);
+    final messages =
+        data.map((e) => MessageModel.fromJson(Map<String, dynamic>.from(e as Map))).toList();
+
+    return messages;
   }
 
   Future<MessageModel> sendMessage({
@@ -275,4 +340,20 @@ class SupabaseQuery {
   }
 
   ///* END Message Section
+
+  ///* START UTILS
+  Future<String> uploadFileToSupabase({
+    required File file,
+    required String storageName,
+  }) async {
+    final generateRandomString = GlobalFunction.generateRandomString(20);
+    final storage = _supabase.storage.from(storageName);
+    final filename = "$generateRandomString${path.extension(file.path)}";
+    await storage.upload(filename, file);
+    final getUrl = storage.getPublicUrl(filename);
+    final result = getUrl.data;
+    return result ?? '';
+  }
+
+  ///* END UTILS
 }

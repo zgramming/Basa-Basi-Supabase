@@ -13,16 +13,16 @@ class MessageAppbarTitle extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final _sender = ref.watch(sender).state;
+    final _pairing = ref.watch(pairing).state;
     Widget image;
-    if (_sender?.pictureProfile == null || (_sender?.pictureProfile?.isEmpty ?? true)) {
+    if (_pairing?.pictureProfile == null || (_pairing?.pictureProfile?.isEmpty ?? true)) {
       image = Image.asset(
         '${appConfig.urlImageAsset}/ob1.png',
         fit: BoxFit.cover,
       );
     } else {
       image = CachedNetworkImage(
-        imageUrl: '${_sender!.pictureProfile}',
+        imageUrl: '${_pairing!.pictureProfile}',
         fit: BoxFit.cover,
       );
     }
@@ -44,19 +44,19 @@ class MessageAppbarTitle extends ConsumerWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              _sender?.fullname ?? '-',
+              _pairing?.fullname ?? '-',
               style: Constant.maitree.copyWith(
                 fontSize: 14.0,
                 fontWeight: FontWeight.bold,
               ),
             ),
-            Text(
-              'Nantinya fitur tracking online',
-              style: Constant.maitree.copyWith(
-                fontSize: 8.0,
-                fontWeight: FontWeight.w300,
-              ),
-            ),
+            // Text(
+            //   'Nantinya fitur tracking online',
+            //   style: Constant.maitree.copyWith(
+            //     fontSize: 8.0,
+            //     fontWeight: FontWeight.w300,
+            //   ),
+            // ),
           ],
         ),
       ],
