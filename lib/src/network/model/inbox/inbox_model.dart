@@ -54,29 +54,26 @@ const messageStatusValues = {
 class InboxModel extends Equatable {
   final int id;
   final ProfileModel? user;
-  final int? idSender;
+  final int idSender;
   final ProfileModel? pairing;
-  final String? inboxChannel;
+  final String inboxChannel;
   final String? inboxLastMessage;
   @JsonKey(
     toJson: GlobalFunction.toJsonMilisecondFromDateTime,
     fromJson: GlobalFunction.fromJsonMilisecondToDateTime,
   )
   final DateTime? inboxLastMessageDate;
-  final MessageStatus? inboxLastMessageStatus;
-  final MessageType? inboxLastMessageType;
-  @JsonKey(defaultValue: false)
-  final bool? isArchived;
-  @JsonKey(defaultValue: false)
-  final bool? isDeleted;
-  @JsonKey(defaultValue: false)
-  final bool? isPinned;
+  final MessageStatus inboxLastMessageStatus;
+  final MessageType inboxLastMessageType;
+  final bool isArchived;
+  final bool isDeleted;
+  final bool isPinned;
   @JsonKey(
     toJson: GlobalFunction.toJsonMilisecondFromDateTime,
     fromJson: GlobalFunction.fromJsonMilisecondToDateTime,
   )
   final DateTime? lastTypingDate;
-  final int? totalUnreadMessage;
+  final int totalUnreadMessage;
 
   @JsonKey(
     toJson: GlobalFunction.toJsonMilisecondFromDateTime,
@@ -99,7 +96,7 @@ class InboxModel extends Equatable {
   const InboxModel({
     this.id = 0,
     this.user,
-    this.idSender,
+    this.idSender = 0,
     this.pairing,
     this.inboxChannel = 'default_inbox_channel',
     this.inboxLastMessage,
@@ -108,7 +105,7 @@ class InboxModel extends Equatable {
     this.inboxLastMessageType = MessageType.none,
     this.isArchived = false,
     this.isDeleted = false,
-    this.isPinned,
+    this.isPinned = false,
     this.lastTypingDate,
     this.totalUnreadMessage = 0,
     this.createdAt,

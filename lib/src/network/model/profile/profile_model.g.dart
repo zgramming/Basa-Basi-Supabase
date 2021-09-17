@@ -9,15 +9,15 @@ part of 'profile_model.dart';
 ProfileModel _$ProfileModelFromJson(Map<String, dynamic> json) {
   return ProfileModel(
     id: json['id'] as int?,
-    idUser: json['id_user'] as String?,
-    fullname: json['fullname'] as String?,
-    email: json['email'] as String?,
-    password: json['password'] as String?,
-    username: json['username'] as String?,
+    idUser: json['id_user'] as String,
+    fullname: json['fullname'] as String,
+    email: json['email'] as String,
+    password: json['password'] as String,
+    username: json['username'] as String,
     pictureProfile: json['picture_profile'] as String?,
     description: json['description'] as String?,
-    isOnline: json['is_online'] as bool?,
-    isNewUser: json['is_new_user'] as bool?,
+    isOnline: json['is_online'] as bool,
+    isNewUser: json['is_new_user'] as bool,
     createdAt:
         GlobalFunction.fromJsonMilisecondToDateTime(json['created_at'] as int?),
     updatedAt:

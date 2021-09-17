@@ -9,16 +9,9 @@ class InboxState extends Equatable {
     this.items = const [],
   });
 
-  InboxState add(InboxModel value) => copyWith(items: [...items, value]);
   InboxState addAll(List<InboxModel> values) => copyWith(items: [...values]);
 
   InboxState delete() => copyWith(items: []);
-
-  InboxState deleteByChannel(InboxModel value) =>
-      copyWith(items: [...items.where((element) => element.inboxChannel != value.inboxChannel)]);
-
-  InboxState deleteById(InboxModel value) =>
-      copyWith(items: [...items.where((element) => element.id != value.id)]);
 
   InboxState updateOrInsert(InboxModel value) {
     final index = items.indexWhere((element) => element.id == value.id);
@@ -42,6 +35,14 @@ class InboxState extends Equatable {
       return copyWith(items: [...items, value]);
     }
   }
+
+  // InboxState add(InboxModel value) => copyWith(items: [...items, value]);
+
+  // InboxState deleteByChannel(InboxModel value) =>
+  //     copyWith(items: [...items.where((element) => element.inboxChannel != value.inboxChannel)]);
+
+  // InboxState deleteById(InboxModel value) =>
+  //     copyWith(items: [...items.where((element) => element.id != value.id)]);
 
   @override
   List<Object> get props => [items];

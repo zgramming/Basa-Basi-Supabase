@@ -11,8 +11,6 @@ MessageModel _$MessageModelFromJson(Map<String, dynamic> json) {
     id: json['id'] as int?,
     idSender: json['id_sender'] as int?,
     inboxChannel: json['inbox_channel'] as String?,
-    isDeleted: json['is_deleted'] as bool?,
-    isLiked: json['is_liked'] as bool?,
     messageContent: json['message_content'] as String?,
     messageDate: GlobalFunction.fromJsonMilisecondToDateTime(
         json['message_date'] as int?),
@@ -28,6 +26,7 @@ MessageModel _$MessageModelFromJson(Map<String, dynamic> json) {
     deletedAt:
         GlobalFunction.fromJsonMilisecondToDateTime(json['deleted_at'] as int?),
     deletedIdUser: json['deleted_id_user'] as int?,
+    likedIdUser: json['liked_id_user'] as int?,
   );
 }
 
@@ -36,8 +35,6 @@ Map<String, dynamic> _$MessageModelToJson(MessageModel instance) =>
       'id': instance.id,
       'id_sender': instance.idSender,
       'inbox_channel': instance.inboxChannel,
-      'is_deleted': instance.isDeleted,
-      'is_liked': instance.isLiked,
       'message_content': instance.messageContent,
       'message_date':
           GlobalFunction.toJsonMilisecondFromDateTime(instance.messageDate),
@@ -51,6 +48,7 @@ Map<String, dynamic> _$MessageModelToJson(MessageModel instance) =>
       'deleted_at':
           GlobalFunction.toJsonMilisecondFromDateTime(instance.deletedAt),
       'deleted_id_user': instance.deletedIdUser,
+      'liked_id_user': instance.likedIdUser,
     };
 
 K _$enumDecode<K, V>(

@@ -84,7 +84,7 @@ class _SearchMessageState extends State<SearchMessage> {
                   final _streamInbox = ref.watch(getAllInbox);
                   return _streamInbox.when(
                     data: (_) {
-                      final inboxes = ref.watch(InboxProvider.provider).items;
+                      final inboxes = ref.watch(archivedInbox(null)).state;
                       return ListView.separated(
                         separatorBuilder: (context, index) => const SizedBox(height: 10),
                         itemCount: inboxes.length,

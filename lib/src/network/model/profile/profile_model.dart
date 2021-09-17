@@ -9,15 +9,15 @@ part 'profile_model.g.dart';
 @JsonSerializable(fieldRename: FieldRename.snake)
 class ProfileModel extends Equatable {
   final int? id;
-  final String? idUser;
-  final String? fullname;
-  final String? email;
-  final String? password;
-  final String? username;
+  final String idUser;
+  final String fullname;
+  final String email;
+  final String password;
+  final String username;
   final String? pictureProfile;
   final String? description;
-  final bool? isOnline;
-  final bool? isNewUser;
+  final bool isOnline;
+  final bool isNewUser;
   @JsonKey(
     toJson: GlobalFunction.toJsonMilisecondFromDateTime,
     fromJson: GlobalFunction.fromJsonMilisecondToDateTime,
@@ -32,11 +32,11 @@ class ProfileModel extends Equatable {
 
   const ProfileModel({
     this.id = 0,
-    this.idUser,
-    this.fullname,
+    this.idUser = '',
+    this.fullname = '',
     this.email = 'zeffry.reynando@gmail.com',
     this.password = 'akutampansekali',
-    this.username,
+    this.username = '',
     this.pictureProfile,
     this.description,
     this.isOnline = false,

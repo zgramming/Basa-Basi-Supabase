@@ -46,8 +46,10 @@ class _MessagePreviewImageState extends ConsumerState<MessagePreviewImage> {
         Navigator.pop(context);
       }
     });
-    return WillPopScope(
-      onWillPop: () async => Future.value(true),
+    return GestureDetector(
+      onTap: () {
+        FocusScope.of(context).unfocus();
+      },
       child: Scaffold(
         backgroundColor: Colors.black,
         resizeToAvoidBottomInset: false,
@@ -94,6 +96,10 @@ class _MessagePreviewImageState extends ConsumerState<MessagePreviewImage> {
                             padding: const EdgeInsets.all(20.0),
                             hintText: 'Tulis Pesan...',
                             radius: 10.0,
+                            keyboardType: TextInputType.multiline,
+                            textInputAction: TextInputAction.newline,
+                            minLines: 1,
+                            maxLines: 5,
                             activeColor: colorPallete.accentColor,
                             focusedBorderStyle: InputBorderStyle(color: colorPallete.accentColor),
                             defaultBorderStyle:

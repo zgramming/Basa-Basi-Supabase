@@ -13,8 +13,6 @@ class MessageModel extends Equatable {
   final int? id;
   final int? idSender;
   final String? inboxChannel;
-  final bool? isDeleted;
-  final bool? isLiked;
   final String? messageContent;
   @JsonKey(
     fromJson: GlobalFunction.fromJsonMilisecondToDateTime,
@@ -41,13 +39,12 @@ class MessageModel extends Equatable {
   )
   final DateTime? deletedAt;
   final int? deletedIdUser;
+  final int? likedIdUser;
 
   const MessageModel({
     this.id = 0,
-    required this.idSender,
+    this.idSender,
     this.inboxChannel = 'default inbox channel',
-    this.isDeleted = false,
-    this.isLiked = false,
     this.messageContent = 'Halooo',
     this.messageDate,
     this.messageFileUrl = '',
@@ -57,6 +54,7 @@ class MessageModel extends Equatable {
     this.updatedAt,
     this.deletedAt,
     this.deletedIdUser,
+    this.likedIdUser,
   });
 
   factory MessageModel.fromJson(Map<String, dynamic> json) => _$MessageModelFromJson(json);
@@ -68,8 +66,6 @@ class MessageModel extends Equatable {
       id,
       idSender,
       inboxChannel,
-      isDeleted,
-      isLiked,
       messageContent,
       messageDate,
       messageFileUrl,
@@ -79,6 +75,7 @@ class MessageModel extends Equatable {
       updatedAt,
       deletedAt,
       deletedIdUser,
+      likedIdUser,
     ];
   }
 
@@ -89,8 +86,6 @@ class MessageModel extends Equatable {
     int? id,
     int? idSender,
     String? inboxChannel,
-    bool? isDeleted,
-    bool? isLiked,
     String? messageContent,
     DateTime? messageDate,
     String? messageFileUrl,
@@ -100,13 +95,12 @@ class MessageModel extends Equatable {
     DateTime? updatedAt,
     DateTime? deletedAt,
     int? deletedIdUser,
+    int? likedIdUser,
   }) {
     return MessageModel(
       id: id ?? this.id,
       idSender: idSender ?? this.idSender,
       inboxChannel: inboxChannel ?? this.inboxChannel,
-      isDeleted: isDeleted ?? this.isDeleted,
-      isLiked: isLiked ?? this.isLiked,
       messageContent: messageContent ?? this.messageContent,
       messageDate: messageDate ?? this.messageDate,
       messageFileUrl: messageFileUrl ?? this.messageFileUrl,
@@ -116,6 +110,7 @@ class MessageModel extends Equatable {
       updatedAt: updatedAt ?? this.updatedAt,
       deletedAt: deletedAt ?? this.deletedAt,
       deletedIdUser: deletedIdUser ?? this.deletedIdUser,
+      likedIdUser: likedIdUser ?? this.likedIdUser,
     );
   }
 }

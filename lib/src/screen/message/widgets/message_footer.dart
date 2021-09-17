@@ -1,4 +1,7 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:global_template/global_template.dart';
@@ -33,7 +36,6 @@ class _MessageFooterState extends ConsumerState<MessageFooter> {
   @override
   Widget build(BuildContext context) {
     return Ink(
-      height: sizes.height(context) / 8,
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
       decoration: BoxDecoration(
         color: Colors.white,
@@ -44,168 +46,182 @@ class _MessageFooterState extends ConsumerState<MessageFooter> {
           ),
         ],
       ),
-      child: Row(
-        children: [
-          Expanded(
-            child: TextFormFieldCustom(
-              controller: widget.messageController,
-              hintText: 'Tulis Pesan...',
-              disableOutlineBorder: false,
-              radius: 10.0,
-              activeColor: colorPallete.accentColor,
-              focusedBorderStyle: InputBorderStyle(color: colorPallete.accentColor),
-              defaultBorderStyle: InputBorderStyle(color: Colors.black.withOpacity(.25)),
-              textStyle: Constant.comfortaa.copyWith(fontSize: 14.0),
-              padding: const EdgeInsets.only(
-                left: 20.0,
-                top: 20.0,
-                bottom: 20.0,
-                right: 40.0,
-              ),
-              hintStyle: Constant.comfortaa.copyWith(
-                fontWeight: FontWeight.w300,
-                fontSize: 10.0,
-              ),
-              onChanged: (value) {
-                if (value.isNotEmpty) {
-                  if (_flagShowButtonImage == 0) {
-                    setState(() {});
-                  }
-                  _showButtonImage = false;
-                  _flagShowButtonImage = 1;
-                }
-                if (value.isEmpty) {
-                  _showButtonImage = true;
-                  _flagShowButtonImage = 0;
-                  setState(() {});
-                }
-                // debounce.run(() {});
-              },
-              suffixIconConfiguration: const SuffixIconConfiguration(
-                rightPosition: 15,
-                bottomPosition: 10,
-              ),
-              suffixIcon: [
-                if (_showButtonImage)
-                  InkWell(
-                    onTap: () async {
-                      final result = await uploadImage(source: ImageSource.camera);
-                      if (result != null) {
-                        await Future.delayed(Duration.zero, () {
-                          Navigator.pushNamed(
-                            context,
-                            MessagePreviewImage.routeNamed,
-                            arguments: result,
-                          );
-                        });
-                      }
-                    },
-                    child: const Icon(FeatherIcons.camera),
-                  ),
-                InkWell(
-                  onTap: () async {
-                    await showModalBottomSheet(
-                      context: context,
-                      builder: (context) => ActionModalBottomSheet(
-                        typeAction: TypeAction.none,
-                        align: WrapAlignment.center,
-                        children: [
-                          ActionCircleButton(
-                            icon: FeatherIcons.camera,
-                            backgroundColor: colorPallete.primaryColor,
-                            foregroundColor: Colors.white,
-                            onTap: () async {
-                              final result = await uploadImage(source: ImageSource.camera);
-                              if (result != null) {
-                                await Future.delayed(Duration.zero, () {
-                                  Navigator.pushNamed(
-                                    context,
-                                    MessagePreviewImage.routeNamed,
-                                    arguments: result,
-                                  );
-                                });
-                              }
-                            },
-                          ),
-                          ActionCircleButton(
-                            icon: FeatherIcons.image,
-                            backgroundColor: colorPallete.success,
-                            foregroundColor: Colors.white,
-                            onTap: () async {
-                              final result = await uploadImage();
-                              if (result != null) {
-                                await Future.delayed(Duration.zero, () {
-                                  Navigator.pushNamed(
-                                    context,
-                                    MessagePreviewImage.routeNamed,
-                                    arguments: result,
-                                  );
-                                });
-                              }
-                            },
-                          ),
-                        ],
-                      ),
-                    );
-                  },
-                  child: const Icon(Icons.attach_file),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 24.0),
+        child: Row(
+          children: [
+            Expanded(
+              child: TextFormFieldCustom(
+                controller: widget.messageController,
+                hintText: 'Tulis Pesan...',
+                disableOutlineBorder: false,
+                radius: 10.0,
+                activeColor: colorPallete.accentColor,
+                focusedBorderStyle: InputBorderStyle(color: colorPallete.accentColor),
+                defaultBorderStyle: InputBorderStyle(color: Colors.black.withOpacity(.25)),
+                textStyle: Constant.comfortaa.copyWith(fontSize: 14.0),
+                keyboardType: TextInputType.multiline,
+                textInputAction: TextInputAction.newline,
+                minLines: 1,
+                maxLines: 5,
+                padding: const EdgeInsets.only(
+                  left: 20.0,
+                  top: 20.0,
+                  bottom: 20.0,
+                  right: 40.0,
                 ),
-              ],
-            ),
-          ),
-          const SizedBox(width: 10),
-          Consumer(
-            builder: (context, ref, child) => InkWell(
-              borderRadius: BorderRadius.circular(15.0),
-              splashColor: Colors.black,
-              onTap: () async {
-                if (widget.messageController.text.isEmpty) {
-                  return;
-                }
+                hintStyle: Constant.comfortaa.copyWith(
+                  fontWeight: FontWeight.w300,
+                  fontSize: 10.0,
+                ),
+                onChanged: (value) {
+                  if (value.isNotEmpty) {
+                    if (_flagShowButtonImage == 0) {
+                      setState(() {});
+                    }
+                    _showButtonImage = false;
+                    _flagShowButtonImage = 1;
 
-                try {
-                  ref.read(isLoading).state = true;
-
-                  final messageContent = widget.messageController.text;
-
-                  /// Reset textfield
-                  widget.messageController.clear();
-
-                  await ref.read(MessageProvider.provider.notifier).sendMessage(
-                        messageContent: messageContent,
-                        status: MessageStatus.send,
-                        type: MessageType.text,
-                      );
-
-                  setState(() {
+                    debounce.run(() async {
+                      if (mounted) {
+                        await ref.read(MessageProvider.provider.notifier).updateTyping();
+                      }
+                    });
+                  }
+                  if (value.isEmpty) {
                     _showButtonImage = true;
                     _flagShowButtonImage = 0;
-                  });
-                } catch (e) {
-                  GlobalFunction.showSnackBar(
-                    context,
-                    content: Text(e.toString()),
-                    snackBarType: SnackBarType.error,
-                  );
-                } finally {
-                  ref.read(isLoading).state = false;
-                }
-              },
-              child: Ink(
-                height: sizes.width(context) / 9,
-                width: sizes.width(context) / 9,
-                decoration: BoxDecoration(
-                  color: colorPallete.accentColor,
-                  borderRadius: BorderRadius.circular(15.0),
+                    setState(() {});
+                  }
+                  // debounce.run(() {});
+                },
+                suffixIconConfiguration: const SuffixIconConfiguration(
+                  rightPosition: 15,
+                  bottomPosition: 10,
                 ),
-                child: const Icon(
-                  FeatherIcons.send,
-                  color: Colors.white,
-                ),
+                suffixIcon: [
+                  if (_showButtonImage)
+                    InkWell(
+                      onTap: () async {
+                        final result = await uploadImage(source: ImageSource.camera);
+                        if (result != null) {
+                          await Future.delayed(Duration.zero, () {
+                            Navigator.pushNamed(
+                              context,
+                              MessagePreviewImage.routeNamed,
+                              arguments: result,
+                            );
+                          });
+                        }
+                      },
+                      child: const Icon(FeatherIcons.camera),
+                    ),
+                  InkWell(
+                    onTap: () async {
+                      await showModalBottomSheet(
+                        context: context,
+                        builder: (context) => ActionModalBottomSheet(
+                          typeAction: TypeAction.none,
+                          align: WrapAlignment.center,
+                          children: [
+                            ActionCircleButton(
+                              icon: FeatherIcons.camera,
+                              backgroundColor: colorPallete.primaryColor,
+                              foregroundColor: Colors.white,
+                              onTap: () async {
+                                final result = await uploadImage(source: ImageSource.camera);
+                                if (result != null) {
+                                  await Future.delayed(Duration.zero, () {
+                                    Navigator.pushNamed(
+                                      context,
+                                      MessagePreviewImage.routeNamed,
+                                      arguments: result,
+                                    );
+                                  });
+                                }
+                              },
+                            ),
+                            ActionCircleButton(
+                              icon: FeatherIcons.image,
+                              backgroundColor: colorPallete.success,
+                              foregroundColor: Colors.white,
+                              onTap: () async {
+                                final result = await uploadImage();
+                                if (result != null) {
+                                  await Future.delayed(Duration.zero, () {
+                                    Navigator.pushNamed(
+                                      context,
+                                      MessagePreviewImage.routeNamed,
+                                      arguments: result,
+                                    );
+                                  });
+                                }
+                              },
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                    child: const Icon(Icons.attach_file),
+                  ),
+                ],
               ),
             ),
-          )
-        ],
+            const SizedBox(width: 10),
+            Consumer(
+              builder: (context, ref, child) => InkWell(
+                borderRadius: BorderRadius.circular(15.0),
+                splashColor: Colors.black,
+                onTap: () async {
+                  if (widget.messageController.text.isEmpty) {
+                    return;
+                  }
+
+                  try {
+                    ref.read(isLoading).state = true;
+
+                    final messageContent = widget.messageController.text;
+
+                    /// Reset textfield
+                    widget.messageController.clear();
+
+                    await ref.read(MessageProvider.provider.notifier).sendMessage(
+                          messageContent: messageContent,
+                          status: MessageStatus.send,
+                          type: MessageType.text,
+                        );
+
+                    setState(() {
+                      _showButtonImage = true;
+                      _flagShowButtonImage = 0;
+                    });
+                  } catch (e) {
+                    GlobalFunction.showSnackBar(
+                      context,
+                      content: Text(e.toString()),
+                      snackBarType: SnackBarType.error,
+                    );
+                    log('Error SendMessage Only Text : ${e.toString()}');
+                  } finally {
+                    ref.read(isLoading).state = false;
+                  }
+                },
+                child: Ink(
+                  height: sizes.width(context) / 9,
+                  width: sizes.width(context) / 9,
+                  decoration: BoxDecoration(
+                    color: colorPallete.accentColor,
+                    borderRadius: BorderRadius.circular(15.0),
+                  ),
+                  child: const Icon(
+                    FeatherIcons.send,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            )
+          ],
+        ),
       ),
     );
   }

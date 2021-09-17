@@ -9,21 +9,21 @@ class ProfileHiveModel {
   @HiveField(0)
   final int? id;
   @HiveField(1)
-  final String? idUser;
+  final String idUser;
   @HiveField(2)
-  final String? fullname;
+  final String fullname;
   @HiveField(3)
-  final String? email;
+  final String email;
   @HiveField(4)
-  final String? password;
+  final String password;
   @HiveField(5)
-  final String? username;
+  final String username;
   @HiveField(6)
   final String? pictureProfile;
   @HiveField(7)
-  final bool? isOnline;
+  final bool isOnline;
   @HiveField(8)
-  final bool? isNewUser;
+  final bool isNewUser;
   @HiveField(9)
   final DateTime? createdAt;
   @HiveField(10)
@@ -33,14 +33,14 @@ class ProfileHiveModel {
 
   const ProfileHiveModel({
     this.id,
-    this.idUser,
-    this.fullname,
-    this.email,
-    this.password,
-    this.username,
+    this.idUser = '',
+    this.fullname = '',
+    this.email = '',
+    this.password = '',
+    this.username = '',
     this.pictureProfile,
-    this.isOnline,
-    this.isNewUser,
+    this.isOnline = false,
+    this.isNewUser = false,
     this.createdAt,
     this.updatedAt,
     this.updatedUsernameAt,
@@ -63,20 +63,20 @@ class ProfileHiveModel {
     );
   }
 
-  ProfileModel convertToProfileModel(ProfileHiveModel? profile) {
+  ProfileModel convertToProfileModel(ProfileHiveModel profile) {
     return ProfileModel(
-      id: profile?.id,
-      createdAt: profile?.createdAt,
-      email: profile?.email,
-      fullname: profile?.fullname,
-      idUser: profile?.idUser,
-      isNewUser: profile?.isNewUser,
-      isOnline: profile?.isOnline,
-      password: profile?.password,
-      pictureProfile: profile?.pictureProfile,
-      updatedAt: profile?.updatedAt,
-      updatedUsernameAt: profile?.updatedUsernameAt,
-      username: profile?.username,
+      id: profile.id,
+      createdAt: profile.createdAt,
+      email: profile.email,
+      fullname: profile.fullname,
+      idUser: profile.idUser,
+      isNewUser: profile.isNewUser,
+      isOnline: profile.isOnline,
+      password: profile.password,
+      pictureProfile: profile.pictureProfile,
+      updatedAt: profile.updatedAt,
+      updatedUsernameAt: profile.updatedUsernameAt,
+      username: profile.username,
     );
   }
 }

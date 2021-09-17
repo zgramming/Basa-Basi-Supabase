@@ -64,8 +64,10 @@ class _MessageContentFloatingTypingState extends ConsumerState<MessageContentFlo
             borderRadius: BorderRadius.circular(30.0),
           ),
           child: Text(
-            'Pacarmu sedang mengetik...',
+            '${inbox.user?.fullname} sedang mengetik',
             textAlign: TextAlign.center,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
             style: Constant.comfortaa.copyWith(color: Colors.white),
           ),
         ),

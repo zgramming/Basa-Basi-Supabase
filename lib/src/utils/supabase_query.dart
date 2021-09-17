@@ -223,7 +223,7 @@ class SupabaseQuery {
     return inboxes;
   }
 
-  Future<InboxModel> insertOrUpdateInbox({
+  Future<PostgrestResponse> insertOrUpdateInbox({
     required int idUser,
     required int idSender,
     required int idPairing,
@@ -276,9 +276,7 @@ class SupabaseQuery {
       throw Exception(response.error?.message);
     }
 
-    final datas = List.from(response.data as List).first;
-    final inboxes = InboxModel.fromJson(Map<String, dynamic>.from(datas as Map));
-    return inboxes;
+    return response;
   }
 
   Future<PostgrestResponse> upsertArchiveInbox(List<InboxModel> values) async {
@@ -293,12 +291,34 @@ class SupabaseQuery {
       });
     }
 
-    final result = await _supabase.from(Constant.tableInbox).upsert(data).execute();
+    // final result = await _supabase.from(Constant.tableInbox).upsert(data).execute();
+    final result = await _supabase
+        .from(Constant.tableInbox)
+        .update({'is_archived': values.first.isArchived})
+        .in_('id', values.map((e) => e.id).toList())
+        .execute();
+
     if (result.error?.message != null) {
       throw Exception(result.error?.message);
     }
 
-    log('result ${result.data}');
+    return result;
+  }
+
+  Future<PostgrestResponse> updateTypingInbox(int you, int idPairing) async {
+    final inboxChannel = getConversationID(you: you, pairing: idPairing);
+    final result = await _supabase
+        .from(Constant.tableInbox)
+        .update({
+          'last_typing_date': DateTime.now().millisecondsSinceEpoch,
+        })
+        .eq('id_user', you)
+        .eq('inbox_channel', inboxChannel)
+        .execute();
+
+    if (result.error?.message != null) {
+      throw Exception(result.error?.message);
+    }
 
     return result;
   }

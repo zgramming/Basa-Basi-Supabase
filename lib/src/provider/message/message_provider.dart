@@ -92,6 +92,10 @@ class MessageProvider extends StateNotifier<MessageState> {
     state = state.add(result);
     return result;
   }
+
+  Future<void> updateTyping() async {
+    await SupabaseQuery.instance.updateTypingInbox(you.id ?? 0, yourPairing.id ?? 0);
+  }
 }
 
 final _listenMessage = StreamProvider.autoDispose.family<void, String>((ref, inboxChannel) async* {

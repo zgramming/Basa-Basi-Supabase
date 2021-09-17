@@ -17,32 +17,66 @@ class InboxItemMessage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.watch(SessionProvider.provider).session.user;
-    return Text.rich(
-      TextSpan(
-        text: user?.id == inbox.idSender ? 'Kamu : ' : '',
-        style: Constant.comfortaa.copyWith(
-          fontWeight: FontWeight.bold,
-          color: colorPallete.primaryColor,
-          fontSize: 10.0,
+
+    Widget messageContent = const SizedBox();
+    switch (inbox.inboxLastMessageType) {
+      case MessageType.text:
+        messageContent = Text(
+          inbox.inboxLastMessage ?? '',
+          style: Constant.comfortaa.copyWith(
+            fontWeight: FontWeight.bold,
+            fontSize: 9.0,
+            color: Colors.black.withOpacity(.5),
+          ),
+        );
+        break;
+      case MessageType.image:
+      case MessageType.imageWithText:
+        messageContent = Text(
+          'Mengirimkan gambar 📷📷📷',
+          style: Constant.comfortaa.copyWith(
+            fontWeight: FontWeight.bold,
+            fontSize: 9.0,
+            color: Colors.black.withOpacity(.5),
+          ),
+        );
+        break;
+      case MessageType.voice:
+        messageContent = Text(
+          'Mengirimkan pesan suara 🎙🎙🎙',
+          style: Constant.comfortaa.copyWith(
+            fontWeight: FontWeight.bold,
+            fontSize: 9.0,
+            color: Colors.black.withOpacity(.5),
+          ),
+        );
+        break;
+      case MessageType.file:
+        messageContent = Text(
+          'Mengirimkan file 📁📁📁',
+          style: Constant.comfortaa.copyWith(
+            fontWeight: FontWeight.bold,
+            fontSize: 9.0,
+            color: Colors.black.withOpacity(.5),
+          ),
+        );
+        break;
+      default:
+        return const SizedBox();
+    }
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Text(
+          user?.id == inbox.idSender ? 'Kamu : ' : '',
+          style: Constant.comfortaa.copyWith(
+            fontWeight: FontWeight.bold,
+            color: colorPallete.primaryColor,
+            fontSize: 10.0,
+          ),
         ),
-        children: [
-          TextSpan(
-            text: '${inbox.inboxLastMessage}',
-            style: Constant.comfortaa.copyWith(
-              fontWeight: FontWeight.bold,
-              fontSize: 8.0,
-              color: Colors.black.withOpacity(.5),
-            ),
-          )
-        ],
-      ),
-      maxLines: 2,
-      overflow: TextOverflow.ellipsis,
-      style: Constant.comfortaa.copyWith(
-        fontSize: 8.0,
-        fontWeight: FontWeight.w300,
-        height: 2,
-      ),
+        Expanded(child: messageContent)
+      ],
     );
   }
 }

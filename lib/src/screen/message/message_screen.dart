@@ -28,28 +28,33 @@ class _MessageScreenState extends ConsumerState<MessageScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          icon: const Icon(FeatherIcons.chevronLeft),
-        ),
-        title: const MessageAppbarTitle(),
-        actions: [
-          IconButton(
-            onPressed: () {},
-            icon: const Icon(FeatherIcons.moreVertical),
+    return GestureDetector(
+      onTap: () {
+        FocusScope.of(context).unfocus();
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          leading: IconButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            icon: const Icon(FeatherIcons.chevronLeft),
           ),
-        ],
-      ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          const MessageContent(),
-          MessageFooter(messageController: _messageController),
-        ],
+          title: const MessageAppbarTitle(),
+          actions: [
+            IconButton(
+              onPressed: () {},
+              icon: const Icon(FeatherIcons.moreVertical),
+            ),
+          ],
+        ),
+        body: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            const MessageContent(),
+            MessageFooter(messageController: _messageController),
+          ],
+        ),
       ),
     );
   }

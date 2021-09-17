@@ -31,10 +31,13 @@ class InboxScreen extends ConsumerWidget {
               data: (_) {
                 final inboxes = ref.watch(archivedInbox(false)).state;
                 if (inboxes.isEmpty) {
-                  return const Center(
-                    child: Padding(
-                      padding: EdgeInsets.all(24.0),
-                      child: Text('Nantinya pesan-pesan kamu akan bermunculan disini'),
+                  return SizedBox(
+                    height: sizes.height(context) / 1.3,
+                    child: const Center(
+                      child: Padding(
+                        padding: EdgeInsets.all(24.0),
+                        child: Text('Nantinya pesan-pesan kamu akan bermunculan disini'),
+                      ),
                     ),
                   );
                 }
@@ -73,69 +76,76 @@ class InboxItem extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return Column(
-      children: [
-        InkWell(
-          onTap: () async {
-            final totalSelectedInbox = ref.read(SelectedInboxProvider.provider).total;
-            if (totalSelectedInbox == 0) {
-              /// Initialize pairing
-              ref.read(pairing).state = inbox.user;
-              await Navigator.pushNamed(
-                context,
-                MessageScreen.routeNamed,
-              );
-            } else {
-              ref.read(SelectedInboxProvider.provider.notifier).add(inbox);
-            }
-          },
-          onLongPress: () {
-            ref.read(SelectedInboxProvider.provider.notifier).add(inbox);
-          },
-          splashColor: colorPallete.primaryColor!.withOpacity(.25),
-          borderRadius: BorderRadius.circular(10.0),
-          child: Ink(
-            decoration: BoxDecoration(
-              color: Colors.white,
+    final _streamListenInbox = ref.watch(listenInbox(inbox.user?.id ?? 0));
+    return _streamListenInbox.when(
+      data: (_) {
+        return Column(
+          children: [
+            InkWell(
+              onTap: () async {
+                final totalSelectedInbox = ref.read(SelectedInboxProvider.provider).total;
+                if (totalSelectedInbox == 0) {
+                  /// Initialize pairing
+                  ref.read(pairing).state = inbox.user;
+                  await Navigator.pushNamed(
+                    context,
+                    MessageScreen.routeNamed,
+                  );
+                } else {
+                  ref.read(SelectedInboxProvider.provider.notifier).add(inbox);
+                }
+              },
+              onLongPress: () {
+                ref.read(SelectedInboxProvider.provider.notifier).add(inbox);
+              },
+              splashColor: colorPallete.primaryColor!.withOpacity(.25),
               borderRadius: BorderRadius.circular(10.0),
-              boxShadow: [
-                BoxShadow(
-                  blurRadius: 2.0,
-                  color: Colors.black.withOpacity(0.25),
+              child: Ink(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(10.0),
+                  boxShadow: [
+                    BoxShadow(
+                      blurRadius: 2.0,
+                      color: Colors.black.withOpacity(0.25),
+                    ),
+                  ],
                 ),
-              ],
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Row(
-                children: [
-                  InboxItemImage(inbox: inbox),
-                  const SizedBox(width: 15.0),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        InboxItemName(inbox: inbox),
-                        const SizedBox(height: 10),
-                        InboxItemMessage(inbox: inbox),
-                        const SizedBox(height: 20),
-                        Row(
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Row(
+                    children: [
+                      InboxItemImage(inbox: inbox),
+                      const SizedBox(width: 15.0),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          mainAxisSize: MainAxisSize.min,
                           children: [
-                            InboxItemUnreadMessage(inbox: inbox),
-                            InboxItemDateAndStatus(inbox: inbox),
+                            InboxItemName(inbox: inbox),
+                            const SizedBox(height: 10),
+                            InboxItemMessage(inbox: inbox),
+                            const SizedBox(height: 20),
+                            Row(
+                              children: [
+                                InboxItemUnreadMessage(inbox: inbox),
+                                InboxItemDateAndStatus(inbox: inbox),
+                              ],
+                            ),
                           ],
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
-                ],
+                ),
               ),
             ),
-          ),
-        ),
-        const SizedBox(height: 24),
-      ],
+            const SizedBox(height: 24),
+          ],
+        );
+      },
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (error, stackTrace) => Center(child: Text(error.toString())),
     );
   }
 }

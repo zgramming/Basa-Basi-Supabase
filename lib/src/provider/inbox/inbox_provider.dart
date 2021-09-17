@@ -2,7 +2,6 @@ import 'dart:developer';
 
 import 'package:collection/collection.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:hive/hive.dart';
 import 'package:supabase/supabase.dart';
 
 import './inbox_state.dart';
@@ -57,27 +56,26 @@ class InboxProvider extends StateNotifier<InboxState> {
       totalUnreadMessage: 1,
     );
 
-    state = state.updateOrInsert(result);
+    final data = List.from(result.data as List).first as Map<String, dynamic>;
+    final inbox = InboxModel.fromJson(data).copyWith(user: await userExistsInHive(pairing.id ?? 0));
+
+    state = state.updateOrInsert(inbox);
   }
 
   Future<void> upsertArchivedInbox(List<InboxModel> values) async {
     await SupabaseQuery.instance.upsertArchiveInbox(values);
     for (final value in values) {
-      state = state.updateOrInsert(value);
+      upsertInbox(value);
     }
   }
 
   Future<void> _getAllInboxByIdUser(int me) async {
     final result = await SupabaseQuery.instance.getAllInboxByIdUser(me);
-    state = state.addAll(result);
+    addAll(result);
   }
 
   void upsertInbox(InboxModel value) {
     state = state.updateOrInsert(value);
-  }
-
-  void add(InboxModel value) {
-    state = state.add(value);
   }
 
   void addAll(List<InboxModel> values) {
@@ -87,24 +85,22 @@ class InboxProvider extends StateNotifier<InboxState> {
   void deleteAllInbox() {
     state = state.delete();
   }
-
-  void deleteById(InboxModel value) {
-    state = state.deleteById(value);
-  }
 }
 
 final getAllInbox = StreamProvider.autoDispose((ref) async* {
-  ///? START HIVE SECTION
-  final boxProfile = Hive.box<ProfileHiveModel>(Constant.hiveKeyBoxProfile);
-
-  ///? END HIVE SECTION
   final user = ref.watch(SessionProvider.provider).session.user;
 
   await ref.watch(InboxProvider.provider.notifier)._getAllInboxByIdUser(user?.id ?? 0);
 
-  /// Listen Our Inbox Chatting
+  yield Stream.value(true);
+});
+
+final listenInbox = AutoDisposeStreamProviderFamily<bool, int>((ref, idPairing) async* {
+  final user = ref.watch(SessionProvider.provider).session.user;
+  final inboxChannel = getConversationID(you: user?.id ?? 0, pairing: idPairing);
+
   final _subscribe = Constant.supabase
-      .from("inbox:id_pairing=eq.${user?.id}")
+      .from('inbox:inbox_channel=eq.$inboxChannel')
       .on(SupabaseEventTypes.all, (events) async {
         if (events.eventType == "INSERT" || events.eventType == "UPDATE") {
           final data = events.newRecord;
@@ -112,25 +108,12 @@ final getAllInbox = StreamProvider.autoDispose((ref) async* {
           if (data != null) {
             log('Listen My Inbox Insert/Update: ${events.eventType}');
             log('Listen Insert/Update: ${events.newRecord}');
-            ProfileModel? pairing;
+            final pairing = await userExistsInHive(data['id_user'] as int);
 
             /// Check to local database (Hive)
             /// is pairing id exists / not
             /// if exist use from local database
             /// otherwise we perform API call
-            if (boxProfile.containsKey(data['id_user'] as int)) {
-              pairing = const ProfileHiveModel()
-                  .convertToProfileModel(boxProfile.get(data['id_user'] as int));
-            } else {
-              await Future.delayed(Duration.zero, () async {
-                final value = await SupabaseQuery.instance.getUserById(data['id_user'] as int);
-                pairing = value;
-                boxProfile.put(
-                  data['id_user'] as int,
-                  const ProfileHiveModel().convertFromProfileModel(value),
-                );
-              });
-            }
 
             final inbox = InboxModel.fromJson(data).copyWith(user: pairing);
             log('inbox $inbox');
@@ -140,16 +123,15 @@ final getAllInbox = StreamProvider.autoDispose((ref) async* {
       })
       .on(SupabaseEventTypes.delete, (eventDelete) {})
       .subscribe((String event, {String? errorMsg}) {
-        log("Subscribe Inbox Event :$event \n Error $errorMsg");
+        log("Subscribe Inbox (channel : $inboxChannel)\n Event :$event \n Error $errorMsg");
       });
 
   ref.onDispose(() {
-    ref.read(InboxProvider.provider.notifier).deleteAllInbox();
     Constant.supabase.removeSubscription(_subscribe);
-    log('dispose listener inbox');
+    log('dispose Listener inbox with channel ($inboxChannel)');
   });
 
-  yield Stream.value(true);
+  yield true;
 });
 
 final myPairingInbox = StateProvider<InboxModel>((ref) {
@@ -161,12 +143,21 @@ final myPairingInbox = StateProvider<InboxModel>((ref) {
   return inboxes ?? const InboxModel();
 });
 
-final archivedInbox = StateProvider.family<List<InboxModel>, bool>((ref, isArchived) {
-  final result = ref
-      .watch(InboxProvider.provider)
-      .items
-      .where((element) => element.isArchived == isArchived)
-      .toList();
+final archivedInbox = StateProvider.family<List<InboxModel>, bool?>((ref, isArchived) {
+  final user = ref.watch(SessionProvider.provider).session.user;
+
+  /// Filter inbox only user not user login
+  /// Because we want only show inbox our partner
+  /// Not our inbox
+  final result = ref.watch(InboxProvider.provider).items.where((element) {
+    final query = element.user?.id != user?.id;
+    final queryArchived = element.isArchived == isArchived;
+
+    if (isArchived != null) {
+      return query && queryArchived;
+    }
+    return query;
+  }).toList();
 
   return result;
 });

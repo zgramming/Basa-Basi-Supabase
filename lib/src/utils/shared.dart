@@ -1,9 +1,14 @@
 import 'dart:developer';
 
 import 'package:global_template/global_template.dart';
+import 'package:hive/hive.dart';
 import 'package:image_picker/image_picker.dart';
 
+import './utils.dart';
+import '../network/model/network.dart';
+
 final ImagePicker _picker = ImagePicker();
+final _boxProfile = Hive.box<ProfileHiveModel>(Constant.hiveKeyBoxProfile);
 
 String getConversationID({
   required int you,
@@ -56,4 +61,22 @@ Future<String?> uploadImage({ImageSource source = ImageSource.gallery}) async {
   // await Future.delayed(Duration.zero, () {
   //   Navigator.pushNamed(context, MessagePreviewImage.routeNamed, arguments: file.path);
   // });
+}
+
+Future<ProfileModel> userExistsInHive(int idUser) async {
+  ProfileModel pairing = const ProfileModel();
+  if (_boxProfile.containsKey(idUser)) {
+    final result = _boxProfile.get(idUser) ?? const ProfileHiveModel();
+    pairing = const ProfileHiveModel().convertToProfileModel(result);
+  } else {
+    await Future.delayed(Duration.zero, () async {
+      final value = await SupabaseQuery.instance.getUserById(idUser);
+      pairing = value;
+      _boxProfile.put(
+        idUser,
+        const ProfileHiveModel().convertFromProfileModel(value),
+      );
+    });
+  }
+  return pairing;
 }
