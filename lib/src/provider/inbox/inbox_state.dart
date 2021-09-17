@@ -19,10 +19,12 @@ class InboxState extends Equatable {
 
     if (oldRecord != null) {
       items[index] = oldRecord.copyWith(
+        idSender: value.idSender,
         totalUnreadMessage: value.totalUnreadMessage,
         lastTypingDate: value.lastTypingDate,
         isArchived: value.isArchived,
         deletedAt: value.deletedAt,
+        isPinned: value.isPinned,
         inboxLastMessage: value.inboxLastMessage,
         inboxLastMessageDate: value.inboxLastMessageDate,
         inboxLastMessageStatus: value.inboxLastMessageStatus,

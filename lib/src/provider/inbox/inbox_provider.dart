@@ -31,6 +31,8 @@ class InboxProvider extends StateNotifier<InboxState> {
     required MessageStatus inboxLastMessageStatus,
     required MessageType inboxLastMessageType,
   }) async {
+    /// Your inbox, it will reset total unread message to 0
+    /// because you in the message page, it's not make sense if still have notification unread message
     await SupabaseQuery.instance.insertOrUpdateInbox(
       idUser: you.id ?? 0,
       idSender: you.id ?? 0,
@@ -40,7 +42,7 @@ class InboxProvider extends StateNotifier<InboxState> {
       inboxLastMessageDate: inboxLastMessageDate.millisecondsSinceEpoch,
       inboxLastMessageStatus: messageStatusValues[inboxLastMessageStatus] ?? '',
       inboxLastMessageType: messageTypeValues[inboxLastMessageType] ?? '',
-      totalUnreadMessage: 1,
+      totalUnreadMessage: 0,
     );
 
     /// Your Partner Inbox, We should insert/update it to table Inbox
@@ -116,8 +118,11 @@ final listenInbox = AutoDisposeStreamProviderFamily<bool, int>((ref, idPairing) 
             /// otherwise we perform API call
 
             final inbox = InboxModel.fromJson(data).copyWith(user: pairing);
-            log('inbox $inbox');
+            log('iduser ${user?.id}\n inbox sender ${inbox.idSender}');
+            // if (user?.id != inbox.idSender) {
+            log('inbox Listen Sender ${inbox.idSender}');
             ref.read(InboxProvider.provider.notifier).upsertInbox(inbox);
+            // }
           }
         }
       })

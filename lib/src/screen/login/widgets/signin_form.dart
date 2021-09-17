@@ -45,6 +45,7 @@ class _SignInFormState extends State<SignInForm> {
                 hintText: 'Masukkan Email',
                 disableOutlineBorder: false,
                 radius: 15.0,
+                keyboardType: TextInputType.emailAddress,
                 focusedBorderStyle: InputBorderStyle(color: colorPallete.accentColor),
                 defaultBorderStyle: InputBorderStyle(color: Colors.black.withOpacity(.25)),
                 activeColor: colorPallete.accentColor,

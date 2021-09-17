@@ -224,6 +224,7 @@ class SupabaseQuery {
   }
 
   Future<PostgrestResponse> insertOrUpdateInbox({
+    // required int id,
     required int idUser,
     required int idSender,
     required int idPairing,
