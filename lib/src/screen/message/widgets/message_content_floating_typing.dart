@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:global_template/global_template.dart';
 
+import '../../../network/model/network.dart';
 import '../../../provider/provider.dart';
 import '../../../utils/utils.dart';
 
@@ -16,15 +17,16 @@ class MessageContentFloatingTyping extends ConsumerStatefulWidget {
 
 class _MessageContentFloatingTypingState extends ConsumerState<MessageContentFloatingTyping> {
   Timer? _timer;
+  ProfileModel? _pairing;
 
+  int flag = 0;
   @override
   void initState() {
     super.initState();
-
-    int flag = 0;
+    _pairing = ref.read(pairing).state;
 
     _timer = Timer.periodic(const Duration(seconds: 3), (timer) {
-      final inbox = ref.read(myPairingInbox).state;
+      final inbox = ref.read(myPairingInbox(_pairing?.id ?? 0)).state;
       final isTyping = isStillTyping(inbox.lastTypingDate);
 
       /// Only rebuild widget when !isTyping and flag == 0
@@ -49,8 +51,9 @@ class _MessageContentFloatingTypingState extends ConsumerState<MessageContentFlo
 
   @override
   Widget build(BuildContext context) {
-    final inbox = ref.watch(myPairingInbox).state;
+    final inbox = ref.watch(myPairingInbox(_pairing?.id ?? 0)).state;
     final isTyping = isStillTyping(inbox.lastTypingDate);
+
     return AnimatedPositioned(
       duration: const Duration(milliseconds: 500),
       bottom: isTyping ? 10 : -50,

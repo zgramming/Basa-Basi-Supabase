@@ -2,6 +2,7 @@ import 'package:collection/collection.dart';
 import 'package:equatable/equatable.dart';
 
 import '../../network/model/network.dart';
+import '../../utils/utils.dart';
 
 class InboxState extends Equatable {
   final List<InboxModel> items;
@@ -9,30 +10,38 @@ class InboxState extends Equatable {
     this.items = const [],
   });
 
+  List<InboxModel> get allInboxTyping =>
+      items.where((element) => isStillTyping(element.lastTypingDate)).toList();
+
   InboxState addAll(List<InboxModel> values) => copyWith(items: [...values]);
 
   InboxState delete() => copyWith(items: []);
 
   InboxState updateOrInsert(InboxModel value) {
-    final index = items.indexWhere((element) => element.id == value.id);
-    final oldRecord = items.firstWhereOrNull((element) => element.id == value.id);
-
-    if (oldRecord != null) {
-      items[index] = oldRecord.copyWith(
-        idSender: value.idSender,
-        totalUnreadMessage: value.totalUnreadMessage,
-        lastTypingDate: value.lastTypingDate,
-        isArchived: value.isArchived,
-        deletedAt: value.deletedAt,
-        isPinned: value.isPinned,
-        inboxLastMessage: value.inboxLastMessage,
-        inboxLastMessageDate: value.inboxLastMessageDate,
-        inboxLastMessageStatus: value.inboxLastMessageStatus,
-        inboxLastMessageType: value.inboxLastMessageType,
-        isDeleted: value.isDeleted,
-        updatedAt: value.updatedAt,
+    final isExists = items.firstWhereOrNull((element) => element.id == value.id);
+    if (isExists != null) {
+      return copyWith(
+        items: [
+          for (final item in items)
+            if (item.id == value.id)
+              item.copyWith(
+                idSender: value.idSender,
+                totalUnreadMessage: value.totalUnreadMessage,
+                lastTypingDate: value.lastTypingDate,
+                isArchived: value.isArchived,
+                deletedAt: value.deletedAt,
+                isPinned: value.isPinned,
+                inboxLastMessage: value.inboxLastMessage,
+                inboxLastMessageDate: value.inboxLastMessageDate,
+                inboxLastMessageStatus: value.inboxLastMessageStatus,
+                inboxLastMessageType: value.inboxLastMessageType,
+                isDeleted: value.isDeleted,
+                updatedAt: value.updatedAt,
+              )
+            else
+              item
+        ],
       );
-      return copyWith(items: items);
     } else {
       return copyWith(items: [...items, value]);
     }

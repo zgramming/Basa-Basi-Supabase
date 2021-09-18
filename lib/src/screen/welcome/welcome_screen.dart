@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -40,6 +42,7 @@ class _WelcomeScreenState extends ConsumerState<WelcomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    log('${DateTime.now().add(const Duration(seconds: 15)).millisecondsSinceEpoch}');
     Widget fab = const SizedBox();
     if (_currentIndex == 0) {
       fab = FloatingActionButton(

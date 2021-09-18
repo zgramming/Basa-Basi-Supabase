@@ -33,4 +33,5 @@ class Constant {
 
   /// Hive key box
   static const hiveKeyBoxProfile = 'profile';
+  static const hiveKeyBoxInbox = 'inbox';
 }

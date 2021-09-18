@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:global_template/global_template.dart';
 
@@ -42,7 +43,7 @@ class SearchNewFriendItem extends ConsumerWidget {
           ),
           child: ListTile(
             title: Text(
-              '${user.fullname}',
+              user.fullname,
               style: Constant.comfortaa.copyWith(
                 fontSize: 14.0,
                 fontWeight: FontWeight.bold,
@@ -53,7 +54,7 @@ class SearchNewFriendItem extends ConsumerWidget {
                 text: 'Username : ',
                 children: [
                   TextSpan(
-                    text: '${user.username}',
+                    text: user.username,
                     style: Constant.comfortaa.copyWith(
                       fontWeight: FontWeight.bold,
                       color: colorPallete.accentColor,
@@ -107,6 +108,11 @@ class SearchNewFriendItem extends ConsumerWidget {
                       : CachedNetworkImage(
                           imageUrl: '${user.pictureProfile}',
                           fit: BoxFit.cover,
+                          errorWidget: (context, url, error) => const Center(
+                            child: CircleAvatar(
+                              child: Icon(FeatherIcons.image),
+                            ),
+                          ),
                         ),
                 ),
               ),

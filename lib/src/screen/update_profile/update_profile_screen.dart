@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
@@ -86,12 +87,33 @@ class _UpdateProfileScreenState extends ConsumerState<UpdateProfileScreen> {
 
                 try {
                   ref.read(isLoading).state = true;
+
+                  if (_pickedImage == null) {
+                    final isEqual = listEquals(
+                      [
+                        user?.username,
+                        user?.fullname,
+                        user?.description,
+                      ],
+                      [
+                        _usernameController.text,
+                        _fullnameController.text,
+                        _descriptionController.text,
+                      ],
+                    );
+
+                    if (isEqual) {
+                      throw Exception('Tidak ada perubahan');
+                    }
+                  }
+
                   await ref.read(ProfileProvider.provider.notifier).setupProfile(
                         user?.idUser ?? '',
                         description: _descriptionController.text,
                         fullname: _fullnameController.text,
                         username: _usernameController.text,
                         file: _pickedImage,
+                        profileUrl: user?.pictureProfile ?? '',
                       );
 
                   if (mounted) {

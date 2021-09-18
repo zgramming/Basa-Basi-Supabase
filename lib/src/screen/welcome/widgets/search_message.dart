@@ -95,7 +95,7 @@ class _SearchMessageState extends State<SearchMessage> {
                           return InkWell(
                             onTap: () async {
                               /// Initialize pairing;
-                              ref.read(pairing).state = inbox.user;
+                              ref.read(pairing).state = inbox.pairing;
 
                               await Navigator.pushNamed(
                                 context,
@@ -112,7 +112,7 @@ class _SearchMessageState extends State<SearchMessage> {
                               ),
                               child: ListTile(
                                 title: Text(
-                                  '${inbox.user?.fullname}',
+                                  '${inbox.pairing?.fullname}',
                                   style: Constant.comfortaa.copyWith(
                                     fontSize: 14.0,
                                     fontWeight: FontWeight.bold,
@@ -123,7 +123,7 @@ class _SearchMessageState extends State<SearchMessage> {
                                     text: 'Username : ',
                                     children: [
                                       TextSpan(
-                                        text: '${inbox.user?.username}',
+                                        text: '${inbox.pairing?.username}',
                                         style: Constant.comfortaa.copyWith(
                                           fontWeight: FontWeight.bold,
                                           color: colorPallete.accentColor,
@@ -141,12 +141,12 @@ class _SearchMessageState extends State<SearchMessage> {
                                   onTap: () async {
                                     late String url;
                                     late ImageViewType imageViewType;
-                                    if (inbox.user?.pictureProfile == null ||
-                                        (inbox.user?.pictureProfile?.isEmpty ?? true)) {
+                                    if (inbox.pairing?.pictureProfile == null ||
+                                        (inbox.pairing?.pictureProfile?.isEmpty ?? true)) {
                                       url = '${appConfig.urlImageAsset}/ob1.png';
                                       imageViewType = ImageViewType.asset;
                                     } else {
-                                      url = inbox.user?.pictureProfile ?? '';
+                                      url = inbox.pairing?.pictureProfile ?? '';
                                       imageViewType = ImageViewType.network;
                                     }
                                     await GlobalFunction.showDetailSingleImage(
@@ -158,27 +158,33 @@ class _SearchMessageState extends State<SearchMessage> {
                                   child: Container(
                                     height: 50,
                                     width: 50,
-                                    padding: const EdgeInsets.all(8.0),
                                     decoration: BoxDecoration(
                                       color: Colors.white,
+                                      borderRadius: BorderRadiusDirectional.circular(10.0),
                                       boxShadow: [
                                         BoxShadow(
                                           blurRadius: 2.0,
                                           color: Colors.black.withOpacity(.25),
                                         )
                                       ],
-                                      shape: BoxShape.circle,
+                                      // shape: BoxShape.circle,
                                     ),
-                                    child: ClipOval(
-                                      child: (inbox.user?.pictureProfile == null ||
-                                              (inbox.user?.pictureProfile?.isEmpty ?? true))
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(10.0),
+                                      child: (inbox.pairing?.pictureProfile == null ||
+                                              (inbox.pairing?.pictureProfile?.isEmpty ?? true))
                                           ? Image.asset(
                                               '${appConfig.urlImageAsset}/ob1.png',
                                               fit: BoxFit.cover,
                                             )
                                           : CachedNetworkImage(
-                                              imageUrl: inbox.user?.pictureProfile ?? '',
+                                              imageUrl: inbox.pairing?.pictureProfile ?? '',
                                               fit: BoxFit.cover,
+                                              errorWidget: (context, url, error) => const Center(
+                                                child: CircleAvatar(
+                                                  child: Icon(FeatherIcons.image),
+                                                ),
+                                              ),
                                             ),
                                     ),
                                   ),

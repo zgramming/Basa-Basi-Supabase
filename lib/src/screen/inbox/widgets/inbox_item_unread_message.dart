@@ -14,33 +14,33 @@ class InboxItemUnreadMessage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (inbox.totalUnreadMessage == 0) {
+      return const Expanded(child: SizedBox());
+    }
     return Expanded(
-      child: (inbox.totalUnreadMessage == 0)
-          ? const SizedBox()
-          : Align(
-              alignment: Alignment.centerLeft,
-              child: Container(
-                padding: const EdgeInsets.all(6.0),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(15.0),
-                  color: colorPallete.accentColor,
-                ),
-                child: Text.rich(
-                  TextSpan(
-                    style: Constant.comfortaa.copyWith(fontSize: 8.0, color: Colors.white),
-                    children: [
-                      TextSpan(
-                        text: '${inbox.totalUnreadMessage}',
-                        style: Constant.comfortaa.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const TextSpan(text: ' Pesan belum dibaca')
-                    ],
+      child: Align(
+        alignment: Alignment.centerLeft,
+        child: Container(
+          padding: const EdgeInsets.all(6.0),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(15.0),
+            color: colorPallete.accentColor,
+          ),
+          child: Text.rich(
+            TextSpan(
+              style: Constant.comfortaa.copyWith(fontSize: 8.0, color: Colors.white),
+              children: [
+                TextSpan(
+                  text: '${inbox.totalUnreadMessage} pesan belum dibaca',
+                  style: Constant.comfortaa.copyWith(
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
-              ),
+              ],
             ),
+          ),
+        ),
+      ),
     );
   }
 }

@@ -71,6 +71,7 @@ class ProfileProvider extends StateNotifier<ProfileState> {
     String? username,
     String? fullname,
     String? description,
+    required String profileUrl,
     File? file,
   }) async {
     final result = await SupabaseQuery.instance.setupProfile(
@@ -79,6 +80,7 @@ class ProfileProvider extends StateNotifier<ProfileState> {
       file: file,
       fullname: fullname,
       description: description,
+      profileUrl: profileUrl,
     );
 
     /// Save Session

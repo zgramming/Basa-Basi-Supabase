@@ -33,7 +33,7 @@ class InboxProvider extends StateNotifier<InboxState> {
   }) async {
     /// Your inbox, it will reset total unread message to 0
     /// because you in the message page, it's not make sense if still have notification unread message
-    await SupabaseQuery.instance.insertOrUpdateInbox(
+    final result = await SupabaseQuery.instance.insertOrUpdateInbox(
       idUser: you.id ?? 0,
       idSender: you.id ?? 0,
       idPairing: pairing.id ?? 0,
@@ -45,8 +45,13 @@ class InboxProvider extends StateNotifier<InboxState> {
       totalUnreadMessage: 0,
     );
 
+    final totalUnreadMessage = await SupabaseQuery.instance.totalUnreadMessage(
+      idUser: you.id ?? 0,
+      inboxChannel: inboxChannel,
+    );
+
     /// Your Partner Inbox, We should insert/update it to table Inbox
-    final result = await SupabaseQuery.instance.insertOrUpdateInbox(
+    await SupabaseQuery.instance.insertOrUpdateInbox(
       idUser: pairing.id ?? 0,
       idSender: you.id ?? 0,
       idPairing: you.id ?? 0,
@@ -55,11 +60,12 @@ class InboxProvider extends StateNotifier<InboxState> {
       inboxLastMessageDate: inboxLastMessageDate.millisecondsSinceEpoch,
       inboxLastMessageStatus: messageStatusValues[inboxLastMessageStatus] ?? '',
       inboxLastMessageType: messageTypeValues[inboxLastMessageType] ?? '',
-      totalUnreadMessage: 1,
+      totalUnreadMessage: totalUnreadMessage + 1,
     );
 
     final data = List.from(result.data as List).first as Map<String, dynamic>;
-    final inbox = InboxModel.fromJson(data).copyWith(user: await userExistsInHive(pairing.id ?? 0));
+    final inbox =
+        InboxModel.fromJson(data).copyWith(pairing: await userExistsInHive(pairing.id ?? 0));
 
     state = state.updateOrInsert(inbox);
   }
@@ -108,8 +114,8 @@ final listenInbox = AutoDisposeStreamProviderFamily<bool, int>((ref, idPairing) 
           final data = events.newRecord;
 
           if (data != null) {
-            log('Listen My Inbox Insert/Update: ${events.eventType}');
-            log('Listen Insert/Update: ${events.newRecord}');
+            // log('Listen My Inbox Insert/Update: ${events.eventType}');
+            // log('Listen Insert/Update: ${events.newRecord}');
             final pairing = await userExistsInHive(data['id_user'] as int);
 
             /// Check to local database (Hive)
@@ -117,10 +123,9 @@ final listenInbox = AutoDisposeStreamProviderFamily<bool, int>((ref, idPairing) 
             /// if exist use from local database
             /// otherwise we perform API call
 
-            final inbox = InboxModel.fromJson(data).copyWith(user: pairing);
-            log('iduser ${user?.id}\n inbox sender ${inbox.idSender}');
+            final inbox = InboxModel.fromJson(data).copyWith(pairing: pairing);
+            // log('iduser ${user?.id}\n inbox sender ${inbox.idSender}');
             // if (user?.id != inbox.idSender) {
-            log('inbox Listen Sender ${inbox.idSender}');
             ref.read(InboxProvider.provider.notifier).upsertInbox(inbox);
             // }
           }
@@ -139,12 +144,10 @@ final listenInbox = AutoDisposeStreamProviderFamily<bool, int>((ref, idPairing) 
   yield true;
 });
 
-final myPairingInbox = StateProvider<InboxModel>((ref) {
-  final _pairing = ref.watch(pairing).state;
-  final inboxes = ref
-      .watch(InboxProvider.provider)
-      .items
-      .firstWhereOrNull((element) => element.user?.id == _pairing?.id);
+final myPairingInbox = StateProvider.family<InboxModel, int>((ref, idPairing) {
+  final inboxes = ref.watch(InboxProvider.provider).items.firstWhereOrNull((element) {
+    return element.user?.id == idPairing;
+  });
   return inboxes ?? const InboxModel();
 });
 
@@ -155,7 +158,7 @@ final archivedInbox = StateProvider.family<List<InboxModel>, bool?>((ref, isArch
   /// Because we want only show inbox our partner
   /// Not our inbox
   final result = ref.watch(InboxProvider.provider).items.where((element) {
-    final query = element.user?.id != user?.id;
+    final query = element.user?.id == user?.id && element.inboxLastMessageDate != null;
     final queryArchived = element.isArchived == isArchived;
 
     if (isArchived != null) {
@@ -164,5 +167,6 @@ final archivedInbox = StateProvider.family<List<InboxModel>, bool?>((ref, isArch
     return query;
   }).toList();
 
+  result.sort((a, b) => b.inboxLastMessageDate!.compareTo(a.inboxLastMessageDate!));
   return result;
 });

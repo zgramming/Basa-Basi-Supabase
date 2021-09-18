@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:basa_basi_supabase/src/utils/supabase_query.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase/supabase.dart';
 
@@ -45,7 +46,6 @@ class MessageProvider extends StateNotifier<MessageState> {
 
   Future<List<MessageModel>> _getAllMessageByInboxChannel(String inboxChannel) async {
     final result = await SupabaseQuery.instance.getAllMessageByInboxChannel(inboxChannel);
-
     state = state.addAll(result);
     return result;
   }
@@ -96,6 +96,20 @@ class MessageProvider extends StateNotifier<MessageState> {
   Future<void> updateTyping() async {
     await SupabaseQuery.instance.updateTypingInbox(you.id ?? 0, yourPairing.id ?? 0);
   }
+
+  Future<void> _updateIsRead() async {
+    final inboxChannel = getConversationID(
+      you: you.id ?? 0,
+      pairing: yourPairing.id ?? 0,
+    );
+
+    await SupabaseQuery.instance.updateIsReadMessage(
+      messageStatus: MessageStatus.read,
+      inboxChannel: inboxChannel,
+      idUser: yourPairing.id ?? 0,
+    );
+    state = state.updateIsRead(yourPairing.id ?? 0);
+  }
 }
 
 final _listenMessage = StreamProvider.autoDispose.family<void, String>((ref, inboxChannel) async* {
@@ -120,7 +134,7 @@ final _listenMessage = StreamProvider.autoDispose.family<void, String>((ref, inb
     log('Listen Realtime Updated Message EventType ${eventUpdated.eventType}');
     log('Listen Realtime Updated Message NewRecord ${eventUpdated.newRecord}');
 
-    /// Insert Message
+    /// Update Message
     if (eventUpdated.newRecord != null) {
       final MessageModel value =
           MessageModel.fromJson(Map<String, dynamic>.from(eventUpdated.newRecord!));
@@ -150,7 +164,7 @@ final _listenMessage = StreamProvider.autoDispose.family<void, String>((ref, inb
   });
 });
 
-final getAllMessage = StreamProvider.autoDispose((ref) {
+final getAllMessage = StreamProvider.autoDispose((ref) async* {
   final user = ref.watch(SessionProvider.provider).session.user;
   final _pairing = ref.watch(pairing).state;
 
@@ -159,14 +173,22 @@ final getAllMessage = StreamProvider.autoDispose((ref) {
     pairing: _pairing?.id ?? 0,
   );
 
-  final messages = ref.watch(MessageProvider.provider.notifier)._getAllMessageByInboxChannel(
-        inboxChannel,
-      );
+  final messagesNotifier = ref.watch(MessageProvider.provider.notifier);
 
-  final stream = Stream.fromFuture(messages);
+  /// Get all message by channel
+  await messagesNotifier._getAllMessageByInboxChannel(inboxChannel);
+
+  // /// update message to read
+  await messagesNotifier._updateIsRead();
+
+  /// Check in inbox Hive is exists or not
+  await inboxExistsInHive(
+    you: user?.id ?? 0,
+    idPairing: _pairing?.id ?? 0,
+  );
 
   /// Listen upcoming message by inbox channel
   ref.watch(_listenMessage(inboxChannel).stream);
 
-  return stream;
+  yield true;
 });

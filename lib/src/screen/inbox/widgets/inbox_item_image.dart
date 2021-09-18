@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
@@ -19,8 +21,10 @@ class InboxItemImage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final isSelectedInbox = ref.watch(SelectedInboxProvider.provider).isExists(inbox);
 
+    final pairingInbox = ref.watch(myPairingInbox(inbox.pairing?.id ?? 0)).state;
+
     Widget image;
-    if (inbox.user?.pictureProfile == null || (inbox.user?.pictureProfile?.isEmpty ?? true)) {
+    if (inbox.pairing?.pictureProfile == null || (inbox.pairing?.pictureProfile?.isEmpty ?? true)) {
       image = Image.asset(
         '${appConfig.urlImageAsset}/ob3.png',
         fit: BoxFit.cover,
@@ -28,9 +32,14 @@ class InboxItemImage extends ConsumerWidget {
       );
     } else {
       image = CachedNetworkImage(
-        imageUrl: '${inbox.user?.pictureProfile}',
+        imageUrl: '${inbox.pairing?.pictureProfile}',
         fit: BoxFit.cover,
         width: 80.0,
+        errorWidget: (context, url, error) => const Center(
+          child: CircleAvatar(
+            child: Icon(FeatherIcons.image),
+          ),
+        ),
       );
     }
 
@@ -53,12 +62,12 @@ class InboxItemImage extends ConsumerWidget {
             onTap: () async {
               String url;
               ImageViewType type;
-              if (inbox.user?.pictureProfile == null ||
-                  (inbox.user?.pictureProfile?.isEmpty ?? true)) {
+              if (inbox.pairing?.pictureProfile == null ||
+                  (inbox.pairing?.pictureProfile?.isEmpty ?? true)) {
                 url = '${appConfig.urlImageAsset}/ob3.png';
                 type = ImageViewType.asset;
               } else {
-                url = '${inbox.user?.pictureProfile}';
+                url = '${inbox.pairing?.pictureProfile}';
                 type = ImageViewType.network;
               }
               await GlobalFunction.showDetailSingleImage(
@@ -77,8 +86,8 @@ class InboxItemImage extends ConsumerWidget {
           ),
           AnimatedPositioned(
             duration: const Duration(milliseconds: 500),
-            width: (isStillTyping(inbox.lastTypingDate) || isSelectedInbox) ? 80 : 0.0,
-            height: (isStillTyping(inbox.lastTypingDate) || isSelectedInbox) ? 80 : 0.0,
+            width: (isStillTyping(pairingInbox.lastTypingDate) || isSelectedInbox) ? 80 : 0.0,
+            height: (isStillTyping(pairingInbox.lastTypingDate) || isSelectedInbox) ? 80 : 0.0,
             child: Container(
               padding: const EdgeInsets.all(24.0),
               decoration: BoxDecoration(

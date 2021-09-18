@@ -130,6 +130,7 @@ class _SetupProfileScreenState extends ConsumerState<SetupProfileScreen> {
                             username: _usernameController.text,
                             fullname: _fullnameController.text,
                             file: _pickedImage,
+                            profileUrl: user?.pictureProfile ?? '',
                           );
 
                       if (mounted) {

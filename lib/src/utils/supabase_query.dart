@@ -124,6 +124,7 @@ class SupabaseQuery {
     String? username,
     String? fullname,
     String? description,
+    required String profileUrl,
     File? file,
   }) async {
     String? pictureProfileUrl;
@@ -134,8 +135,11 @@ class SupabaseQuery {
       await storage.upload(filename, file);
       final getUrl = storage.getPublicUrl(filename);
       pictureProfileUrl = getUrl.data;
+
+      if (profileUrl.isNotEmpty) {
+        await _supabase.storage.from('avatars').remove([(profileUrl.split('/').last)]);
+      }
     }
-    log('picture profile $pictureProfileUrl || iduser $idUser');
     final result = await _supabase
         .from('profile')
         .update({
@@ -146,9 +150,6 @@ class SupabaseQuery {
         })
         .eq('id_user', idUser)
         .execute();
-
-    log('SetupProfileQuery Data: ${result.data} || IdUser $idUser');
-    log('SetupProfileQuery Error: ${result.error}');
 
     if (result.error?.message != null) {
       throw Exception(result.error?.message);
@@ -210,7 +211,7 @@ class SupabaseQuery {
     final result = await _supabase
         .from("inbox")
         .select("*, user:id_user(*), pairing:id_pairing(*)")
-        .eq('id_pairing', me)
+        .eq('id_user', me)
         .execute();
 
     if (result.error?.message != null) {
@@ -229,29 +230,24 @@ class SupabaseQuery {
     required int idSender,
     required int idPairing,
     required String inboxChannel,
-    required String inboxLastMessage,
-    required int inboxLastMessageDate,
-    required String inboxLastMessageStatus,
-    required String inboxLastMessageType,
-    required int totalUnreadMessage,
+    String? inboxLastMessage,
+    int? inboxLastMessageDate,
+    String? inboxLastMessageStatus,
+    String? inboxLastMessageType,
+    int? totalUnreadMessage,
   }) async {
     final query = await _supabase
         .from('inbox')
         .select('id')
-        .filter('id_user', 'eq', idUser)
-        .filter('inbox_channel', 'eq', inboxChannel)
+        .eq('id_user', idUser)
+        .eq('inbox_channel', inboxChannel)
         .single()
         .execute(count: CountOption.exact);
 
-    final data = {
-      'id_sender': '$idSender',
-      'id_user': '$idUser',
+    final data = <String, dynamic>{
+      'id_sender': idSender,
+      'id_user': idUser,
       'inbox_channel': inboxChannel,
-      'inbox_last_message': inboxLastMessage,
-      'inbox_last_message_date': '$inboxLastMessageDate',
-      'inbox_last_message_status': inboxLastMessageStatus,
-      'inbox_last_message_type': inboxLastMessageType,
-      'total_unread_message': totalUnreadMessage,
     };
 
     final isNotExists = (query.data ?? 0) == 0;
@@ -265,6 +261,12 @@ class SupabaseQuery {
     } else {
       /// Update
       data['updated_at'] = DateTime.now().millisecondsSinceEpoch;
+      data['inbox_last_message'] = inboxLastMessage;
+      data['inbox_last_message_date'] = inboxLastMessageDate;
+      data['inbox_last_message_status'] = inboxLastMessageStatus;
+      data['inbox_last_message_type'] = inboxLastMessageType;
+      data['total_unread_message'] = totalUnreadMessage;
+
       response = await _supabase
           .from('inbox')
           .update(data)
@@ -332,9 +334,7 @@ class SupabaseQuery {
         .from('message')
         .select()
         .eq('inbox_channel', inboxChannel)
-        .order(
-          'message_date',
-        )
+        .order('message_date')
         .execute();
 
     if (result.error?.message != null) {
@@ -342,6 +342,11 @@ class SupabaseQuery {
     }
 
     final data = List.from(result.data as List);
+
+    if (data.isEmpty) {
+      return [];
+    }
+
     final messages =
         data.map((e) => MessageModel.fromJson(Map<String, dynamic>.from(e as Map))).toList();
 
@@ -360,6 +365,46 @@ class SupabaseQuery {
     final data = List.from(result.data as List).first;
     final message = MessageModel.fromJson(Map<String, dynamic>.from(data as Map));
     return message;
+  }
+
+  Future<PostgrestResponse> updateIsReadMessage({
+    required MessageStatus messageStatus,
+    required String inboxChannel,
+    required int idUser,
+  }) async {
+    final result = await _supabase
+        .from(Constant.tableMessage)
+        .update({
+          'message_status': messageStatusValues[messageStatus],
+        })
+        .eq('inbox_channel', inboxChannel)
+        .eq('id_sender', idUser)
+        .execute();
+
+    if (result.error?.code != null) {
+      throw Exception(result.error?.message);
+    }
+
+    return result;
+  }
+
+  Future<int> totalUnreadMessage({
+    required int idUser,
+    required String inboxChannel,
+  }) async {
+    final result = await _supabase
+        .from(Constant.tableMessage)
+        .select('id')
+        .eq('inbox_channel', inboxChannel)
+        .eq('id_sender', idUser)
+        .not('message_status', 'eq', messageStatusValues[MessageStatus.read])
+        .execute(count: CountOption.exact);
+    if (result.error?.message != null) {
+      throw Exception(result.error?.message);
+    }
+
+    log('result Query totalUnreadMessage ${result.data}');
+    return List.from(result.data as List).length;
   }
 
   ///* END Message Section

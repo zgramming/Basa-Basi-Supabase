@@ -1,3 +1,7 @@
+import 'dart:async';
+import 'dart:developer';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:global_template/global_template.dart';
@@ -8,18 +12,56 @@ import './widgets/inbox_item_image.dart';
 import './widgets/inbox_item_message.dart';
 import './widgets/inbox_item_name.dart';
 import './widgets/inbox_item_unread_message.dart';
-
 import '../../network/model/network.dart';
 import '../../provider/provider.dart';
-
 import '../message/message_screen.dart';
 
-class InboxScreen extends ConsumerWidget {
+class InboxScreen extends ConsumerStatefulWidget {
   const InboxScreen({
     Key? key,
   }) : super(key: key);
+
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  _InboxScreenState createState() => _InboxScreenState();
+}
+
+class _InboxScreenState extends ConsumerState<InboxScreen> {
+  final _tempTypingInbox = <InboxModel>[];
+  Timer? _timer;
+  @override
+  void initState() {
+    super.initState();
+    _timer = Timer.periodic(const Duration(seconds: 3), (timer) {
+      /// Check setiap 3/4/5 detik apakah ada inboxes yang sedang mengetik
+      final typingInboxes = ref.read(InboxProvider.provider).allInboxTyping;
+      // log('typingInboxes: $typingInboxes');
+
+      final isEqual = listEquals(typingInboxes, _tempTypingInbox);
+
+      /// Yang Ketik (X) :: Temporary List (Z)
+      /// X = 2 || Z = 0
+      /// isEqual (false), X = 2 | Z = 2
+      /// setState(()=> X == X)
+      if (!isEqual) {
+        _tempTypingInbox.replaceRange(
+          0,
+          (_tempTypingInbox.isEmpty) ? 0 : _tempTypingInbox.length,
+          typingInboxes,
+        );
+        setState(() {});
+        log('Refresh halaman inbox screen setiap ada yang selesai mengetik');
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return ListView(
       physics: const BouncingScrollPhysics(),
       children: [
@@ -76,7 +118,7 @@ class InboxItem extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final _streamListenInbox = ref.watch(listenInbox(inbox.user?.id ?? 0));
+    final _streamListenInbox = ref.watch(listenInbox(inbox.pairing?.id ?? 0));
     return _streamListenInbox.when(
       data: (_) {
         return Column(
@@ -84,9 +126,10 @@ class InboxItem extends ConsumerWidget {
             InkWell(
               onTap: () async {
                 final totalSelectedInbox = ref.read(SelectedInboxProvider.provider).total;
+
                 if (totalSelectedInbox == 0) {
                   /// Initialize pairing
-                  ref.read(pairing).state = inbox.user;
+                  ref.read(pairing).state = inbox.pairing;
                   await Navigator.pushNamed(
                     context,
                     MessageScreen.routeNamed,
