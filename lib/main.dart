@@ -30,6 +30,7 @@ Future<void> _initHive() async {
   Hive.registerAdapter(ProfileHiveModelAdapter());
 
   await Hive.openBox<ProfileHiveModel>(Constant.hiveKeyBoxProfile);
+  await Hive.openBox<String>(Constant.hiveKeyBoxInbox);
 
   ///? END HIVE INITIALIZE
 }
