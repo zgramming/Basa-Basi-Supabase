@@ -87,9 +87,11 @@ class InboxProvider extends StateNotifier<InboxState> {
       idUser: idUser,
     );
 
-    final data = List.from(result.data as List).first as Map<String, dynamic>;
-    final inbox = InboxModel.fromJson(data).copyWith(pairing: await userExistsInHive(idPairing));
-    state = state.updateOrInsert(inbox);
+    if (result.data != null) {
+      final data = List.from(result.data as List).first as Map<String, dynamic>;
+      final inbox = InboxModel.fromJson(data).copyWith(pairing: await userExistsInHive(idPairing));
+      state = state.updateOrInsert(inbox);
+    }
   }
 
   Future<void> _getAllInboxByIdUser(int me) async {
