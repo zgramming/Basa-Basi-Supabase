@@ -126,11 +126,12 @@ class _SetupProfileScreenState extends ConsumerState<SetupProfileScreen> {
                       ref.read(isLoading).state = true;
 
                       await ref.read(ProfileProvider.provider.notifier).setupProfile(
-                            user?.idUser ?? '',
+                            user?.id ?? 0,
                             username: _usernameController.text,
                             fullname: _fullnameController.text,
                             file: _pickedImage,
                             profileUrl: user?.pictureProfile ?? '',
+                            oldUsername: user?.username ?? '',
                           );
 
                       if (mounted) {

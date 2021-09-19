@@ -19,16 +19,23 @@ class SupabaseQuery {
     required String password,
   }) async {
     try {
-      final auth = await _supabase.auth.signUp(email, password);
-      if (auth.error?.message != null) {
-        throw Exception(auth.error!.message);
+      /// Check if exists email in database
+      final emailIsExists =
+          await _supabase.from(Constant.tableProfile).select('id').eq('email', email).execute();
+
+      if (emailIsExists.error?.message != null) {
+        throw Exception(emailIsExists.error?.message);
+      }
+
+      final emailMap = List.from(emailIsExists.data as List);
+      if (emailMap.isNotEmpty) {
+        throw Exception('Email dengan nama $email sudah digunakan');
       }
 
       /// Insert Profile
       final result = await _insertProfile(
         email: email,
         password: password,
-        idUser: auth.user?.id ?? '',
       );
 
       log('insertProfile 1. ${result.count}');
@@ -54,28 +61,29 @@ class SupabaseQuery {
     required String password,
   }) async {
     try {
-      final result = await _supabase.auth.signIn(
-        email: email,
-        password: password,
-      );
-
-      if (result.error?.message != null) {
-        throw Exception(result.error!.message);
-      }
-
-      final getUser = await Constant.supabase
+      final result = await Constant.supabase
           .from(Constant.tableProfile)
           .select()
-          .eq('id_user', result.user!.id)
-          .single()
+          .eq('email', email)
+          .eq('password', password)
           .execute();
 
-      if (getUser.error?.message != null) {
+      log('result SignIn Data ${result.data}');
+      log('result SignIn Status ${result.status}');
+      log('result SignIn Count ${result.count}');
+      log('result SignIn Error ${result.error}');
+
+      if (result.error?.message != null) {
         throw Exception(result.error?.message);
       }
 
-      final user = ProfileModel.fromJson(Map<String, dynamic>.from(getUser.data as Map));
+      final map = List.from(result.data as List);
 
+      if (map.isEmpty) {
+        throw Exception('Username / Password tidak valid');
+      }
+
+      final user = ProfileModel.fromJson(Map<String, dynamic>.from(map.first as Map));
       return user;
     } catch (e) {
       rethrow;
@@ -96,7 +104,6 @@ class SupabaseQuery {
   Future<PostgrestResponse> _insertProfile({
     required String email,
     required String password,
-    required String idUser,
   }) async {
     final randomUsername = GlobalFunction.generateRandomString(
       10,
@@ -106,7 +113,6 @@ class SupabaseQuery {
     final result = await _supabase.from(Constant.tableProfile).insert({
       'email': email,
       'password': password,
-      'id_user': idUser,
       'username': randomUsername,
       'fullname': email,
       'created_at': DateTime.now().millisecondsSinceEpoch,
@@ -120,14 +126,52 @@ class SupabaseQuery {
   }
 
   Future<ProfileModel> setupProfile(
-    String idUser, {
+    int idUser, {
+    required String oldUsername,
+    required String profileUrl,
     String? username,
     String? fullname,
     String? description,
-    required String profileUrl,
     File? file,
   }) async {
     String? pictureProfileUrl;
+
+    /// Check apakah kuota untuk mengganti username masih ada / belum
+    final quotaChangeUsernameStillExists = await _supabase
+        .from(Constant.tableProfile)
+        .select('updated_username_at')
+        .eq('id', idUser)
+        .single()
+        .execute();
+
+    if (quotaChangeUsernameStillExists.error?.message != null) {
+      throw Exception(quotaChangeUsernameStillExists.error?.message);
+    }
+
+    final mapQuotaChangeUsernameStillExists = quotaChangeUsernameStillExists.data as Map;
+
+    if (mapQuotaChangeUsernameStillExists['updated_username_at'] != null) {
+      throw Exception('Tidak bisa mengubah username kembali, karena sudah melebihi kuota');
+    }
+
+    /// Cari username apakah sudah ada/belum
+    final usernameIsExists = await _supabase
+        .from(Constant.tableProfile)
+        .select('id')
+        .eq('username', username)
+        .not('id', 'eq', idUser)
+        .execute();
+
+    if (usernameIsExists.error?.message != null) {
+      throw Exception(usernameIsExists.error?.message);
+    }
+
+    final mapUsername = usernameIsExists.data as List;
+
+    if (mapUsername.isNotEmpty) {
+      throw Exception('Username dengan nama $username sudah digunakan oleh orang lain.');
+    }
+
     if (file != null) {
       final generateRandomString = GlobalFunction.generateRandomString(20);
       final storage = _supabase.storage.from('avatars');
@@ -140,6 +184,7 @@ class SupabaseQuery {
         await _supabase.storage.from('avatars').remove([(profileUrl.split('/').last)]);
       }
     }
+
     final result = await _supabase
         .from('profile')
         .update({
@@ -147,8 +192,9 @@ class SupabaseQuery {
           if (pictureProfileUrl != null) 'picture_profile': pictureProfileUrl,
           'fullname': fullname,
           'description': description,
+          if (username != oldUsername) 'updated_username_at': DateTime.now().millisecondsSinceEpoch,
         })
-        .eq('id_user', idUser)
+        .eq('id', idUser)
         .execute();
 
     if (result.error?.message != null) {
@@ -157,7 +203,6 @@ class SupabaseQuery {
 
     final data = List.from(result.data as List).first;
     final user = ProfileModel.fromJson(Map<String, dynamic>.from(data as Map));
-
     return user;
   }
 

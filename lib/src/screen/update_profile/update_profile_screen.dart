@@ -108,12 +108,13 @@ class _UpdateProfileScreenState extends ConsumerState<UpdateProfileScreen> {
                   }
 
                   await ref.read(ProfileProvider.provider.notifier).setupProfile(
-                        user?.idUser ?? '',
+                        user?.id ?? 0,
                         description: _descriptionController.text,
                         fullname: _fullnameController.text,
                         username: _usernameController.text,
                         file: _pickedImage,
                         profileUrl: user?.pictureProfile ?? '',
+                        oldUsername: user?.username ?? '',
                       );
 
                   if (mounted) {
@@ -122,6 +123,7 @@ class _UpdateProfileScreenState extends ConsumerState<UpdateProfileScreen> {
                       content: const Text('Berhasil update profile'),
                       snackBarType: SnackBarType.success,
                     );
+                    Navigator.pop(context);
                   }
                 } catch (e) {
                   GlobalFunction.showSnackBar(

@@ -9,7 +9,6 @@ part 'profile_model.g.dart';
 @JsonSerializable(fieldRename: FieldRename.snake)
 class ProfileModel extends Equatable {
   final int? id;
-  final String idUser;
   final String fullname;
   final String email;
   final String password;
@@ -28,11 +27,14 @@ class ProfileModel extends Equatable {
     fromJson: GlobalFunction.fromJsonMilisecondToDateTime,
   )
   final DateTime? updatedAt;
+  @JsonKey(
+    toJson: GlobalFunction.toJsonMilisecondFromDateTime,
+    fromJson: GlobalFunction.fromJsonMilisecondToDateTime,
+  )
   final DateTime? updatedUsernameAt;
 
   const ProfileModel({
     this.id = 0,
-    this.idUser = '',
     this.fullname = '',
     this.email = 'zeffry.reynando@gmail.com',
     this.password = 'akutampansekali',
@@ -53,7 +55,6 @@ class ProfileModel extends Equatable {
   List<Object?> get props {
     return [
       id,
-      idUser,
       fullname,
       email,
       password,
@@ -73,7 +74,6 @@ class ProfileModel extends Equatable {
 
   ProfileModel copyWith({
     int? id,
-    String? idUser,
     String? fullname,
     String? email,
     String? password,
@@ -88,7 +88,6 @@ class ProfileModel extends Equatable {
   }) {
     return ProfileModel(
       id: id ?? this.id,
-      idUser: idUser ?? this.idUser,
       fullname: fullname ?? this.fullname,
       email: email ?? this.email,
       password: password ?? this.password,

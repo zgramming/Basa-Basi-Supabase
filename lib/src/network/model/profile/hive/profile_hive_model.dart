@@ -1,3 +1,4 @@
+import 'package:equatable/equatable.dart';
 import 'package:hive/hive.dart';
 
 import '../../network.dart';
@@ -5,35 +6,32 @@ import '../../network.dart';
 part 'profile_hive_model.g.dart';
 
 @HiveType(typeId: 0)
-class ProfileHiveModel {
+class ProfileHiveModel extends Equatable {
   @HiveField(0)
   final int? id;
   @HiveField(1)
-  final String idUser;
-  @HiveField(2)
   final String fullname;
-  @HiveField(3)
+  @HiveField(2)
   final String email;
-  @HiveField(4)
+  @HiveField(3)
   final String password;
-  @HiveField(5)
+  @HiveField(4)
   final String username;
-  @HiveField(6)
+  @HiveField(5)
   final String? pictureProfile;
-  @HiveField(7)
+  @HiveField(6)
   final bool isOnline;
-  @HiveField(8)
+  @HiveField(7)
   final bool isNewUser;
-  @HiveField(9)
+  @HiveField(8)
   final DateTime? createdAt;
-  @HiveField(10)
+  @HiveField(9)
   final DateTime? updatedAt;
-  @HiveField(11)
+  @HiveField(10)
   final DateTime? updatedUsernameAt;
 
   const ProfileHiveModel({
     this.id,
-    this.idUser = '',
     this.fullname = '',
     this.email = '',
     this.password = '',
@@ -52,7 +50,6 @@ class ProfileHiveModel {
       createdAt: profile.createdAt,
       email: profile.email,
       fullname: profile.fullname,
-      idUser: profile.idUser,
       isNewUser: profile.isNewUser,
       isOnline: profile.isOnline,
       password: profile.password,
@@ -69,7 +66,6 @@ class ProfileHiveModel {
       createdAt: profile.createdAt,
       email: profile.email,
       fullname: profile.fullname,
-      idUser: profile.idUser,
       isNewUser: profile.isNewUser,
       isOnline: profile.isOnline,
       password: profile.password,
@@ -77,6 +73,54 @@ class ProfileHiveModel {
       updatedAt: profile.updatedAt,
       updatedUsernameAt: profile.updatedUsernameAt,
       username: profile.username,
+    );
+  }
+
+  @override
+  List<Object?> get props {
+    return [
+      id,
+      fullname,
+      email,
+      password,
+      username,
+      pictureProfile,
+      isOnline,
+      isNewUser,
+      createdAt,
+      updatedAt,
+      updatedUsernameAt,
+    ];
+  }
+
+  @override
+  bool get stringify => true;
+
+  ProfileHiveModel copyWith({
+    int? id,
+    String? fullname,
+    String? email,
+    String? password,
+    String? username,
+    String? pictureProfile,
+    bool? isOnline,
+    bool? isNewUser,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+    DateTime? updatedUsernameAt,
+  }) {
+    return ProfileHiveModel(
+      id: id ?? this.id,
+      fullname: fullname ?? this.fullname,
+      email: email ?? this.email,
+      password: password ?? this.password,
+      username: username ?? this.username,
+      pictureProfile: pictureProfile ?? this.pictureProfile,
+      isOnline: isOnline ?? this.isOnline,
+      isNewUser: isNewUser ?? this.isNewUser,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      updatedUsernameAt: updatedUsernameAt ?? this.updatedUsernameAt,
     );
   }
 }

@@ -9,7 +9,6 @@ part of 'profile_model.dart';
 ProfileModel _$ProfileModelFromJson(Map<String, dynamic> json) {
   return ProfileModel(
     id: json['id'] as int?,
-    idUser: json['id_user'] as String,
     fullname: json['fullname'] as String,
     email: json['email'] as String,
     password: json['password'] as String,
@@ -22,16 +21,14 @@ ProfileModel _$ProfileModelFromJson(Map<String, dynamic> json) {
         GlobalFunction.fromJsonMilisecondToDateTime(json['created_at'] as int?),
     updatedAt:
         GlobalFunction.fromJsonMilisecondToDateTime(json['updated_at'] as int?),
-    updatedUsernameAt: json['updated_username_at'] == null
-        ? null
-        : DateTime.parse(json['updated_username_at'] as String),
+    updatedUsernameAt: GlobalFunction.fromJsonMilisecondToDateTime(
+        json['updated_username_at'] as int?),
   );
 }
 
 Map<String, dynamic> _$ProfileModelToJson(ProfileModel instance) =>
     <String, dynamic>{
       'id': instance.id,
-      'id_user': instance.idUser,
       'fullname': instance.fullname,
       'email': instance.email,
       'password': instance.password,
@@ -44,5 +41,6 @@ Map<String, dynamic> _$ProfileModelToJson(ProfileModel instance) =>
           GlobalFunction.toJsonMilisecondFromDateTime(instance.createdAt),
       'updated_at':
           GlobalFunction.toJsonMilisecondFromDateTime(instance.updatedAt),
-      'updated_username_at': instance.updatedUsernameAt?.toIso8601String(),
+      'updated_username_at': GlobalFunction.toJsonMilisecondFromDateTime(
+          instance.updatedUsernameAt),
     };
