@@ -388,6 +388,26 @@ class SupabaseQuery {
     return result;
   }
 
+  Future<PostgrestResponse> resetUnreadMessageToZero({
+    required String inboxChannel,
+    required int idUser,
+  }) async {
+    final result = await _supabase
+        .from(Constant.tableInbox)
+        .update({
+          'total_unread_message': 0,
+        })
+        .eq('inbox_channel', inboxChannel)
+        .eq('id_user', idUser)
+        .execute();
+
+    if (result.error?.code != null) {
+      throw Exception(result.error?.message);
+    }
+
+    return result;
+  }
+
   Future<int> totalUnreadMessage({
     required int idUser,
     required String inboxChannel,

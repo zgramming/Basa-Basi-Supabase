@@ -84,7 +84,11 @@ class _MessageFooterState extends ConsumerState<MessageFooter> {
 
                     debounce.run(() async {
                       if (mounted) {
-                        await ref.read(MessageProvider.provider.notifier).updateTyping();
+                        try {
+                          await ref.read(MessageProvider.provider.notifier).updateTyping();
+                        } catch (e) {
+                          log('error when realtime typing ${e.toString()}');
+                        }
                       }
                     });
                   }

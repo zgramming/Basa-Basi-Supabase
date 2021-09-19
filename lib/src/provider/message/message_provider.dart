@@ -1,6 +1,5 @@
 import 'dart:developer';
 
-import 'package:basa_basi_supabase/src/utils/supabase_query.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase/supabase.dart';
 
@@ -97,7 +96,7 @@ class MessageProvider extends StateNotifier<MessageState> {
     await SupabaseQuery.instance.updateTypingInbox(you.id ?? 0, yourPairing.id ?? 0);
   }
 
-  Future<void> _updateIsRead() async {
+  Future<void> _updateMessageToRead() async {
     final inboxChannel = getConversationID(
       you: you.id ?? 0,
       pairing: yourPairing.id ?? 0,
@@ -108,7 +107,8 @@ class MessageProvider extends StateNotifier<MessageState> {
       inboxChannel: inboxChannel,
       idUser: yourPairing.id ?? 0,
     );
-    state = state.updateIsRead(yourPairing.id ?? 0);
+
+    state = state.updateMessageToRead(yourPairing.id ?? 0);
   }
 }
 
@@ -174,12 +174,22 @@ final getAllMessage = StreamProvider.autoDispose((ref) async* {
   );
 
   final messagesNotifier = ref.watch(MessageProvider.provider.notifier);
+  final inboxNotifier = ref.watch(InboxProvider.provider.notifier);
 
-  /// Get all message by channel
-  await messagesNotifier._getAllMessageByInboxChannel(inboxChannel);
+  await Future.wait([
+    /// Get all message by channel
+    messagesNotifier._getAllMessageByInboxChannel(inboxChannel),
 
-  // /// update message to read
-  await messagesNotifier._updateIsRead();
+    /// update message to read
+    messagesNotifier._updateMessageToRead(),
+
+    /// Reset totalUnreadMessage to 0
+    inboxNotifier.resetUnreadMessageToZero(
+      inboxChannel: inboxChannel,
+      idUser: user?.id ?? 0,
+      idPairing: _pairing?.id ?? 0,
+    )
+  ]);
 
   /// Check in inbox Hive is exists or not
   await inboxExistsInHive(

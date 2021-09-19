@@ -33,8 +33,8 @@ class _InboxScreenState extends ConsumerState<InboxScreen> {
     super.initState();
     _timer = Timer.periodic(const Duration(seconds: 3), (timer) {
       /// Check setiap 3/4/5 detik apakah ada inboxes yang sedang mengetik
+      /// Lalu check apakah typinginbox == tempTypingInbox (apakah isi dalam list masih sama (equal))
       final typingInboxes = ref.read(InboxProvider.provider).allInboxTyping;
-      // log('typingInboxes: $typingInboxes');
 
       final isEqual = listEquals(typingInboxes, _tempTypingInbox);
 

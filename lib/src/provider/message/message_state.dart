@@ -25,7 +25,7 @@ class MessageState extends Equatable {
   MessageState delete(int id) =>
       copyWith(items: [...items.where((element) => element.id != id).toList()]);
 
-  MessageState updateIsRead(int idUser) {
+  MessageState updateMessageToRead(int idUser) {
     return copyWith(
       items: [
         for (final item in items)

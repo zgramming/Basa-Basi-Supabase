@@ -67,6 +67,7 @@ Future<String?> uploadImage({ImageSource source = ImageSource.gallery}) async {
 
 Future<ProfileModel> userExistsInHive(int idUser) async {
   ProfileModel pairing = const ProfileModel();
+
   if (_boxProfile.containsKey(idUser)) {
     final result = _boxProfile.get(idUser) ?? const ProfileHiveModel();
     pairing = const ProfileHiveModel().convertToProfileModel(result);

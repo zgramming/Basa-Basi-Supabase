@@ -42,7 +42,7 @@ class _WelcomeScreenState extends ConsumerState<WelcomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    log('${DateTime.now().add(const Duration(seconds: 15)).millisecondsSinceEpoch}');
+    log('WelcomeScreen ${DateTime.now().add(const Duration(seconds: 15)).millisecondsSinceEpoch}');
     Widget fab = const SizedBox();
     if (_currentIndex == 0) {
       fab = FloatingActionButton(

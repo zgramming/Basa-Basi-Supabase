@@ -77,6 +77,21 @@ class InboxProvider extends StateNotifier<InboxState> {
     }
   }
 
+  Future<void> resetUnreadMessageToZero({
+    required String inboxChannel,
+    required int idUser,
+    required int idPairing,
+  }) async {
+    final result = await SupabaseQuery.instance.resetUnreadMessageToZero(
+      inboxChannel: inboxChannel,
+      idUser: idUser,
+    );
+
+    final data = List.from(result.data as List).first as Map<String, dynamic>;
+    final inbox = InboxModel.fromJson(data).copyWith(pairing: await userExistsInHive(idPairing));
+    state = state.updateOrInsert(inbox);
+  }
+
   Future<void> _getAllInboxByIdUser(int me) async {
     final result = await SupabaseQuery.instance.getAllInboxByIdUser(me);
     addAll(result);
@@ -123,11 +138,18 @@ final listenInbox = AutoDisposeStreamProviderFamily<bool, int>((ref, idPairing) 
             /// if exist use from local database
             /// otherwise we perform API call
 
-            final inbox = InboxModel.fromJson(data).copyWith(pairing: pairing);
-            // log('iduser ${user?.id}\n inbox sender ${inbox.idSender}');
-            // if (user?.id != inbox.idSender) {
+            InboxModel inbox = const InboxModel();
+
+            /// My own inbox
+            if ((data['id_user'] as int) == user?.id) {
+              inbox = InboxModel.fromJson(data).copyWith(user: user, pairing: pairing);
+            } else {
+              /// Our partner inbox
+              inbox = InboxModel.fromJson(data).copyWith(user: pairing, pairing: user);
+            }
+
+            log('inbox $inbox');
             ref.read(InboxProvider.provider.notifier).upsertInbox(inbox);
-            // }
           }
         }
       })

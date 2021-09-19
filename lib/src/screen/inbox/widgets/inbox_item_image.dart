@@ -89,18 +89,17 @@ class InboxItemImage extends ConsumerWidget {
             width: (isStillTyping(pairingInbox.lastTypingDate) || isSelectedInbox) ? 80 : 0.0,
             height: (isStillTyping(pairingInbox.lastTypingDate) || isSelectedInbox) ? 80 : 0.0,
             child: Container(
-              padding: const EdgeInsets.all(24.0),
               decoration: BoxDecoration(
                 color: colorPallete.accentColor,
                 borderRadius: BorderRadius.circular(10.0),
                 boxShadow: [BoxShadow(color: Colors.black.withOpacity(.5), blurRadius: 2.0)],
               ),
-              child: FittedBox(
-                child: Icon(
-                  isSelectedInbox ? FeatherIcons.checkCircle : FeatherIcons.moreHorizontal,
-                  color: Colors.white,
-                ),
-              ),
+              child: (isStillTyping(pairingInbox.lastTypingDate) || isSelectedInbox)
+                  ? const JumpingDot(
+                      numberOfDot: 3,
+                      dotColor: Colors.white,
+                    )
+                  : const SizedBox(),
             ),
           ),
         ],

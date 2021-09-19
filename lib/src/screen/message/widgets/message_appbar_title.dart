@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:global_template/global_template.dart';
 
@@ -24,6 +25,11 @@ class MessageAppbarTitle extends ConsumerWidget {
       image = CachedNetworkImage(
         imageUrl: '${_pairing!.pictureProfile}',
         fit: BoxFit.cover,
+        errorWidget: (context, url, error) => const Center(
+          child: CircleAvatar(
+            child: Icon(FeatherIcons.image),
+          ),
+        ),
       );
     }
 
