@@ -20,9 +20,17 @@ class InboxItemDateAndStatus extends ConsumerWidget {
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
         if (inbox.idSender == user?.id)
-          CircleAvatar(
-            radius: sizes.width(context) * 0.015,
-            backgroundColor: const Color(0xFfC4C4C4),
+          AnimatedContainer(
+            duration: const Duration(seconds: 2),
+            curve: Curves.bounceIn,
+            width: 10,
+            height: 10,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: inbox.inboxLastMessageStatus == MessageStatus.send
+                  ? Colors.grey[400]
+                  : colorPallete.accentColor,
+            ),
           ),
         const SizedBox(width: 5.0),
         Text(

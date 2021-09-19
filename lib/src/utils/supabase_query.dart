@@ -396,6 +396,7 @@ class SupabaseQuery {
         .from(Constant.tableInbox)
         .update({
           'total_unread_message': 0,
+          'inbox_last_message_status': messageStatusValues[MessageStatus.read],
         })
         .eq('inbox_channel', inboxChannel)
         .eq('id_user', idUser)

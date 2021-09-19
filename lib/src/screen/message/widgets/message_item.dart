@@ -44,23 +44,31 @@ class MessageItem extends ConsumerWidget {
                         //   const Icon(FeatherIcons.smile, color: Colors.white),
                         //   const SizedBox(width: 10),
                         // ],
-                        Text(
-                          GlobalFunction.formatHM(message.messageDate ?? DateTime(1970)),
-                          textAlign: TextAlign.right,
-                          style: Constant.maitree.copyWith(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 10.0,
-                            color: Colors.white,
-                          ),
+                        Row(
+                          children: [
+                            MessageItemDate(message: message, textColor: Colors.white),
+                            const SizedBox(width: 5),
+                            AnimatedContainer(
+                              duration: const Duration(seconds: 2),
+                              curve: Curves.bounceIn,
+                              width: 10,
+                              height: 10,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: message.messageStatus == MessageStatus.send
+                                    ? Colors.grey[400]
+                                    : colorPallete.accentColor,
+                              ),
+                            ),
+                          ],
                         ),
                       ] else ...[
-                        Text(
-                          GlobalFunction.formatHM(message.messageDate ?? DateTime(1970)),
-                          style: Constant.maitree.copyWith(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 10.0,
-                          ),
+                        Row(
+                          children: [
+                            MessageItemDate(message: message),
+                          ],
                         ),
+
                         // if (message.isLiked ?? false) ...[
                         //   const Icon(FeatherIcons.smile),
                         //   const SizedBox(width: 10),
@@ -73,6 +81,31 @@ class MessageItem extends ConsumerWidget {
             ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+class MessageItemDate extends StatelessWidget {
+  const MessageItemDate({
+    Key? key,
+    this.textColor,
+    required this.message,
+  }) : super(key: key);
+
+  final Color? textColor;
+
+  final MessageModel message;
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      GlobalFunction.formatHM(message.messageDate ?? DateTime(1970)),
+      textAlign: TextAlign.right,
+      style: Constant.maitree.copyWith(
+        fontWeight: FontWeight.bold,
+        fontSize: 10.0,
+        color: textColor,
       ),
     );
   }
