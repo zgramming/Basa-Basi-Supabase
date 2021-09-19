@@ -10,7 +10,6 @@ import '../network/model/network.dart';
 
 final ImagePicker _picker = ImagePicker();
 final _boxProfile = Hive.box<ProfileHiveModel>(Constant.hiveKeyBoxProfile);
-final _boxInbox = Hive.box<String>(Constant.hiveKeyBoxInbox);
 
 String getConversationID({
   required int you,
@@ -82,37 +81,4 @@ Future<ProfileModel> userExistsInHive(int idUser) async {
     });
   }
   return pairing;
-}
-
-/// Format Inbox Channel for Inbox Hive => IDUSER_IDUSER_IDPAIRING
-///
-/// idUser = 1, idPairing = 2
-///
-/// result => 1_1_2
-Future<bool> inboxExistsInHive({
-  required int you,
-  required int idPairing,
-}) async {
-  final inboxChannel = getConversationID(you: you, pairing: idPairing);
-  final inboxChannelHive = "${you}_$inboxChannel";
-  final isExists = _boxInbox.containsKey(inboxChannel);
-
-  if (!isExists) {
-    await SupabaseQuery.instance.insertOrUpdateInbox(
-      idUser: you,
-      idSender: you,
-      idPairing: idPairing,
-      inboxChannel: inboxChannel,
-    );
-
-    await SupabaseQuery.instance.insertOrUpdateInbox(
-      idUser: idPairing,
-      idSender: you,
-      idPairing: you,
-      inboxChannel: inboxChannel,
-    );
-    _boxInbox.put(inboxChannel, inboxChannelHive);
-  }
-
-  return isExists;
 }

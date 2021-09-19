@@ -11,19 +11,21 @@ import '../provider.dart';
 
 class InboxProvider extends StateNotifier<InboxState> {
   final SessionProvider session;
+  final ProfileModel you;
   InboxProvider({
     required this.session,
+    required this.you,
   }) : super(const InboxState());
 
   static final provider = StateNotifierProvider<InboxProvider, InboxState>(
     (ref) {
       final session = ref.watch(SessionProvider.provider.notifier);
-      return InboxProvider(session: session);
+      final you = ref.watch(SessionProvider.provider).session.user;
+      return InboxProvider(session: session, you: you ?? const ProfileModel());
     },
   );
 
   Future<void> insertInbox({
-    required ProfileModel you,
     required ProfileModel pairing,
     required String inboxChannel,
     required String inboxLastMessage,
@@ -64,8 +66,11 @@ class InboxProvider extends StateNotifier<InboxState> {
     );
 
     final data = List.from(result.data as List).first as Map<String, dynamic>;
-    final inbox =
-        InboxModel.fromJson(data).copyWith(pairing: await userExistsInHive(pairing.id ?? 0));
+
+    final inbox = InboxModel.fromJson(data).copyWith(
+      user: you,
+      pairing: await userExistsInHive(pairing.id ?? 0),
+    );
 
     state = state.updateOrInsert(inbox);
   }
@@ -79,12 +84,11 @@ class InboxProvider extends StateNotifier<InboxState> {
 
   Future<void> resetUnreadMessageToZero({
     required String inboxChannel,
-    required int idUser,
     required int idPairing,
   }) async {
     final result = await SupabaseQuery.instance.resetUnreadMessageToZero(
       inboxChannel: inboxChannel,
-      idUser: idUser,
+      idUser: you.id ?? 0,
     );
 
     if (result.data != null) {
@@ -92,6 +96,16 @@ class InboxProvider extends StateNotifier<InboxState> {
       final inbox = InboxModel.fromJson(data).copyWith(pairing: await userExistsInHive(idPairing));
       state = state.updateOrInsert(inbox);
     }
+  }
+
+  Future<void> updateLastMessageStatusInbox({
+    required int idPairing,
+    required String inboxChannel,
+  }) async {
+    await SupabaseQuery.instance.updateLastMessageStatusInbox(
+      idUser: idPairing,
+      inboxChannel: inboxChannel,
+    );
   }
 
   Future<void> _getAllInboxByIdUser(int me) async {

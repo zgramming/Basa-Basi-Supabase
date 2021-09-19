@@ -26,7 +26,6 @@ class WelcomeNavbar extends StatelessWidget implements PreferredSizeWidget {
             ] else ...[
               IconButton(
                 onPressed: () async {
-                  //TODO: Lakukan query update inbox menjadi archived
                   try {
                     ref.read(isLoadingArchived).state = true;
                     final selectedInbox = ref

@@ -192,6 +192,7 @@ class SupabaseQuery {
           if (pictureProfileUrl != null) 'picture_profile': pictureProfileUrl,
           'fullname': fullname,
           'description': description,
+          'is_new_user': false,
           if (username != oldUsername) 'updated_username_at': DateTime.now().millisecondsSinceEpoch,
         })
         .eq('id', idUser)
@@ -232,6 +233,21 @@ class SupabaseQuery {
   Future<ProfileModel> getUserById(int id) async {
     final result =
         await _supabase.from(Constant.tableProfile).select().eq('id', id).single().execute();
+
+    if (result.error?.message != null) {
+      throw Exception(result.error?.message);
+    }
+
+    return ProfileModel.fromJson(Map<String, dynamic>.from(result.data as Map));
+  }
+
+  Future<ProfileModel> updateFromNewToOldUser(int idUser) async {
+    final result = await _supabase
+        .from(Constant.tableProfile)
+        .update({'is_new_user': false})
+        .eq('id', idUser)
+        .single()
+        .execute();
 
     if (result.error?.message != null) {
       throw Exception(result.error?.message);
@@ -353,22 +369,41 @@ class SupabaseQuery {
     return result;
   }
 
-  Future<PostgrestResponse> updateTypingInbox(int you, int idPairing) async {
+  Future<PostgrestResponse> updateTypingInbox({
+    required int you,
+    required int idPairing,
+  }) async {
     final inboxChannel = getConversationID(you: you, pairing: idPairing);
     final result = await _supabase
         .from(Constant.tableInbox)
-        .update({
-          'last_typing_date': DateTime.now().millisecondsSinceEpoch,
-        })
+        .update({'last_typing_date': DateTime.now().millisecondsSinceEpoch})
         .eq('id_user', you)
         .eq('inbox_channel', inboxChannel)
         .execute();
 
-    if (result.error?.message != null) {
+    if (result.error?.code != null) {
       throw Exception(result.error?.message);
     }
 
     return result;
+  }
+
+  Future<void> updateLastMessageStatusInbox({
+    required int idUser,
+    required String inboxChannel,
+  }) async {
+    final result = await _supabase
+        .from(Constant.tableInbox)
+        .update({
+          'inbox_last_message_status': messageStatusValues[MessageStatus.read],
+        })
+        .eq('id_user', idUser)
+        .eq('inbox_channel', inboxChannel)
+        .execute();
+
+    if (result.error?.code != null) {
+      throw Exception(result.error?.message);
+    }
   }
 
   ///* END Inbox Section
@@ -439,10 +474,7 @@ class SupabaseQuery {
   }) async {
     final result = await _supabase
         .from(Constant.tableInbox)
-        .update({
-          'total_unread_message': 0,
-          'inbox_last_message_status': messageStatusValues[MessageStatus.read],
-        })
+        .update({'total_unread_message': 0})
         .eq('inbox_channel', inboxChannel)
         .eq('id_user', idUser)
         .execute();

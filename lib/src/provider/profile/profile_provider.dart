@@ -91,4 +91,9 @@ class ProfileProvider extends StateNotifier<ProfileState> {
     state = state.setProfile(result);
     return result;
   }
+
+  Future<void> updateFromNewToOldUser(int idUser) async {
+    final result = await SupabaseQuery.instance.updateFromNewToOldUser(idUser);
+    await session.setUserSession(result);
+  }
 }

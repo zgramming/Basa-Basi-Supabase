@@ -45,7 +45,8 @@ class MessageProvider extends StateNotifier<MessageState> {
 
   Future<List<MessageModel>> _getAllMessageByInboxChannel(String inboxChannel) async {
     final result = await SupabaseQuery.instance.getAllMessageByInboxChannel(inboxChannel);
-    state = state.addAll(result);
+
+    if (mounted) state = state.addAll(result);
     return result;
   }
 
@@ -79,7 +80,6 @@ class MessageProvider extends StateNotifier<MessageState> {
     /// After insert message
     /// Then insert to inbox
     await inboxProvider.insertInbox(
-      you: you,
       pairing: yourPairing,
       inboxChannel: inboxChannel,
       inboxLastMessage: post.messageContent ?? '',
@@ -93,7 +93,8 @@ class MessageProvider extends StateNotifier<MessageState> {
   }
 
   Future<void> updateTyping() async {
-    await SupabaseQuery.instance.updateTypingInbox(you.id ?? 0, yourPairing.id ?? 0);
+    await SupabaseQuery.instance
+        .updateTypingInbox(you: you.id ?? 0, idPairing: yourPairing.id ?? 0);
   }
 
   Future<void> _updateMessageToRead() async {
@@ -168,10 +169,7 @@ final getAllMessage = StreamProvider.autoDispose((ref) async* {
   final user = ref.watch(SessionProvider.provider).session.user;
   final _pairing = ref.watch(pairing).state;
 
-  final inboxChannel = getConversationID(
-    you: user?.id ?? 0,
-    pairing: _pairing?.id ?? 0,
-  );
+  final inboxChannel = getConversationID(you: user?.id ?? 0, pairing: _pairing?.id ?? 0);
 
   final messagesNotifier = ref.watch(MessageProvider.provider.notifier);
   final inboxNotifier = ref.watch(InboxProvider.provider.notifier);
@@ -186,16 +184,15 @@ final getAllMessage = StreamProvider.autoDispose((ref) async* {
     /// Reset totalUnreadMessage to 0
     inboxNotifier.resetUnreadMessageToZero(
       inboxChannel: inboxChannel,
-      idUser: user?.id ?? 0,
       idPairing: _pairing?.id ?? 0,
-    )
-  ]);
+    ),
 
-  /// Check in inbox Hive is exists or not
-  await inboxExistsInHive(
-    you: user?.id ?? 0,
-    idPairing: _pairing?.id ?? 0,
-  );
+    /// Update last message status your pairing to read
+    inboxNotifier.updateLastMessageStatusInbox(
+      idPairing: _pairing?.id ?? 0,
+      inboxChannel: inboxChannel,
+    ),
+  ]);
 
   /// Listen upcoming message by inbox channel
   ref.watch(_listenMessage(inboxChannel).stream);

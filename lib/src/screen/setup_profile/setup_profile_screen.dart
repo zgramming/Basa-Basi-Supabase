@@ -1,6 +1,6 @@
-import 'dart:developer';
 import 'dart:io';
 
+import 'package:basa_basi_supabase/src/provider/profile/profile_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -31,7 +31,6 @@ class _SetupProfileScreenState extends ConsumerState<SetupProfileScreen> {
   void initState() {
     super.initState();
     final user = ref.read(SessionProvider.provider).session.user;
-    log('Initstate SetupProfileUser ${user?.toJson()}');
     _usernameController = TextEditingController(text: user?.username);
     _fullnameController = TextEditingController(text: user?.fullname);
   }
@@ -164,11 +163,18 @@ class _SetupProfileScreenState extends ConsumerState<SetupProfileScreen> {
                 OutlinedButton(
                   onPressed: () async {
                     if (mounted) {
-                      await Navigator.pushNamedAndRemoveUntil(
-                        context,
-                        WelcomeScreen.routeNamed,
-                        (route) => false,
-                      );
+                      /// Update user to old user
+                      await ref
+                          .read(ProfileProvider.provider.notifier)
+                          .updateFromNewToOldUser(user?.id ?? 0);
+
+                      await Future.delayed(Duration.zero, () {
+                        Navigator.pushNamedAndRemoveUntil(
+                          context,
+                          WelcomeScreen.routeNamed,
+                          (route) => false,
+                        );
+                      });
                     }
                   },
                   style: OutlinedButton.styleFrom(

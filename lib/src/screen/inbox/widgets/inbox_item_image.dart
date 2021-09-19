@@ -92,12 +92,20 @@ class InboxItemImage extends ConsumerWidget {
                 borderRadius: BorderRadius.circular(10.0),
                 boxShadow: [BoxShadow(color: Colors.black.withOpacity(.5), blurRadius: 2.0)],
               ),
-              child: (isStillTyping(pairingInbox.lastTypingDate) || isSelectedInbox)
-                  ? const JumpingDot(
+              child: Builder(
+                builder: (context) {
+                  if (isSelectedInbox) {
+                    return const Icon(FeatherIcons.check, color: Colors.white);
+                  } else if (isStillTyping(pairingInbox.lastTypingDate)) {
+                    return const JumpingDot(
                       numberOfDot: 3,
                       dotColor: Colors.white,
-                    )
-                  : const SizedBox(),
+                    );
+                  } else {
+                    return const SizedBox();
+                  }
+                },
+              ),
             ),
           ),
         ],
