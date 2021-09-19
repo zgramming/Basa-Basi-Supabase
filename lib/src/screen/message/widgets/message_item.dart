@@ -63,11 +63,7 @@ class MessageItem extends ConsumerWidget {
                           ],
                         ),
                       ] else ...[
-                        Row(
-                          children: [
-                            MessageItemDate(message: message),
-                          ],
-                        ),
+                        MessageItemDate(message: message),
 
                         // if (message.isLiked ?? false) ...[
                         //   const Icon(FeatherIcons.smile),
