@@ -6,29 +6,29 @@ part of 'message_model.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-MessageModel _$MessageModelFromJson(Map<String, dynamic> json) {
-  return MessageModel(
-    id: json['id'] as int?,
-    idSender: json['id_sender'] as int?,
-    inboxChannel: json['inbox_channel'] as String?,
-    messageContent: json['message_content'] as String?,
-    messageDate: GlobalFunction.fromJsonMilisecondToDateTime(
-        json['message_date'] as int?),
-    messageFileUrl: json['message_file_url'] as String?,
-    messageStatus:
-        _$enumDecodeNullable(_$MessageStatusEnumMap, json['message_status']),
-    messageType:
-        _$enumDecodeNullable(_$MessageTypeEnumMap, json['message_type']),
-    createdAt:
-        GlobalFunction.fromJsonMilisecondToDateTime(json['created_at'] as int?),
-    updatedAt:
-        GlobalFunction.fromJsonMilisecondToDateTime(json['updated_at'] as int?),
-    deletedAt:
-        GlobalFunction.fromJsonMilisecondToDateTime(json['deleted_at'] as int?),
-    deletedIdUser: json['deleted_id_user'] as int?,
-    likedIdUser: json['liked_id_user'] as int?,
-  );
-}
+MessageModel _$MessageModelFromJson(Map<String, dynamic> json) => MessageModel(
+      id: json['id'] as int? ?? 0,
+      idSender: json['id_sender'] as int?,
+      inboxChannel: json['inbox_channel'] as String? ?? 'default inbox channel',
+      messageContent: json['message_content'] as String? ?? 'Halooo',
+      messageDate: GlobalFunction.fromJsonMilisecondToDateTime(
+          json['message_date'] as int?),
+      messageFileUrl: json['message_file_url'] as String? ?? '',
+      messageStatus: _$enumDecodeNullable(
+              _$MessageStatusEnumMap, json['message_status']) ??
+          MessageStatus.none,
+      messageType:
+          _$enumDecodeNullable(_$MessageTypeEnumMap, json['message_type']) ??
+              MessageType.none,
+      createdAt: GlobalFunction.fromJsonMilisecondToDateTime(
+          json['created_at'] as int?),
+      updatedAt: GlobalFunction.fromJsonMilisecondToDateTime(
+          json['updated_at'] as int?),
+      deletedAt: GlobalFunction.fromJsonMilisecondToDateTime(
+          json['deleted_at'] as int?),
+      deletedIdUser: json['deleted_id_user'] as int?,
+      likedIdUser: json['liked_id_user'] as int?,
+    );
 
 Map<String, dynamic> _$MessageModelToJson(MessageModel instance) =>
     <String, dynamic>{

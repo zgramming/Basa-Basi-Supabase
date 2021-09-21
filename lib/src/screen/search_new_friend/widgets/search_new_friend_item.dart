@@ -88,18 +88,18 @@ class SearchNewFriendItem extends ConsumerWidget {
               child: Container(
                 height: 50,
                 width: 50,
-                padding: const EdgeInsets.all(8.0),
                 decoration: BoxDecoration(
                   color: Colors.white,
+                  borderRadius: BorderRadiusDirectional.circular(10.0),
                   boxShadow: [
                     BoxShadow(
                       blurRadius: 2.0,
                       color: Colors.black.withOpacity(.25),
                     )
                   ],
-                  shape: BoxShape.circle,
                 ),
-                child: ClipOval(
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(10.0),
                   child: (user.pictureProfile == null || (user.pictureProfile?.isEmpty ?? true))
                       ? Image.asset(
                           '${appConfig.urlImageAsset}/ob1.png',

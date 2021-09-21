@@ -15,8 +15,8 @@ class ProfileModel extends Equatable {
   final String username;
   final String? pictureProfile;
   final String? description;
-  final bool isOnline;
-  final bool isNewUser;
+  final bool? isOnline;
+  final bool? isNewUser;
   @JsonKey(
     toJson: GlobalFunction.toJsonMilisecondFromDateTime,
     fromJson: GlobalFunction.fromJsonMilisecondToDateTime,

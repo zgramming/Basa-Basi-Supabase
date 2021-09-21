@@ -6,20 +6,22 @@ part of 'message_post.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-MessagePost _$MessagePostFromJson(Map<String, dynamic> json) {
-  return MessagePost(
-    idSender: json['id_sender'] as int?,
-    inboxChannel: json['inbox_channel'] as String?,
-    messageContent: json['message_content'] as String?,
-    messageDate: GlobalFunction.fromJsonMilisecondToDateTime(
-        json['message_date'] as int?),
-    messageFileUrl: json['message_file_url'] as String?,
-    messageStatus: _$enumDecode(_$MessageStatusEnumMap, json['message_status']),
-    messageType: _$enumDecode(_$MessageTypeEnumMap, json['message_type']),
-    createdAt:
-        GlobalFunction.fromJsonMilisecondToDateTime(json['created_at'] as int?),
-  );
-}
+MessagePost _$MessagePostFromJson(Map<String, dynamic> json) => MessagePost(
+      idSender: json['id_sender'] as int?,
+      inboxChannel: json['inbox_channel'] as String?,
+      messageContent: json['message_content'] as String?,
+      messageDate: GlobalFunction.fromJsonMilisecondToDateTime(
+          json['message_date'] as int?),
+      messageFileUrl: json['message_file_url'] as String?,
+      messageStatus: _$enumDecodeNullable(
+              _$MessageStatusEnumMap, json['message_status']) ??
+          MessageStatus.none,
+      messageType:
+          _$enumDecodeNullable(_$MessageTypeEnumMap, json['message_type']) ??
+              MessageType.none,
+      createdAt: GlobalFunction.fromJsonMilisecondToDateTime(
+          json['created_at'] as int?),
+    );
 
 Map<String, dynamic> _$MessagePostToJson(MessagePost instance) =>
     <String, dynamic>{
@@ -59,6 +61,17 @@ K _$enumDecode<K, V>(
       return MapEntry(unknownValue, enumValues.values.first);
     },
   ).key;
+}
+
+K? _$enumDecodeNullable<K, V>(
+  Map<K, V> enumValues,
+  dynamic source, {
+  K? unknownValue,
+}) {
+  if (source == null) {
+    return null;
+  }
+  return _$enumDecode<K, V>(enumValues, source, unknownValue: unknownValue);
 }
 
 const _$MessageStatusEnumMap = {

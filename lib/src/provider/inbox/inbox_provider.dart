@@ -145,14 +145,9 @@ final listenInbox = AutoDisposeStreamProviderFamily<bool, int>((ref, idPairing) 
           final data = events.newRecord;
 
           if (data != null) {
-            // log('Listen My Inbox Insert/Update: ${events.eventType}');
-            // log('Listen Insert/Update: ${events.newRecord}');
+            log('Listen My Inbox Insert/Update: ${events.eventType}');
+            log('Listen Insert/Update: ${events.newRecord}');
             final pairing = await userExistsInHive(data['id_user'] as int);
-
-            /// Check to local database (Hive)
-            /// is pairing id exists / not
-            /// if exist use from local database
-            /// otherwise we perform API call
 
             InboxModel inbox = const InboxModel();
 

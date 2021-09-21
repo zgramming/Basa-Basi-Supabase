@@ -6,25 +6,23 @@ part of 'profile_model.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-ProfileModel _$ProfileModelFromJson(Map<String, dynamic> json) {
-  return ProfileModel(
-    id: json['id'] as int?,
-    fullname: json['fullname'] as String,
-    email: json['email'] as String,
-    password: json['password'] as String,
-    username: json['username'] as String,
-    pictureProfile: json['picture_profile'] as String?,
-    description: json['description'] as String?,
-    isOnline: json['is_online'] as bool,
-    isNewUser: json['is_new_user'] as bool,
-    createdAt:
-        GlobalFunction.fromJsonMilisecondToDateTime(json['created_at'] as int?),
-    updatedAt:
-        GlobalFunction.fromJsonMilisecondToDateTime(json['updated_at'] as int?),
-    updatedUsernameAt: GlobalFunction.fromJsonMilisecondToDateTime(
-        json['updated_username_at'] as int?),
-  );
-}
+ProfileModel _$ProfileModelFromJson(Map<String, dynamic> json) => ProfileModel(
+      id: json['id'] as int? ?? 0,
+      fullname: json['fullname'] as String? ?? '',
+      email: json['email'] as String? ?? 'zeffry.reynando@gmail.com',
+      password: json['password'] as String? ?? 'akutampansekali',
+      username: json['username'] as String? ?? '',
+      pictureProfile: json['picture_profile'] as String?,
+      description: json['description'] as String?,
+      isOnline: json['is_online'] as bool? ?? false,
+      isNewUser: json['is_new_user'] as bool? ?? false,
+      createdAt: GlobalFunction.fromJsonMilisecondToDateTime(
+          json['created_at'] as int?),
+      updatedAt: GlobalFunction.fromJsonMilisecondToDateTime(
+          json['updated_at'] as int?),
+      updatedUsernameAt: GlobalFunction.fromJsonMilisecondToDateTime(
+          json['updated_username_at'] as int?),
+    );
 
 Map<String, dynamic> _$ProfileModelToJson(ProfileModel instance) =>
     <String, dynamic>{

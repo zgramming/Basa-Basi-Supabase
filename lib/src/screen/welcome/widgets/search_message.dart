@@ -167,7 +167,6 @@ class _SearchMessageState extends State<SearchMessage> {
                                           color: Colors.black.withOpacity(.25),
                                         )
                                       ],
-                                      // shape: BoxShape.circle,
                                     ),
                                     child: ClipRRect(
                                       borderRadius: BorderRadius.circular(10.0),

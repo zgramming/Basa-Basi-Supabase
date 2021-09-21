@@ -6,38 +6,38 @@ part of 'inbox_model.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-InboxModel _$InboxModelFromJson(Map<String, dynamic> json) {
-  return InboxModel(
-    id: json['id'] as int,
-    user: json['user'] == null
-        ? null
-        : ProfileModel.fromJson(json['user'] as Map<String, dynamic>),
-    idSender: json['id_sender'] as int,
-    pairing: json['pairing'] == null
-        ? null
-        : ProfileModel.fromJson(json['pairing'] as Map<String, dynamic>),
-    inboxChannel: json['inbox_channel'] as String,
-    inboxLastMessage: json['inbox_last_message'] as String?,
-    inboxLastMessageDate: GlobalFunction.fromJsonMilisecondToDateTime(
-        json['inbox_last_message_date'] as int?),
-    inboxLastMessageStatus:
-        _$enumDecode(_$MessageStatusEnumMap, json['inbox_last_message_status']),
-    inboxLastMessageType:
-        _$enumDecode(_$MessageTypeEnumMap, json['inbox_last_message_type']),
-    isArchived: json['is_archived'] as bool,
-    isDeleted: json['is_deleted'] as bool,
-    isPinned: json['is_pinned'] as bool,
-    lastTypingDate: GlobalFunction.fromJsonMilisecondToDateTime(
-        json['last_typing_date'] as int?),
-    totalUnreadMessage: json['total_unread_message'] as int,
-    createdAt:
-        GlobalFunction.fromJsonMilisecondToDateTime(json['created_at'] as int?),
-    updatedAt:
-        GlobalFunction.fromJsonMilisecondToDateTime(json['updated_at'] as int?),
-    deletedAt:
-        GlobalFunction.fromJsonMilisecondToDateTime(json['deleted_at'] as int?),
-  );
-}
+InboxModel _$InboxModelFromJson(Map<String, dynamic> json) => InboxModel(
+      id: json['id'] as int? ?? 0,
+      user: json['user'] == null
+          ? null
+          : ProfileModel.fromJson(json['user'] as Map<String, dynamic>),
+      idSender: json['id_sender'] as int? ?? 0,
+      pairing: json['pairing'] == null
+          ? null
+          : ProfileModel.fromJson(json['pairing'] as Map<String, dynamic>),
+      inboxChannel: json['inbox_channel'] as String? ?? 'default_inbox_channel',
+      inboxLastMessage: json['inbox_last_message'] as String?,
+      inboxLastMessageDate: GlobalFunction.fromJsonMilisecondToDateTime(
+          json['inbox_last_message_date'] as int?),
+      inboxLastMessageStatus: _$enumDecodeNullable(
+              _$MessageStatusEnumMap, json['inbox_last_message_status']) ??
+          MessageStatus.none,
+      inboxLastMessageType: _$enumDecodeNullable(
+              _$MessageTypeEnumMap, json['inbox_last_message_type']) ??
+          MessageType.none,
+      isArchived: json['is_archived'] as bool? ?? false,
+      isDeleted: json['is_deleted'] as bool? ?? false,
+      isPinned: json['is_pinned'] as bool? ?? false,
+      lastTypingDate: GlobalFunction.fromJsonMilisecondToDateTime(
+          json['last_typing_date'] as int?),
+      totalUnreadMessage: json['total_unread_message'] as int? ?? 0,
+      createdAt: GlobalFunction.fromJsonMilisecondToDateTime(
+          json['created_at'] as int?),
+      updatedAt: GlobalFunction.fromJsonMilisecondToDateTime(
+          json['updated_at'] as int?),
+      deletedAt: GlobalFunction.fromJsonMilisecondToDateTime(
+          json['deleted_at'] as int?),
+    );
 
 Map<String, dynamic> _$InboxModelToJson(InboxModel instance) =>
     <String, dynamic>{
@@ -91,6 +91,17 @@ K _$enumDecode<K, V>(
       return MapEntry(unknownValue, enumValues.values.first);
     },
   ).key;
+}
+
+K? _$enumDecodeNullable<K, V>(
+  Map<K, V> enumValues,
+  dynamic source, {
+  K? unknownValue,
+}) {
+  if (source == null) {
+    return null;
+  }
+  return _$enumDecode<K, V>(enumValues, source, unknownValue: unknownValue);
 }
 
 const _$MessageStatusEnumMap = {

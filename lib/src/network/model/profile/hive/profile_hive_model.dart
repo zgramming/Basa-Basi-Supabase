@@ -20,9 +20,9 @@ class ProfileHiveModel extends Equatable {
   @HiveField(5)
   final String? pictureProfile;
   @HiveField(6)
-  final bool isOnline;
+  final bool? isOnline;
   @HiveField(7)
-  final bool isNewUser;
+  final bool? isNewUser;
   @HiveField(8)
   final DateTime? createdAt;
   @HiveField(9)

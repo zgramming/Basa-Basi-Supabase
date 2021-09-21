@@ -147,7 +147,9 @@ class _SetupProfileScreenState extends ConsumerState<SetupProfileScreen> {
                         snackBarType: SnackBarType.error,
                       );
                     } finally {
-                      ref.read(isLoading).state = false;
+                      if (mounted) {
+                        ref.read(isLoading).state = false;
+                      }
                     }
                   },
                   style: ElevatedButton.styleFrom(padding: const EdgeInsets.all(16.0)),

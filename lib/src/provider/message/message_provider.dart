@@ -1,5 +1,7 @@
+import 'dart:collection';
 import 'dart:developer';
 
+import 'package:collection/collection.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase/supabase.dart';
 
@@ -198,4 +200,17 @@ final getAllMessage = StreamProvider.autoDispose((ref) async* {
   ref.watch(_listenMessage(inboxChannel).stream);
 
   yield true;
+});
+
+final messages = StateProvider.autoDispose((ref) {
+  final items = ref.watch(MessageProvider.provider).items;
+  items.sort((a, b) => a.messageDate!.compareTo(b.messageDate!));
+
+  final groupedByDate = groupBy<MessageModel, DateTime>(items, (message) {
+    final date = message.messageDate ?? DateTime(1970);
+    return DateTime(date.year, date.month, date.day);
+  });
+
+  return SplayTreeMap<DateTime, List<MessageModel>>.from(groupedByDate, (a, b) => b.compareTo(a));
+  // return groupedByDate;
 });
