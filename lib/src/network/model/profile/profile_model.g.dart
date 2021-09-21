@@ -15,7 +15,7 @@ ProfileModel _$ProfileModelFromJson(Map<String, dynamic> json) => ProfileModel(
       pictureProfile: json['picture_profile'] as String?,
       description: json['description'] as String?,
       isOnline: json['is_online'] as bool? ?? false,
-      isNewUser: json['is_new_user'] as bool? ?? false,
+      isNewUser: json['is_new_user'] as bool? ?? true,
       createdAt: GlobalFunction.fromJsonMilisecondToDateTime(
           json['created_at'] as int?),
       updatedAt: GlobalFunction.fromJsonMilisecondToDateTime(

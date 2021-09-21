@@ -42,7 +42,7 @@ class ProfileModel extends Equatable {
     this.pictureProfile,
     this.description,
     this.isOnline = false,
-    this.isNewUser = false,
+    this.isNewUser = true,
     this.createdAt,
     this.updatedAt,
     this.updatedUsernameAt,

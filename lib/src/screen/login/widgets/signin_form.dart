@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:basa_basi_supabase/src/screen/welcome/welcome_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -93,7 +94,7 @@ class _SignInFormState extends State<SignInForm> {
                         if (mounted) {
                           await Navigator.pushReplacementNamed(
                             context,
-                            SetupProfileScreen.routeNamed,
+                            WelcomeScreen.routeNamed,
                           );
                         }
                       } catch (e) {

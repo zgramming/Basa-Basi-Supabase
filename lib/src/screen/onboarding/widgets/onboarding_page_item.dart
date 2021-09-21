@@ -61,6 +61,7 @@ class PageItem extends StatelessWidget {
                   fontWeight: FontWeight.w300,
                   fontSize: 12,
                   color: colorPallete.primaryColor,
+                  height: 2,
                 ),
               ),
               const SizedBox(height: 20),

@@ -20,12 +20,14 @@ class OnboardingScreen extends StatefulWidget {
 class _OnboardingScreenState extends State<OnboardingScreen> {
   late final PageController _controller;
   int _selectedIndex = 0;
+  int _totalPages = 0;
 
   final _pages = <Widget>[
     PageItem(
       urlImageAsset: '${appConfig.urlImageAsset}/ob1.png',
-      title: 'Login with Google',
-      subtitle: 'Login & Daftar dengan mudah menggunakan akun Google-mu',
+      title: 'Tampilan & Kemudahan',
+      subtitle:
+          'Dengan tampilan yang menarik dan kemudahan dalam penggunaan aplikasi, kami berusaha agar kamu dapat menikmati aplikasi se-nyaman mungkin',
     ),
     PageItem(
       urlImageAsset: '${appConfig.urlImageAsset}/ob2.png',
@@ -41,8 +43,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   @override
   void initState() {
-    _controller = PageController(initialPage: _selectedIndex);
     super.initState();
+    _controller = PageController(initialPage: _selectedIndex);
+    _totalPages = _pages.length;
   }
 
   @override
@@ -53,7 +56,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           Positioned.fill(
             child: PageView.builder(
               controller: _controller,
-              itemCount: _pages.length,
+              itemCount: _totalPages,
               onPageChanged: (value) => setState(() => _selectedIndex = value),
               itemBuilder: (context, index) {
                 final page = _pages[index];
@@ -75,7 +78,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   Expanded(
                     child: SmoothPageIndicator(
                       controller: _controller,
-                      count: _pages.length,
+                      count: _totalPages,
                       effect: SlideEffect(
                         dotColor: const Color(0xFFC4C4C4),
                         activeDotColor: colorPallete.accentColor!,
@@ -94,7 +97,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     child: Consumer(
                       builder: (context, ref, child) => OutlinedButton(
                         onPressed: () async {
-                          if (_selectedIndex == (_pages.length - 1)) {
+                          if (_selectedIndex == (_totalPages - 1)) {
                             await ref
                                 .read(SessionProvider.provider.notifier)
                                 .setOnboardingSession(value: true);
@@ -107,7 +110,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                             });
                             _controller.animateToPage(
                               _selectedIndex,
-                              duration: const Duration(seconds: 1),
+                              duration: const Duration(milliseconds: 500),
                               curve: Curves.easeIn,
                             );
                           }
@@ -118,14 +121,14 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           ),
                           side: BorderSide(color: colorPallete.accentColor!),
                           padding: const EdgeInsets.all(16.0),
-                          backgroundColor: _selectedIndex == (_pages.length - 1)
+                          backgroundColor: _selectedIndex == (_totalPages - 1)
                               ? colorPallete.accentColor
                               : Colors.transparent,
                         ),
                         child: Text(
-                          _selectedIndex == (_pages.length - 1) ? 'Ayo Mulai' : 'Selanjutnya',
+                          _selectedIndex == (_totalPages - 1) ? 'Ayo Mulai' : 'Selanjutnya',
                           style: Constant.comfortaa.copyWith(
-                            color: _selectedIndex == (_pages.length - 1)
+                            color: _selectedIndex == (_totalPages - 1)
                                 ? Colors.white
                                 : colorPallete.accentColor,
                           ),
