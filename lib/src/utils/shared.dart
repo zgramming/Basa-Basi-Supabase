@@ -4,6 +4,7 @@ import 'package:basa_basi_supabase/src/utils/supabase_query.dart';
 import 'package:global_template/global_template.dart';
 import 'package:hive/hive.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import './utils.dart';
 import '../network/model/network.dart';
@@ -81,4 +82,12 @@ Future<ProfileModel> userExistsInHive(int idUser) async {
     });
   }
   return pairing;
+}
+
+Future<void> openUrl(String url) async {
+  if (await canLaunch(url)) {
+    await launch(url);
+  } else {
+    throw 'Could not launch $url';
+  }
 }

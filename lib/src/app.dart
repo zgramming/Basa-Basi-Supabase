@@ -3,6 +3,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:global_template/global_template.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import './screen/about_developer/about_developer_screen.dart';
 import './screen/inbox/widgets/inbox_archived.dart';
 import './screen/login/login_screen.dart';
 import './screen/message/message_screen.dart';
@@ -82,6 +83,10 @@ class MyApp extends StatelessWidget {
           case UpdateProfileScreen.routeNamed:
             return routeAnimation.slideTransition(
               screen: (ctx, animation, secondaryAnimation) => const UpdateProfileScreen(),
+            );
+          case AboutDeveloperScreen.routeNamed:
+            return routeAnimation.slideTransition(
+              screen: (ctx, animation, secondaryAnimation) => const AboutDeveloperScreen(),
             );
 
           default:
