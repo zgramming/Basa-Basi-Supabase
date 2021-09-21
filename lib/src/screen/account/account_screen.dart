@@ -9,6 +9,7 @@ import './widgets/account_menu_item.dart';
 import '../../provider/provider.dart';
 
 import '../about_developer/about_developer_screen.dart';
+import '../license_image/license_image_screen.dart';
 import '../login/login_screen.dart';
 
 class AccountScreen extends StatelessWidget {
@@ -33,6 +34,18 @@ class AccountScreen extends StatelessWidget {
                   title: 'Tentang Developer',
                   onTap: () async {
                     await Navigator.pushNamed(context, AboutDeveloperScreen.routeNamed);
+                  },
+                ),
+                AccountMenuItem(
+                  title: 'Lisensi Gambar',
+                  icon: FeatherIcons.image,
+                  onTap: () async {
+                    await showModalBottomSheet(
+                      context: context,
+                      builder: (ctx) {
+                        return const LicenseImageScreen();
+                      },
+                    );
                   },
                 ),
                 Consumer(
