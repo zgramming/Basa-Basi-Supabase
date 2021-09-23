@@ -22,74 +22,67 @@ class InboxItem extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final _streamListenInbox = ref.watch(listenInbox(inbox.pairing?.id ?? 0));
-    return _streamListenInbox.when(
-      data: (_) {
-        return Column(
-          children: [
-            InkWell(
-              onTap: () async {
-                final totalSelectedInbox = ref.read(SelectedInboxProvider.provider).total;
+    return Column(
+      children: [
+        InkWell(
+          onTap: () async {
+            final totalSelectedInbox = ref.read(SelectedInboxProvider.provider).total;
 
-                if (totalSelectedInbox == 0) {
-                  /// Initialize pairing
-                  ref.read(pairing).state = inbox.pairing;
-                  await GlobalNavigation.pushNamed(routeName: MessageScreen.routeNamed);
-                } else {
-                  ref.read(SelectedInboxProvider.provider.notifier).add(inbox);
-                }
-              },
-              onLongPress: () {
-                ref.read(SelectedInboxProvider.provider.notifier).add(inbox);
-              },
-              splashColor: colorPallete.primaryColor!.withOpacity(.25),
+            if (totalSelectedInbox == 0) {
+              /// Initialize pairing
+              ref.read(pairing).state = await userExistsInHive(inbox.pairing.id);
+              await GlobalNavigation.pushNamed(routeName: MessageScreen.routeNamed);
+            } else {
+              ref.read(SelectedInboxProvider.provider.notifier).add(inbox);
+            }
+          },
+          onLongPress: () {
+            ref.read(SelectedInboxProvider.provider.notifier).add(inbox);
+          },
+          splashColor: colorPallete.primaryColor!.withOpacity(.25),
+          borderRadius: BorderRadius.circular(10.0),
+          child: Ink(
+            decoration: BoxDecoration(
+              color: Colors.white,
               borderRadius: BorderRadius.circular(10.0),
-              child: Ink(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(10.0),
-                  boxShadow: [
-                    BoxShadow(
-                      blurRadius: 2.0,
-                      color: Colors.black.withOpacity(0.25),
-                    ),
-                  ],
+              boxShadow: [
+                BoxShadow(
+                  blurRadius: 2.0,
+                  color: Colors.black.withOpacity(0.25),
                 ),
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Row(
-                    children: [
-                      InboxItemImage(inbox: inbox),
-                      const SizedBox(width: 15.0),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          mainAxisSize: MainAxisSize.min,
+              ],
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Row(
+                children: [
+                  InboxItemImage(inbox: inbox),
+                  const SizedBox(width: 15.0),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        InboxItemName(inbox: inbox),
+                        const SizedBox(height: 10),
+                        InboxItemMessage(inbox: inbox),
+                        const SizedBox(height: 20),
+                        Row(
                           children: [
-                            InboxItemName(inbox: inbox),
-                            const SizedBox(height: 10),
-                            InboxItemMessage(inbox: inbox),
-                            const SizedBox(height: 20),
-                            Row(
-                              children: [
-                                InboxItemUnreadMessage(inbox: inbox),
-                                InboxItemDateAndStatus(inbox: inbox),
-                              ],
-                            ),
+                            InboxItemUnreadMessage(inbox: inbox),
+                            InboxItemDateAndStatus(inbox: inbox),
                           ],
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
+                ],
               ),
             ),
-            const SizedBox(height: 24),
-          ],
-        );
-      },
-      loading: () => const Center(child: CircularProgressIndicator()),
-      error: (error, stackTrace) => Center(child: Text(error.toString())),
+          ),
+        ),
+        const SizedBox(height: 24),
+      ],
     );
   }
 }

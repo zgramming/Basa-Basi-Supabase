@@ -31,8 +31,8 @@ class _SetupProfileScreenState extends ConsumerState<SetupProfileScreen> {
   void initState() {
     super.initState();
     final user = ref.read(SessionProvider.provider).session.user;
-    _usernameController = TextEditingController(text: user?.username);
-    _fullnameController = TextEditingController(text: user?.fullname);
+    _usernameController = TextEditingController(text: user.username);
+    _fullnameController = TextEditingController(text: user.fullname);
   }
 
   @override
@@ -125,12 +125,12 @@ class _SetupProfileScreenState extends ConsumerState<SetupProfileScreen> {
                       ref.read(isLoading).state = true;
 
                       await ref.read(ProfileProvider.provider.notifier).setupProfile(
-                            user?.id ?? 0,
+                            user.id,
                             username: _usernameController.text,
                             fullname: _fullnameController.text,
                             file: _pickedImage,
-                            profileUrl: user?.pictureProfile ?? '',
-                            oldUsername: user?.username ?? '',
+                            profileUrl: user.pictureProfile ?? '',
+                            oldUsername: user.username,
                           );
 
                       if (mounted) {
@@ -168,7 +168,7 @@ class _SetupProfileScreenState extends ConsumerState<SetupProfileScreen> {
                       /// Update user to old user
                       await ref
                           .read(ProfileProvider.provider.notifier)
-                          .updateFromNewToOldUser(user?.id ?? 0);
+                          .updateFromNewToOldUser(user.id);
 
                       await Future.delayed(Duration.zero, () {
                         Navigator.pushNamedAndRemoveUntil(

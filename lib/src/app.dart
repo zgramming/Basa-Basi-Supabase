@@ -9,12 +9,12 @@ import './screen/login/login_screen.dart';
 import './screen/message/message_screen.dart';
 import './screen/message/widgets/message_preview_image.dart';
 import './screen/onboarding/onboarding_screen.dart';
+import './screen/search_message/search_message.dart';
 import './screen/search_new_friend/search_new_friend.dart';
 import './screen/setup_profile/setup_profile_screen.dart';
 import './screen/splash/splash_screen.dart';
 import './screen/update_profile/update_profile_screen.dart';
 import './screen/welcome/welcome_screen.dart';
-import './screen/welcome/widgets/search_message.dart';
 import './utils/utils.dart';
 
 class MyApp extends StatelessWidget {

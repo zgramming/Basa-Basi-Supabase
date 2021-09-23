@@ -67,7 +67,7 @@ class InboxItemMessage extends ConsumerWidget {
     return Row(
       children: [
         Text(
-          user?.id == inbox.idSender ? 'Kamu : ' : '',
+          user.id == inbox.idSender ? 'Kamu : ' : '',
           style: Constant.comfortaa.copyWith(
             fontWeight: FontWeight.bold,
             color: colorPallete.primaryColor,

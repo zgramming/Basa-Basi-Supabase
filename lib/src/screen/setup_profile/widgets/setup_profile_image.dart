@@ -94,7 +94,7 @@ class _SetupProfileImageState extends ConsumerState<SetupProfileImage> {
           ),
           child: Stack(
             children: [
-              if (user?.pictureProfile == null)
+              if (user.pictureProfile == null)
                 Positioned.fill(
                   child: SizedBox(
                     child: _pickedImage != null

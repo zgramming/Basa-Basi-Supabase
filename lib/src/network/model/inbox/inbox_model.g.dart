@@ -9,11 +9,11 @@ part of 'inbox_model.dart';
 InboxModel _$InboxModelFromJson(Map<String, dynamic> json) => InboxModel(
       id: json['id'] as int? ?? 0,
       user: json['user'] == null
-          ? null
+          ? const ProfileModel()
           : ProfileModel.fromJson(json['user'] as Map<String, dynamic>),
       idSender: json['id_sender'] as int? ?? 0,
       pairing: json['pairing'] == null
-          ? null
+          ? const ProfileModel()
           : ProfileModel.fromJson(json['pairing'] as Map<String, dynamic>),
       inboxChannel: json['inbox_channel'] as String? ?? 'default_inbox_channel',
       inboxLastMessage: json['inbox_last_message'] as String?,

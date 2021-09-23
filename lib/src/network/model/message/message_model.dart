@@ -10,7 +10,7 @@ part 'message_model.g.dart';
 @immutable
 @JsonSerializable(fieldRename: FieldRename.snake)
 class MessageModel extends Equatable {
-  final int? id;
+  final int id;
   final int? idSender;
   final String? inboxChannel;
   final String? messageContent;

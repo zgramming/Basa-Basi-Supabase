@@ -41,7 +41,7 @@ final searchUserByEmailOrUsername = AutoDisposeFutureProvider<List<ProfileModel>
   ///? END HIVE SECTION
 
   final profiles = await ref.watch(SearchProfileProvider.provider.notifier).searchUsers(
-        idUser: user?.id ?? 0,
+        idUser: user.id,
         query: query!,
       );
 

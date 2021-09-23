@@ -34,9 +34,9 @@ class AccountHeader extends ConsumerWidget {
               ),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(15.0),
-                child: (user?.pictureProfile != null || (user?.pictureProfile?.isNotEmpty ?? false))
+                child: (user.pictureProfile != null || (user.pictureProfile?.isNotEmpty ?? false))
                     ? CachedNetworkImage(
-                        imageUrl: '${user?.pictureProfile}',
+                        imageUrl: '${user.pictureProfile}',
                         fit: BoxFit.cover,
                       )
                     : Padding(
@@ -55,7 +55,7 @@ class AccountHeader extends ConsumerWidget {
                 children: [
                   const SizedBox(height: 10),
                   Text(
-                    user?.fullname ?? 'Zeffry Reynando Alakazam',
+                    user.fullname,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: Constant.comfortaa.copyWith(
@@ -68,7 +68,7 @@ class AccountHeader extends ConsumerWidget {
                       text: 'Username : ',
                       children: [
                         TextSpan(
-                          text: '${user?.username}',
+                          text: user.username,
                           style: Constant.comfortaa.copyWith(
                             fontWeight: FontWeight.bold,
                             decoration: TextDecoration.underline,

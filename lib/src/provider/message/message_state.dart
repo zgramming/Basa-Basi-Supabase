@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:equatable/equatable.dart';
 
 import '../../network/model/network.dart';
@@ -10,8 +11,31 @@ class MessageState extends Equatable {
 
   int get total => items.length;
 
-  MessageState addAll(List<MessageModel> values) => copyWith(items: [...values]);
-  MessageState add(MessageModel value) {
+  MessageState upsert({
+    required MessageModel value,
+  }) {
+    final isExists = items.firstWhereOrNull((element) => element.id == value.id);
+
+    if (isExists != null) {
+      return copyWith(
+        items: [
+          for (final item in items)
+            if (item.id == value.id) value else item
+        ],
+      );
+    } else {
+      return copyWith(items: [...items, value]);
+    }
+  }
+
+  MessageState addAll({
+    required List<MessageModel> values,
+  }) =>
+      copyWith(items: [...values]);
+
+  MessageState add({
+    required MessageModel value,
+  }) {
     final result = copyWith(items: [value, ...items]).items;
     return copyWith(items: result);
   }
@@ -22,10 +46,14 @@ class MessageState extends Equatable {
     return copyWith(items: items);
   }
 
-  MessageState delete(int id) =>
+  MessageState delete({
+    required int id,
+  }) =>
       copyWith(items: [...items.where((element) => element.id != id).toList()]);
 
-  MessageState updateMessageToRead(int idUser) {
+  MessageState updateAllMessageToRead({
+    required int idUser,
+  }) {
     return copyWith(
       items: [
         for (final item in items)

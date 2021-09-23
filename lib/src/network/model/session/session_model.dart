@@ -11,19 +11,19 @@ part 'session_model.g.dart';
 class SessionModel extends Equatable {
   final bool alreadyOnboarding;
   final bool isDarkMode;
-  final ProfileModel? user;
+  final ProfileModel user;
 
   const SessionModel({
     this.alreadyOnboarding = false,
     this.isDarkMode = false,
-    this.user,
+    this.user = const ProfileModel(),
   });
 
   factory SessionModel.fromJson(Map<String, dynamic> json) => _$SessionModelFromJson(json);
   Map<String, dynamic> toJson() => _$SessionModelToJson(this);
 
   @override
-  List<Object?> get props => [alreadyOnboarding, isDarkMode, user];
+  List<Object> get props => [alreadyOnboarding, isDarkMode, user];
 
   @override
   bool get stringify => true;
@@ -32,7 +32,6 @@ class SessionModel extends Equatable {
     bool? alreadyOnboarding,
     bool? isDarkMode,
     ProfileModel? user,
-    List<ProfileModel?>? senders,
   }) {
     return SessionModel(
       alreadyOnboarding: alreadyOnboarding ?? this.alreadyOnboarding,

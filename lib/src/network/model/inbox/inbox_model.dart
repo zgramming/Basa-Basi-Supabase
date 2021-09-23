@@ -53,9 +53,9 @@ const messageStatusValues = {
 @JsonSerializable(fieldRename: FieldRename.snake)
 class InboxModel extends Equatable {
   final int id;
-  final ProfileModel? user;
+  final ProfileModel user;
   final int idSender;
-  final ProfileModel? pairing;
+  final ProfileModel pairing;
   final String inboxChannel;
   final String? inboxLastMessage;
   @JsonKey(
@@ -95,9 +95,9 @@ class InboxModel extends Equatable {
 
   const InboxModel({
     this.id = 0,
-    this.user,
+    this.user = const ProfileModel(),
     this.idSender = 0,
-    this.pairing,
+    this.pairing = const ProfileModel(),
     this.inboxChannel = 'default_inbox_channel',
     this.inboxLastMessage,
     this.inboxLastMessageDate,

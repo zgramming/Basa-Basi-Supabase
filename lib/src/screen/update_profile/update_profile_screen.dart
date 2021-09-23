@@ -36,7 +36,7 @@ class _UpdateProfileScreenState extends ConsumerState<UpdateProfileScreen> {
   void initState() {
     super.initState();
     final _user = ref.read(SessionProvider.provider).session.user;
-    user = _user ?? const ProfileModel();
+    user = _user;
 
     _usernameController = TextEditingController(text: '${user?.username}');
     _fullnameController = TextEditingController(text: '${user?.fullname}');

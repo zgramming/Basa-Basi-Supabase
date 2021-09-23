@@ -16,14 +16,14 @@ class MessageAppbarTitle extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final _pairing = ref.watch(pairing).state;
     Widget image;
-    if (_pairing?.pictureProfile == null || (_pairing?.pictureProfile?.isEmpty ?? true)) {
+    if (_pairing.pictureProfile == null || (_pairing.pictureProfile?.isEmpty ?? true)) {
       image = Image.asset(
         '${appConfig.urlImageAsset}/ob1.png',
         fit: BoxFit.cover,
       );
     } else {
       image = CachedNetworkImage(
-        imageUrl: '${_pairing!.pictureProfile}',
+        imageUrl: '${_pairing.pictureProfile}',
         fit: BoxFit.cover,
         errorWidget: (context, url, error) => const Center(
           child: CircleAvatar(
@@ -50,7 +50,7 @@ class MessageAppbarTitle extends ConsumerWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              _pairing?.fullname ?? '-',
+              _pairing.fullname,
               style: Constant.maitree.copyWith(
                 fontSize: 14.0,
                 fontWeight: FontWeight.bold,

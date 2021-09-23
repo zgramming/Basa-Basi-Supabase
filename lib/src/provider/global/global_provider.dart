@@ -8,4 +8,4 @@ final isLoadingArchived = StateProvider.autoDispose<bool>((ref) => false);
 final querySearch = StateProvider.autoDispose<String?>((ref) => null);
 
 /// Keep Pairing to variable, then we can reuse it on anywhere widget
-final pairing = StateProvider<ProfileModel?>((ref) => null);
+final pairing = StateProvider<ProfileModel>((ref) => const ProfileModel());

@@ -8,7 +8,7 @@ part 'profile_model.g.dart';
 @immutable
 @JsonSerializable(fieldRename: FieldRename.snake)
 class ProfileModel extends Equatable {
-  final int? id;
+  final int id;
   final String fullname;
   final String email;
   final String password;

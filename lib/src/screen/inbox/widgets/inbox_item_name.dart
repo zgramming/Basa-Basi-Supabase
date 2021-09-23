@@ -13,7 +13,7 @@ class InboxItemName extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Text(
-      inbox.pairing?.fullname ?? '-',
+      inbox.pairing.fullname,
       style: Constant.comfortaa.copyWith(
         fontWeight: FontWeight.bold,
         fontSize: 14.0,

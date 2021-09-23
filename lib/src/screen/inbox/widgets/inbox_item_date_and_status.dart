@@ -19,7 +19,7 @@ class InboxItemDateAndStatus extends ConsumerWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
-        if (inbox.idSender == user?.id)
+        if (inbox.idSender == user.id)
           AnimatedContainer(
             duration: const Duration(seconds: 2),
             curve: Curves.bounceIn,

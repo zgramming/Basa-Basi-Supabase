@@ -28,31 +28,18 @@ class MessageProvider extends StateNotifier<MessageState> {
 
     return MessageProvider(
       inboxProvider: inboxProvider,
-      yourPairing: _pairing!,
-      you: you!,
+      yourPairing: _pairing,
+      you: you,
     );
   });
 
-  void addMessage(MessageModel value) {
-    state = state.add(value);
-  }
-
-  void deleteMessage(int id) {
-    state = state.delete(id);
-  }
-
-  void updateMessage(MessageModel value) {
-    state = state.update(value);
-  }
-
-  Future<List<MessageModel>> _getAllMessageByInboxChannel(String inboxChannel) async {
+  Future<void> _getAllMessageByInboxChannel(String inboxChannel) async {
     final result = await SupabaseQuery.instance.getAllMessageByInboxChannel(inboxChannel);
 
-    if (mounted) state = state.addAll(result);
-    return result;
+    if (mounted) state = state.addAll(values: result);
   }
 
-  Future<MessageModel> sendMessage({
+  Future<void> sendMessage({
     // required MessagePost post,
     required String messageContent,
     required MessageStatus status,
@@ -61,8 +48,8 @@ class MessageProvider extends StateNotifier<MessageState> {
   }) async {
     final now = DateTime.now();
     final inboxChannel = getConversationID(
-      you: you.id ?? 0,
-      pairing: yourPairing.id ?? 0,
+      you: you.id,
+      pairing: yourPairing.id,
     );
 
     final post = MessagePost(
@@ -76,11 +63,7 @@ class MessageProvider extends StateNotifier<MessageState> {
       messageType: type,
     );
 
-    /// Insert for your inbox
-    final result = await SupabaseQuery.instance.sendMessage(post: post);
-
-    /// After insert message
-    /// Then insert to inbox
+    /// Insert/Update to [inbox]
     await inboxProvider.insertInbox(
       pairing: yourPairing,
       inboxChannel: inboxChannel,
@@ -90,72 +73,93 @@ class MessageProvider extends StateNotifier<MessageState> {
       inboxLastMessageType: post.messageType,
     );
 
-    state = state.add(result);
-    return result;
+    /// Then Insert into [message]
+    final result = await SupabaseQuery.instance.sendMessage(post: post);
+
+    upsert(value: result);
   }
 
   Future<void> updateTyping() async {
-    await SupabaseQuery.instance
-        .updateTypingInbox(you: you.id ?? 0, idPairing: yourPairing.id ?? 0);
+    await SupabaseQuery.instance.updateTypingInbox(
+      you: you.id,
+      idPairing: yourPairing.id,
+    );
   }
 
-  Future<void> _updateMessageToRead() async {
+  Future<void> updateAllMessageStatusToRead({
+    required int idUser,
+  }) async {
     final inboxChannel = getConversationID(
-      you: you.id ?? 0,
-      pairing: yourPairing.id ?? 0,
+      you: you.id,
+      pairing: yourPairing.id,
     );
 
     await SupabaseQuery.instance.updateIsReadMessage(
       messageStatus: MessageStatus.read,
       inboxChannel: inboxChannel,
-      idUser: yourPairing.id ?? 0,
+      idUser: idUser,
     );
 
-    state = state.updateMessageToRead(yourPairing.id ?? 0);
+    _updateAllMessageStatusToRead(idUser: idUser);
+  }
+
+  void deleteMessage({
+    required int id,
+  }) {
+    state = state.delete(id: id);
+  }
+
+  void upsert({
+    required MessageModel value,
+  }) {
+    state = state.upsert(value: value);
+  }
+
+  void _updateAllMessageStatusToRead({
+    required int idUser,
+  }) {
+    state = state.updateAllMessageToRead(idUser: idUser);
   }
 }
 
 final _listenMessage = StreamProvider.autoDispose.family<void, String>((ref, inboxChannel) async* {
+  final user = ref.watch(SessionProvider.provider).session.user;
+
   final subscription = Constant.supabase
       .from('message:inbox_channel=eq.$inboxChannel')
-      .on(SupabaseEventTypes.insert, (eventInsert) {
-    log('Listen Realtime Insert Message EventType ${eventInsert.eventType}');
-    log('Listen Realtime Insert Message NewRecord ${eventInsert.newRecord}');
+      .on(SupabaseEventTypes.all, (events) async {
+    if (events.eventType == "INSERT" || events.eventType == "UPDATE") {
+      /// Listen INSERT & UPDATE mode
 
-    /// Insert Message
-    if (eventInsert.newRecord != null) {
-      final user = ref.watch(SessionProvider.provider).session.user;
-      final MessageModel value =
-          MessageModel.fromJson(Map<String, dynamic>.from(eventInsert.newRecord!));
+      log('Listen Realtime Insert/Update Event Type ${events.eventType}');
+      log('Listen Realtime Insert/Update Message NewRecord ${events.newRecord}');
 
-      /// Masukkan apabila partner kita mengirimkan pesan
-      if (user?.id != value.idSender) {
-        ref.read(MessageProvider.provider.notifier).addMessage(value);
+      if (events.newRecord != null) {
+        final MessageModel value =
+            MessageModel.fromJson(Map<String, dynamic>.from(events.newRecord!));
+
+        /// Masukkan apabila partner kita mengirimkan pesan
+        ref.read(MessageProvider.provider.notifier).upsert(value: value);
+
+        /// Jika yang mengirim pesan bukan aku (berarti pairingnya), update semua message aku menjadi read
+        /// Ini mengindikasikan kita berada di room yang sama, dan pasti pesan kita dibaca oleh dia
+        if (user.id != value.idSender) {
+          await Future.delayed(Duration.zero, () {
+            ref
+                .read(MessageProvider.provider.notifier)
+                .updateAllMessageStatusToRead(idUser: user.id);
+          });
+        }
       }
-    }
-  }).on(SupabaseEventTypes.update, (eventUpdated) {
-    log('Listen Realtime Updated Message EventType ${eventUpdated.eventType}');
-    log('Listen Realtime Updated Message NewRecord ${eventUpdated.newRecord}');
+    } else {
+      /// Listen Delete Mode
+      log('Listen Realtime Deleted Message OldRecord ${events.oldRecord}');
 
-    /// Update Message
-    if (eventUpdated.newRecord != null) {
-      final MessageModel value =
-          MessageModel.fromJson(Map<String, dynamic>.from(eventUpdated.newRecord!));
-      final user = ref.watch(SessionProvider.provider).session.user;
-
-      /// Masukkan apabila partner kita mengirimkan pesan
-      if (user?.id != value.idSender) {
-        ref.read(MessageProvider.provider.notifier).updateMessage(value);
+      if (events.oldRecord != null) {
+        final MessageModel value =
+            MessageModel.fromJson(Map<String, dynamic>.from(events.oldRecord!));
+        ref.read(MessageProvider.provider.notifier).deleteMessage(id: value.id);
       }
-    }
-  }).on(SupabaseEventTypes.delete, (eventDeleted) {
-    log('Listen Realtime Deleted Message EventType ${eventDeleted.eventType}');
-    log('Listen Realtime Deleted Message NewRecord ${eventDeleted.newRecord}');
-
-    if (eventDeleted.oldRecord != null) {
-      final MessageModel value =
-          MessageModel.fromJson(Map<String, dynamic>.from(eventDeleted.oldRecord!));
-      ref.read(MessageProvider.provider.notifier).deleteMessage(value.id ?? 0);
     }
   }).subscribe((String event, {String? errorMsg}) {
     log('Listen Event Realtime Message: $event error: $errorMsg');
@@ -171,7 +175,7 @@ final getAllMessage = StreamProvider.autoDispose((ref) async* {
   final user = ref.watch(SessionProvider.provider).session.user;
   final _pairing = ref.watch(pairing).state;
 
-  final inboxChannel = getConversationID(you: user?.id ?? 0, pairing: _pairing?.id ?? 0);
+  final inboxChannel = getConversationID(you: user.id, pairing: _pairing.id);
 
   final messagesNotifier = ref.watch(MessageProvider.provider.notifier);
   final inboxNotifier = ref.watch(InboxProvider.provider.notifier);
@@ -181,23 +185,23 @@ final getAllMessage = StreamProvider.autoDispose((ref) async* {
     messagesNotifier._getAllMessageByInboxChannel(inboxChannel),
 
     /// update message to read
-    messagesNotifier._updateMessageToRead(),
+    messagesNotifier.updateAllMessageStatusToRead(idUser: _pairing.id),
 
     /// Reset totalUnreadMessage to 0
     inboxNotifier.resetUnreadMessageToZero(
       inboxChannel: inboxChannel,
-      idPairing: _pairing?.id ?? 0,
+      idPairing: _pairing.id,
     ),
 
     /// Update last message status your pairing to read
     inboxNotifier.updateLastMessageStatusInbox(
-      idPairing: _pairing?.id ?? 0,
+      idPairing: _pairing.id,
       inboxChannel: inboxChannel,
     ),
   ]);
 
   /// Listen upcoming message by inbox channel
-  ref.watch(_listenMessage(inboxChannel).stream);
+  ref.watch(_listenMessage(inboxChannel).last);
 
   yield true;
 });

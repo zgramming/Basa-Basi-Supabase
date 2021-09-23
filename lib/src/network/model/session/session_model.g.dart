@@ -10,7 +10,7 @@ SessionModel _$SessionModelFromJson(Map<String, dynamic> json) => SessionModel(
       alreadyOnboarding: json['already_onboarding'] as bool? ?? false,
       isDarkMode: json['is_dark_mode'] as bool? ?? false,
       user: json['user'] == null
-          ? null
+          ? const ProfileModel()
           : ProfileModel.fromJson(json['user'] as Map<String, dynamic>),
     );
 

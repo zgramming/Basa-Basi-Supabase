@@ -19,10 +19,10 @@ class InboxItemImage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final isSelectedInbox = ref.watch(SelectedInboxProvider.provider).isExists(inbox);
 
-    final pairingInbox = ref.watch(myPairingInbox(inbox.pairing?.id ?? 0)).state;
+    final pairingInbox = ref.watch(myPairingInbox(inbox.pairing.id)).state;
 
     Widget image;
-    if (inbox.pairing?.pictureProfile == null || (inbox.pairing?.pictureProfile?.isEmpty ?? true)) {
+    if (inbox.pairing.pictureProfile == null || (inbox.pairing.pictureProfile?.isEmpty ?? true)) {
       image = Image.asset(
         '${appConfig.urlImageAsset}/ob3.png',
         fit: BoxFit.cover,
@@ -30,7 +30,7 @@ class InboxItemImage extends ConsumerWidget {
       );
     } else {
       image = CachedNetworkImage(
-        imageUrl: '${inbox.pairing?.pictureProfile}',
+        imageUrl: '${inbox.pairing.pictureProfile}',
         fit: BoxFit.cover,
         width: 80.0,
         errorWidget: (context, url, error) => const Center(
@@ -60,12 +60,12 @@ class InboxItemImage extends ConsumerWidget {
             onTap: () async {
               String url;
               ImageViewType type;
-              if (inbox.pairing?.pictureProfile == null ||
-                  (inbox.pairing?.pictureProfile?.isEmpty ?? true)) {
+              if (inbox.pairing.pictureProfile == null ||
+                  (inbox.pairing.pictureProfile?.isEmpty ?? true)) {
                 url = '${appConfig.urlImageAsset}/ob3.png';
                 type = ImageViewType.asset;
               } else {
-                url = '${inbox.pairing?.pictureProfile}';
+                url = '${inbox.pairing.pictureProfile}';
                 type = ImageViewType.network;
               }
               await GlobalFunction.showDetailSingleImage(

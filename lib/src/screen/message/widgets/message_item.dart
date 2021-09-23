@@ -17,7 +17,7 @@ class MessageItem extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.watch(SessionProvider.provider).session.user;
-    final meIsSender = user?.id == message.idSender;
+    final meIsSender = user.id == message.idSender;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 8.0),
       child: Align(

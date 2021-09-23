@@ -313,15 +313,15 @@ class SupabaseQuery {
         .execute(count: CountOption.exact);
 
     final data = <String, dynamic>{
-      'id_sender': idSender,
-      'id_user': idUser,
       'inbox_channel': inboxChannel,
+      'id_sender': idSender,
     };
 
     final isNotExists = (query.data ?? 0) == 0;
     PostgrestResponse response;
     if (isNotExists) {
       /// Insert
+      data['id_user'] = idUser;
       data['id_pairing'] = idPairing;
       data['created_at'] = DateTime.now().millisecondsSinceEpoch;
 
@@ -333,12 +333,11 @@ class SupabaseQuery {
       data['inbox_last_message_date'] = inboxLastMessageDate;
       data['inbox_last_message_status'] = inboxLastMessageStatus;
       data['inbox_last_message_type'] = inboxLastMessageType;
-      data['total_unread_message'] = totalUnreadMessage;
 
       response = await _supabase
           .from('inbox')
           .update(data)
-          .eq('id_user', idUser)
+          // .eq('id_user', idUser)
           .eq('inbox_channel', inboxChannel)
           .execute();
     }
@@ -348,6 +347,20 @@ class SupabaseQuery {
     }
 
     return response;
+  }
+
+  Future<PostgrestResponse> increaseTotalUnreadMessage(int idUser) async {
+    final result = await _supabase
+        .from(Constant.tableInbox)
+        .update({'total_unread_message': 'total_unread_message + 1'})
+        .eq('id_user', idUser)
+        .execute();
+
+    if (result.error?.message != null) {
+      throw Exception(result.error?.message);
+    }
+
+    return result;
   }
 
   Future<PostgrestResponse> upsertArchiveInbox(List<InboxModel> values) async {
@@ -504,12 +517,17 @@ class SupabaseQuery {
         .eq('id_sender', idUser)
         .not('message_status', 'eq', messageStatusValues[MessageStatus.read])
         .execute(count: CountOption.exact);
+
     if (result.error?.message != null) {
       throw Exception(result.error?.message);
     }
 
+    final total = List.from(result.data as List).length;
+
     log('result Query totalUnreadMessage ${result.data}');
-    return List.from(result.data as List).length;
+    log('result Query totalUnreadMessage Length ${result.data}');
+
+    return total;
   }
 
   ///* END Message Section

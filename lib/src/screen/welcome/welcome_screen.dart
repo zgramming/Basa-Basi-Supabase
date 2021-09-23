@@ -1,11 +1,8 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:global_template/global_template.dart';
 
-import './widgets/search_message.dart';
 import './widgets/welcome_navbar.dart';
 
 import '../../provider/provider.dart';
@@ -13,6 +10,7 @@ import '../../utils/utils.dart';
 
 import '../account/account_screen.dart';
 import '../inbox/inbox_screen.dart';
+import '../search_message/search_message.dart';
 import '../story/story_screen.dart';
 
 class WelcomeScreen extends ConsumerStatefulWidget {
@@ -45,7 +43,6 @@ class _WelcomeScreenState extends ConsumerState<WelcomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    log('DateTimeNow WelcomeScreen ${DateTime.now().add(const Duration(seconds: 1000)).millisecondsSinceEpoch}');
     Widget fab = const SizedBox();
     if (_currentIndex == 0) {
       fab = FloatingActionButton(

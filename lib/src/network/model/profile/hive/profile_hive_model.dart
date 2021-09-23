@@ -8,7 +8,7 @@ part 'profile_hive_model.g.dart';
 @HiveType(typeId: 0)
 class ProfileHiveModel extends Equatable {
   @HiveField(0)
-  final int? id;
+  final int id;
   @HiveField(1)
   final String fullname;
   @HiveField(2)
@@ -31,7 +31,7 @@ class ProfileHiveModel extends Equatable {
   final DateTime? updatedUsernameAt;
 
   const ProfileHiveModel({
-    this.id,
+    this.id = 0,
     this.fullname = '',
     this.email = '',
     this.password = '',

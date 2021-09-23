@@ -70,7 +70,7 @@ class _MessageContentFloatingTypingState extends ConsumerState<MessageContentFlo
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                '${inbox.user?.fullname} sedang mengetik',
+                '${inbox.user.fullname} sedang mengetik',
                 textAlign: TextAlign.center,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
