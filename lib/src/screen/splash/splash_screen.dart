@@ -32,12 +32,12 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
           routeName: OnboardingScreen.routeNamed,
           predicate: (route) => false,
         );
-      } else if (result.session.user == null) {
+      } else if (result.session.user.id == 0) {
         GlobalNavigation.pushNamedAndRemoveUntil(
           routeName: LoginScreen.routeNamed,
           predicate: (route) => false,
         );
-      } else if (result.session.user != null) {
+      } else {
         GlobalNavigation.pushNamedAndRemoveUntil(
           routeName: WelcomeScreen.routeNamed,
           predicate: (route) => false,
