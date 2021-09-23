@@ -1,6 +1,5 @@
 import 'dart:developer';
 
-import 'package:basa_basi_supabase/src/utils/supabase_query.dart';
 import 'package:global_template/global_template.dart';
 import 'package:hive/hive.dart';
 import 'package:image_picker/image_picker.dart';
@@ -40,7 +39,7 @@ String compareDateMessage(DateTime date) {
 
 bool isStillTyping(DateTime? lastTyping) {
   if (lastTyping != null) {
-    final diff = lastTyping.add(const Duration(seconds: 5)).difference(DateTime.now()).inSeconds;
+    final diff = lastTyping.add(const Duration(seconds: 3)).difference(DateTime.now()).inSeconds;
     // log('diff $diff');
     return diff >= 0;
   }

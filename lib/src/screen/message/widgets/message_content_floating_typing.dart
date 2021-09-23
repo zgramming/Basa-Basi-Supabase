@@ -25,7 +25,7 @@ class _MessageContentFloatingTypingState extends ConsumerState<MessageContentFlo
     super.initState();
     _pairing = ref.read(pairing).state;
 
-    _timer = Timer.periodic(const Duration(seconds: 3), (timer) {
+    _timer = Timer.periodic(const Duration(milliseconds: 1500), (timer) {
       final inbox = ref.read(myPairingInbox(_pairing?.id ?? 0)).state;
       final isTyping = isStillTyping(inbox.lastTypingDate);
 
@@ -66,12 +66,19 @@ class _MessageContentFloatingTypingState extends ConsumerState<MessageContentFlo
             color: colorPallete.accentColor,
             borderRadius: BorderRadius.circular(30.0),
           ),
-          child: Text(
-            '${inbox.user?.fullname} sedang mengetik',
-            textAlign: TextAlign.center,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: Constant.comfortaa.copyWith(color: Colors.white),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                '${inbox.user?.fullname} sedang mengetik',
+                textAlign: TextAlign.center,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: Constant.comfortaa.copyWith(color: Colors.white),
+              ),
+              const SizedBox(width: 5),
+              const JumpingDot(numberOfDot: 3, dotSize: 5, jumpingY: -10, dotColor: Colors.white),
+            ],
           ),
         ),
       ),
