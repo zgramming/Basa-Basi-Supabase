@@ -124,7 +124,7 @@ class _SetupProfileScreenState extends ConsumerState<SetupProfileScreen> {
                     try {
                       ref.read(isLoading).state = true;
 
-                      await ref.read(ProfileProvider.provider.notifier).setupProfile(
+                      await ref.read(ProfileProvider.provider.notifier).updateProfile(
                             user.id,
                             username: _usernameController.text,
                             fullname: _fullnameController.text,

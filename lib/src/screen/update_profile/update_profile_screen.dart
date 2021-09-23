@@ -107,7 +107,7 @@ class _UpdateProfileScreenState extends ConsumerState<UpdateProfileScreen> {
                     }
                   }
 
-                  await ref.read(ProfileProvider.provider.notifier).setupProfile(
+                  await ref.read(ProfileProvider.provider.notifier).updateProfile(
                         user?.id ?? 0,
                         description: _descriptionController.text,
                         fullname: _fullnameController.text,
