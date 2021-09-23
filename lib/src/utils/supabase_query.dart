@@ -129,36 +129,42 @@ class SupabaseQuery {
     int idUser, {
     required String oldUsername,
     required String profileUrl,
-    String? username,
+    String? newUsername,
     String? fullname,
     String? description,
     File? file,
   }) async {
     String? pictureProfileUrl;
+    DateTime? updatedUsernameAt;
 
-    /// Check apakah kuota untuk mengganti username masih ada / belum
-    final quotaChangeUsernameStillExists = await _supabase
-        .from(Constant.tableProfile)
-        .select('updated_username_at')
-        .eq('id', idUser)
-        .single()
-        .execute();
+    log('newUsername $newUsername || oldUsername $oldUsername');
+    if (newUsername != oldUsername) {
+      /// Check apakah kuota untuk mengganti username masih ada / belum
+      final quotaChangeUsernameStillExists = await _supabase
+          .from(Constant.tableProfile)
+          .select('updated_username_at')
+          .eq('id', idUser)
+          .single()
+          .execute();
 
-    if (quotaChangeUsernameStillExists.error?.message != null) {
-      throw Exception(quotaChangeUsernameStillExists.error?.message);
-    }
+      if (quotaChangeUsernameStillExists.error?.message != null) {
+        throw Exception(quotaChangeUsernameStillExists.error?.message);
+      }
 
-    final mapQuotaChangeUsernameStillExists = quotaChangeUsernameStillExists.data as Map;
+      final mapQuotaChangeUsernameStillExists = quotaChangeUsernameStillExists.data as Map;
 
-    if (mapQuotaChangeUsernameStillExists['updated_username_at'] != null) {
-      throw Exception('Tidak bisa mengubah username kembali, karena sudah melebihi kuota');
+      if (mapQuotaChangeUsernameStillExists['updated_username_at'] != null) {
+        throw Exception('Tidak bisa mengubah username kembali, karena sudah melebihi kuota');
+      }
+
+      updatedUsernameAt = DateTime.now();
     }
 
     /// Cari username apakah sudah ada/belum
     final usernameIsExists = await _supabase
         .from(Constant.tableProfile)
         .select('id')
-        .eq('username', username)
+        .eq('username', newUsername)
         .not('id', 'eq', idUser)
         .execute();
 
@@ -169,7 +175,7 @@ class SupabaseQuery {
     final mapUsername = usernameIsExists.data as List;
 
     if (mapUsername.isNotEmpty) {
-      throw Exception('Username dengan nama $username sudah digunakan oleh orang lain.');
+      throw Exception('Username dengan nama $newUsername sudah digunakan oleh orang lain.');
     }
 
     if (file != null) {
@@ -188,12 +194,13 @@ class SupabaseQuery {
     final result = await _supabase
         .from('profile')
         .update({
-          'username': username,
+          'username': newUsername,
           if (pictureProfileUrl != null) 'picture_profile': pictureProfileUrl,
           'fullname': fullname,
           'description': description,
           'is_new_user': false,
-          if (username != oldUsername) 'updated_username_at': DateTime.now().millisecondsSinceEpoch,
+          if (updatedUsernameAt != null)
+            'updated_username_at': updatedUsernameAt.millisecondsSinceEpoch,
         })
         .eq('id', idUser)
         .execute();
