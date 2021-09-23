@@ -27,7 +27,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       urlImageAsset: '${appConfig.urlImageAsset}/ob1.png',
       title: 'Tampilan & Kemudahan',
       subtitle:
-          'Dengan tampilan yang menarik dan kemudahan dalam penggunaan aplikasi, kami berusaha agar kamu dapat menikmati aplikasi se-nyaman mungkin',
+          'Dengan tampilan yang menarik, kami berusaha agar kamu dapat menikmati aplikasi se-nyaman mungkin',
     ),
     PageItem(
       urlImageAsset: '${appConfig.urlImageAsset}/ob2.png',
