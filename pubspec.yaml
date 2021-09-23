@@ -65,7 +65,7 @@ dev_dependencies:
 flutter_icons:
   android: true
   ios: true
-  image_path: "assets/images/logo_primary.png"
+  image_path: "assets/images/logo_primary_bg.png"
   remove_alpha_ios: true
 
 flutter_native_splash:

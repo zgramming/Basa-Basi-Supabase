@@ -28,7 +28,7 @@ class MyApp extends StatelessWidget {
       localizationsDelegates: const [GlobalMaterialLocalizations.delegate],
       supportedLocales: const [Locale('id', 'ID')],
       navigatorKey: navigatorKey,
-      color: Colors.white,
+      color: colorPallete.primaryColor,
       theme: ThemeData(
         primaryColor: colorPallete.primaryColor,
         textTheme: GoogleFonts.comfortaaTextTheme(Theme.of(context).textTheme),
