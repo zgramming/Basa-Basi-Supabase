@@ -15,6 +15,7 @@ import './screen/splash/splash_screen.dart';
 import './screen/update_profile/update_profile_screen.dart';
 import './screen/welcome/welcome_screen.dart';
 import './screen/welcome/widgets/search_message.dart';
+import './utils/utils.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
@@ -26,6 +27,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       localizationsDelegates: const [GlobalMaterialLocalizations.delegate],
       supportedLocales: const [Locale('id', 'ID')],
+      navigatorKey: navigatorKey,
       color: Colors.white,
       theme: ThemeData(
         primaryColor: colorPallete.primaryColor,
