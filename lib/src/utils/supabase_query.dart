@@ -125,7 +125,7 @@ class SupabaseQuery {
     return result;
   }
 
-  Future<ProfileModel> setupProfile(
+  Future<ProfileModel> updateProfile(
     int idUser, {
     required String oldUsername,
     required String profileUrl,
@@ -180,7 +180,7 @@ class SupabaseQuery {
 
     if (file != null) {
       final generateRandomString = GlobalFunction.generateRandomString(20);
-      final storage = _supabase.storage.from('avatars');
+      final storage = _supabase.storage.from(Constant.avatarsBucket);
       final filename = "$generateRandomString${path.extension(file.path)}";
       await storage.upload(filename, file);
       final getUrl = storage.getPublicUrl(filename);
@@ -305,34 +305,41 @@ class SupabaseQuery {
     int? totalUnreadMessage,
   }) async {
     final query = await _supabase
-        .from('inbox')
+        .from(Constant.tableInbox)
         .select('id')
-        .eq('id_user', idUser)
+        // .eq('id_user', idUser)
         .eq('inbox_channel', inboxChannel)
-        .single()
         .execute(count: CountOption.exact);
 
     final data = <String, dynamic>{
       'inbox_channel': inboxChannel,
       'id_sender': idSender,
+      'inbox_last_message': inboxLastMessage,
+      'inbox_last_message_date': inboxLastMessageDate,
+      'inbox_last_message_status': inboxLastMessageStatus,
+      'inbox_last_message_type': inboxLastMessageType,
     };
 
-    final isNotExists = (query.data ?? 0) == 0;
+    final isEmpty = List.from(query.data as List).isEmpty;
+    // log('query data ${query.error}');
     PostgrestResponse response;
-    if (isNotExists) {
+    if (isEmpty) {
       /// Insert
       data['id_user'] = idUser;
       data['id_pairing'] = idPairing;
       data['created_at'] = DateTime.now().millisecondsSinceEpoch;
 
+      /// Insert first for [my] inbox
       response = await _supabase.from('inbox').insert(data).execute();
+
+      data['id_user'] = idPairing;
+      data['id_pairing'] = idUser;
+
+      /// Insert second for [pairing] inbox
+      await _supabase.from('inbox').insert(data).execute();
     } else {
       /// Update
       data['updated_at'] = DateTime.now().millisecondsSinceEpoch;
-      data['inbox_last_message'] = inboxLastMessage;
-      data['inbox_last_message_date'] = inboxLastMessageDate;
-      data['inbox_last_message_status'] = inboxLastMessageStatus;
-      data['inbox_last_message_type'] = inboxLastMessageType;
 
       response = await _supabase
           .from('inbox')
@@ -342,21 +349,31 @@ class SupabaseQuery {
           .execute();
     }
 
-    if (response.error?.message != null) {
+    if (response.error?.code != null) {
       throw Exception(response.error?.message);
     }
 
     return response;
   }
 
-  Future<PostgrestResponse> increaseTotalUnreadMessage(int idUser) async {
-    final result = await _supabase
-        .from(Constant.tableInbox)
-        .update({'total_unread_message': 'total_unread_message + 1'})
-        .eq('id_user', idUser)
-        .execute();
+  Future<PostgrestResponse> increaseTotalUnreadMessage({
+    required int idUser,
+    required String inboxChannel,
+  }) async {
+    /// Equal To :
+    /// UPDATE [inbox] SET total_unread_message = total_unread_message + 1 WHERE id_user = $idUser AND inbox_channel = $inboxChannel
+    final result = await _supabase.rpc(
+      'increment_total_unread_message',
+      params: {
+        'id_userr': idUser,
+        'inbox_channell': inboxChannel,
+      },
+    ).execute();
 
-    if (result.error?.message != null) {
+    log('result increaseTotalUnreadMessage ${result.data}');
+    log('result increaseTotalUnreadMessage ${result.error}');
+
+    if (result.error?.code != null) {
       throw Exception(result.error?.message);
     }
 
@@ -431,7 +448,7 @@ class SupabaseQuery {
   ///* START Message Section
   Future<List<MessageModel>> getAllMessageByInboxChannel(String inboxChannel) async {
     final result = await _supabase
-        .from('message')
+        .from(Constant.tableMessage)
         .select()
         .eq('inbox_channel', inboxChannel)
         .order('message_date')
@@ -456,9 +473,9 @@ class SupabaseQuery {
   Future<MessageModel> sendMessage({
     required MessagePost post,
   }) async {
-    final result = await _supabase.from('message').insert(post.toJson()).execute();
-
-    if (result.error?.message != null) {
+    final result = await _supabase.from(Constant.tableMessage).insert(post.toJson()).execute();
+    log('masuk sini');
+    if (result.error?.code != null) {
       throw Exception(result.error?.message);
     }
 

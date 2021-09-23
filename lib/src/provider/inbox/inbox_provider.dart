@@ -49,7 +49,10 @@ class InboxProvider extends StateNotifier<InboxState> {
           inboxLastMessageType: messageTypeValues[inboxLastMessageType] ?? '',
           totalUnreadMessage: 0,
         ),
-        SupabaseQuery.instance.increaseTotalUnreadMessage(pairing.id),
+        SupabaseQuery.instance.increaseTotalUnreadMessage(
+          idUser: pairing.id,
+          inboxChannel: inboxChannel,
+        ),
       ],
     );
 
