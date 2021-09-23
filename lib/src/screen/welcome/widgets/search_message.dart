@@ -41,7 +41,7 @@ class _SearchMessageState extends State<SearchMessage> {
             children: [
               InkWell(
                 onTap: () async {
-                  await Navigator.pushNamed(context, SearchNewFriendScreen.routeNamed);
+                  await GlobalNavigation.pushNamed(routeName: SearchNewFriendScreen.routeNamed);
                 },
                 child: Ink(
                   decoration: BoxDecoration(
@@ -96,11 +96,7 @@ class _SearchMessageState extends State<SearchMessage> {
                             onTap: () async {
                               /// Initialize pairing;
                               ref.read(pairing).state = inbox.pairing;
-
-                              await Navigator.pushNamed(
-                                context,
-                                MessageScreen.routeNamed,
-                              );
+                              await GlobalNavigation.pushNamed(routeName: MessageScreen.routeNamed);
                             },
                             child: Ink(
                               decoration: BoxDecoration(

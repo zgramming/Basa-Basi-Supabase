@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../provider/provider.dart';
+import '../../utils/utils.dart';
 
 import '../login/login_screen.dart';
 import '../onboarding/onboarding_screen.dart';
@@ -27,11 +28,20 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
       final result = ref.read(SessionProvider.provider);
       log('Splashscreen Session ${result.session.toJson()}');
       if (!result.session.alreadyOnboarding) {
-        Navigator.pushReplacementNamed(context, OnboardingScreen.routeNamed);
+        GlobalNavigation.pushNamedAndRemoveUntil(
+          routeName: OnboardingScreen.routeNamed,
+          predicate: (route) => false,
+        );
       } else if (result.session.user == null) {
-        Navigator.pushReplacementNamed(context, LoginScreen.routeNamed);
+        GlobalNavigation.pushNamedAndRemoveUntil(
+          routeName: LoginScreen.routeNamed,
+          predicate: (route) => false,
+        );
       } else if (result.session.user != null) {
-        Navigator.pushReplacementNamed(context, WelcomeScreen.routeNamed);
+        GlobalNavigation.pushNamedAndRemoveUntil(
+          routeName: WelcomeScreen.routeNamed,
+          predicate: (route) => false,
+        );
       }
     }).onError((error, stackTrace) {
       setState(() {

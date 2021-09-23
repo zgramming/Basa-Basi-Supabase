@@ -131,12 +131,11 @@ class _SignUpFormState extends State<SignUpForm> {
                       await ref.read(SessionProvider.provider.notifier).setUserSession(user);
 
                       _resetForm();
-                      if (mounted) {
-                        await Navigator.pushReplacementNamed(
-                          context,
-                          SetupProfileScreen.routeNamed,
-                        );
-                      }
+
+                      await GlobalNavigation.pushNamedAndRemoveUntil(
+                        routeName: SetupProfileScreen.routeNamed,
+                        predicate: (route) => false,
+                      );
                     } catch (e) {
                       GlobalFunction.showSnackBar(
                         context,
@@ -144,7 +143,9 @@ class _SignUpFormState extends State<SignUpForm> {
                         snackBarType: SnackBarType.error,
                       );
                     } finally {
-                      ref.read(isLoading).state = false;
+                      if (mounted) {
+                        ref.read(isLoading).state = false;
+                      }
                     }
                   },
                   style: ElevatedButton.styleFrom(

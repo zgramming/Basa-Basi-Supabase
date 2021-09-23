@@ -43,7 +43,7 @@ class _MessagePreviewImageState extends ConsumerState<MessagePreviewImage> {
       if (loading.state) {
         GlobalFunction.showDialogLoading(context);
       } else {
-        Navigator.pop(context);
+        GlobalNavigation.pop();
       }
     });
     return GestureDetector(
@@ -133,7 +133,7 @@ class _MessagePreviewImageState extends ConsumerState<MessagePreviewImage> {
                                   );
 
                               if (mounted) {
-                                Navigator.pop(context);
+                                GlobalNavigation.pop();
                               }
                             } catch (e) {
                               GlobalFunction.showSnackBar(

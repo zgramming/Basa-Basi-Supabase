@@ -1,6 +1,5 @@
 import 'dart:developer';
 
-import 'package:basa_basi_supabase/src/screen/welcome/welcome_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -8,7 +7,8 @@ import 'package:global_template/global_template.dart';
 
 import '../../../provider/provider.dart';
 import '../../../utils/utils.dart';
-import '../../setup_profile/setup_profile_screen.dart';
+
+import '../../welcome/welcome_screen.dart';
 
 class SignInForm extends StatefulWidget {
   const SignInForm({
@@ -91,12 +91,10 @@ class _SignInFormState extends State<SignInForm> {
                               password: _passwordController.text,
                             );
 
-                        if (mounted) {
-                          await Navigator.pushReplacementNamed(
-                            context,
-                            WelcomeScreen.routeNamed,
-                          );
-                        }
+                        await GlobalNavigation.pushNamedAndRemoveUntil(
+                          routeName: WelcomeScreen.routeNamed,
+                          predicate: (route) => false,
+                        );
                       } catch (e) {
                         GlobalFunction.showSnackBar(
                           context,
@@ -104,7 +102,9 @@ class _SignInFormState extends State<SignInForm> {
                           snackBarType: SnackBarType.error,
                         );
                       } finally {
-                        ref.read(isLoading).state = false;
+                        if (mounted) {
+                          ref.read(isLoading).state = false;
+                        }
                       }
                     },
                     style: ElevatedButton.styleFrom(

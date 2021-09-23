@@ -7,6 +7,7 @@ import './widgets/account_header.dart';
 import './widgets/account_menu_item.dart';
 
 import '../../provider/provider.dart';
+import '../../utils/utils.dart';
 
 import '../about_developer/about_developer_screen.dart';
 import '../license_image/license_image_screen.dart';
@@ -21,9 +22,7 @@ class AccountScreen extends StatelessWidget {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          const Flexible(
-            child: AccountHeader(),
-          ),
+          const AccountHeader(),
           Expanded(
             flex: 2,
             child: ListView(
@@ -33,7 +32,7 @@ class AccountScreen extends StatelessWidget {
                 AccountMenuItem(
                   title: 'Tentang Developer',
                   onTap: () async {
-                    await Navigator.pushNamed(context, AboutDeveloperScreen.routeNamed);
+                    await GlobalNavigation.pushNamed(routeName: AboutDeveloperScreen.routeNamed);
                   },
                 ),
                 AccountMenuItem(
@@ -56,9 +55,10 @@ class AccountScreen extends StatelessWidget {
                       backgroundColor: Colors.red,
                       onTap: () async {
                         await ref.read(ProfileProvider.provider.notifier).signOut();
-                        await Future.delayed(Duration.zero, () {
-                          Navigator.pushReplacementNamed(context, LoginScreen.routeNamed);
-                        });
+                        await GlobalNavigation.pushNamedAndRemoveUntil(
+                          routeName: LoginScreen.routeNamed,
+                          predicate: (route) => false,
+                        );
                       },
                     );
                   },

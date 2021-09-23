@@ -77,7 +77,7 @@ class ProfileProvider extends StateNotifier<ProfileState> {
   }) async {
     final result = await SupabaseQuery.instance.setupProfile(
       idUser,
-      username: username,
+      newUsername: username,
       file: file,
       fullname: fullname,
       description: description,

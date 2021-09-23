@@ -6,6 +6,8 @@ import './widgets/message_appbar_title.dart';
 import './widgets/message_content.dart';
 import './widgets/message_footer.dart';
 
+import '../../utils/utils.dart';
+
 class MessageScreen extends ConsumerStatefulWidget {
   static const routeNamed = '/message-screen';
 
@@ -36,7 +38,7 @@ class _MessageScreenState extends ConsumerState<MessageScreen> {
         appBar: AppBar(
           leading: IconButton(
             onPressed: () {
-              Navigator.pop(context);
+              GlobalNavigation.pop();
             },
             icon: const Icon(FeatherIcons.chevronLeft),
           ),

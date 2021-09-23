@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import './inbox_archived_appbar.dart';
+import './inbox_item.dart';
+
 import '../../../provider/provider.dart';
-import '../inbox_screen.dart';
 
 class InboxArchived extends StatelessWidget {
   static const routeNamed = '/inbox-archived';

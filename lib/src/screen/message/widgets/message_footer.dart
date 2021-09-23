@@ -27,10 +27,11 @@ class _MessageFooterState extends ConsumerState<MessageFooter> {
   final debounce = Debouncer(milliseconds: 500);
   bool _showButtonImage = true;
   int _flagShowButtonImage = 0;
+
   @override
   void dispose() {
-    super.dispose();
     debounce.dispose();
+    super.dispose();
   }
 
   @override
@@ -109,13 +110,10 @@ class _MessageFooterState extends ConsumerState<MessageFooter> {
                       onTap: () async {
                         final result = await uploadImage(source: ImageSource.camera);
                         if (result != null) {
-                          await Future.delayed(Duration.zero, () {
-                            Navigator.pushNamed(
-                              context,
-                              MessagePreviewImage.routeNamed,
-                              arguments: result,
-                            );
-                          });
+                          await GlobalNavigation.pushNamed(
+                            routeName: MessagePreviewImage.routeNamed,
+                            arguments: result,
+                          );
                         }
                       },
                       child: const Icon(FeatherIcons.camera),
@@ -135,13 +133,10 @@ class _MessageFooterState extends ConsumerState<MessageFooter> {
                               onTap: () async {
                                 final result = await uploadImage(source: ImageSource.camera);
                                 if (result != null) {
-                                  await Future.delayed(Duration.zero, () {
-                                    Navigator.pushNamed(
-                                      context,
-                                      MessagePreviewImage.routeNamed,
-                                      arguments: result,
-                                    );
-                                  });
+                                  await GlobalNavigation.pushNamed(
+                                    routeName: MessagePreviewImage.routeNamed,
+                                    arguments: result,
+                                  );
                                 }
                               },
                             ),
@@ -152,13 +147,10 @@ class _MessageFooterState extends ConsumerState<MessageFooter> {
                               onTap: () async {
                                 final result = await uploadImage();
                                 if (result != null) {
-                                  await Future.delayed(Duration.zero, () {
-                                    Navigator.pushNamed(
-                                      context,
-                                      MessagePreviewImage.routeNamed,
-                                      arguments: result,
-                                    );
-                                  });
+                                  await GlobalNavigation.pushNamed(
+                                    routeName: MessagePreviewImage.routeNamed,
+                                    arguments: result,
+                                  );
                                 }
                               },
                             ),

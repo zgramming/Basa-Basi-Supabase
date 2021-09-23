@@ -1,6 +1,3 @@
-import 'dart:developer';
-
-import 'package:basa_basi_supabase/src/utils/utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -9,6 +6,7 @@ import 'package:global_template/global_template.dart';
 import './message_content_floating_typing.dart';
 import './message_item.dart';
 import '../../../provider/provider.dart';
+import '../../../utils/utils.dart';
 
 class MessageContent extends StatelessWidget {
   const MessageContent({

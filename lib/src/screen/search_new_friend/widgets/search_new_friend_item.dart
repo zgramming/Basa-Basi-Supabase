@@ -25,10 +25,7 @@ class SearchNewFriendItem extends ConsumerWidget {
         onTap: () async {
           /// Initialize pairing;
           ref.read(pairing).state = user;
-          await Navigator.pushNamed(
-            context,
-            MessageScreen.routeNamed,
-          );
+          await GlobalNavigation.pushNamed(routeName: MessageScreen.routeNamed);
         },
         child: Ink(
           decoration: BoxDecoration(
