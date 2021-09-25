@@ -6,7 +6,8 @@ import 'utils.dart';
 class Constant {
   Constant._();
 
-  static final Constant instance = Constant._();
+  static final _instance = Constant._();
+  static Constant get instance => _instance;
 
   static final supabase = SupabaseClient(supabaseUrl, supabaseKey);
 
