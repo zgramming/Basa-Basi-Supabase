@@ -47,22 +47,22 @@ class AccountScreen extends StatelessWidget {
                     );
                   },
                 ),
-                Consumer(
-                  builder: (_, ref, child) {
-                    return AccountMenuItem(
-                      title: 'Keluar (Developer purpose)',
-                      icon: FeatherIcons.logOut,
-                      backgroundColor: Colors.red,
-                      onTap: () async {
-                        await ref.read(ProfileProvider.provider.notifier).signOut();
-                        await GlobalNavigation.pushNamedAndRemoveUntil(
-                          routeName: LoginScreen.routeNamed,
-                          predicate: (route) => false,
-                        );
-                      },
-                    );
-                  },
-                ),
+                // Consumer(
+                //   builder: (_, ref, child) {
+                //     return AccountMenuItem(
+                //       title: 'Keluar (Developer purpose)',
+                //       icon: FeatherIcons.logOut,
+                //       backgroundColor: Colors.red,
+                //       onTap: () async {
+                //         await ref.read(ProfileProvider.provider.notifier).signOut();
+                //         await GlobalNavigation.pushNamedAndRemoveUntil(
+                //           routeName: LoginScreen.routeNamed,
+                //           predicate: (route) => false,
+                //         );
+                //       },
+                //     );
+                //   },
+                // ),
               ],
             ),
           ),
