@@ -28,7 +28,7 @@ class _MessageFooterState extends ConsumerState<MessageFooter> {
   bool _showButtonImage = true;
   int _flagShowButtonImage = 0;
 
-  List<MessageModel> _tempMessages = [];
+  final List<MessageModel> _tempMessages = [];
 
   @override
   void dispose() {
