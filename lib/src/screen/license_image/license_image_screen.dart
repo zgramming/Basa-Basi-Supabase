@@ -33,7 +33,7 @@ class LicenseImageScreen extends StatelessWidget {
               recognizer: TapGestureRecognizer()
                 ..onTap = () async {
                   try {
-                    await openUrl('https://www.freepik.com');
+                    await Shared.instance.openUrl('https://www.freepik.com');
                   } catch (e) {
                     GlobalFunction.showSnackBar(
                       context,
@@ -54,7 +54,7 @@ class LicenseImageScreen extends StatelessWidget {
               recognizer: TapGestureRecognizer()
                 ..onTap = () async {
                   try {
-                    await openUrl('https://www.flaticon.com/');
+                    await Shared.instance.openUrl('https://www.flaticon.com/');
                   } catch (e) {
                     GlobalFunction.showSnackBar(
                       context,

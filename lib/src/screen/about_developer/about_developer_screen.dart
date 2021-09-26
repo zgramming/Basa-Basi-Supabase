@@ -29,7 +29,7 @@ class AboutDeveloperScreen extends StatelessWidget {
           return InkWell(
             onTap: () async {
               try {
-                await openUrl(socialMedia.url);
+                await Shared.instance.openUrl(socialMedia.url);
               } catch (e) {
                 GlobalFunction.showSnackBar(
                   context,

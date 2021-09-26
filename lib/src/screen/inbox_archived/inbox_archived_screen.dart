@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import './inbox_archived_appbar.dart';
-import './inbox_item.dart';
+import './widgets/inbox_archived_appbar.dart';
 
-import '../../../provider/provider.dart';
+import '../../provider/provider.dart';
 
-class InboxArchived extends StatelessWidget {
+import '../inbox/widgets/inbox_item.dart';
+
+class InboxArchivedScreen extends StatelessWidget {
   static const routeNamed = '/inbox-archived';
-  const InboxArchived({Key? key}) : super(key: key);
+  const InboxArchivedScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

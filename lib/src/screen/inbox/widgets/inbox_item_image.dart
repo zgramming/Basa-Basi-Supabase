@@ -27,12 +27,14 @@ class InboxItemImage extends ConsumerWidget {
         '${appConfig.urlImageAsset}/ob3.png',
         fit: BoxFit.cover,
         width: 80.0,
+        height: 80.0,
       );
     } else {
       image = CachedNetworkImage(
         imageUrl: '${inbox.pairing.pictureProfile}',
         fit: BoxFit.cover,
         width: 80.0,
+        height: 80.0,
         errorWidget: (context, url, error) => const Center(
           child: CircleAvatar(
             child: Icon(FeatherIcons.image),
@@ -84,8 +86,12 @@ class InboxItemImage extends ConsumerWidget {
           ),
           AnimatedPositioned(
             duration: const Duration(milliseconds: 500),
-            width: (isStillTyping(pairingInbox.lastTypingDate) || isSelectedInbox) ? 80 : 0.0,
-            height: (isStillTyping(pairingInbox.lastTypingDate) || isSelectedInbox) ? 80 : 0.0,
+            width: (Shared.instance.isStillTyping(pairingInbox.lastTypingDate) || isSelectedInbox)
+                ? 80
+                : 0.0,
+            height: (Shared.instance.isStillTyping(pairingInbox.lastTypingDate) || isSelectedInbox)
+                ? 80
+                : 0.0,
             child: Container(
               decoration: BoxDecoration(
                 color: colorPallete.accentColor,
@@ -96,7 +102,7 @@ class InboxItemImage extends ConsumerWidget {
                 builder: (context) {
                   if (isSelectedInbox) {
                     return const Icon(FeatherIcons.check, color: Colors.white);
-                  } else if (isStillTyping(pairingInbox.lastTypingDate)) {
+                  } else if (Shared.instance.isStillTyping(pairingInbox.lastTypingDate)) {
                     return const JumpingDot(
                       numberOfDot: 3,
                       dotColor: Colors.white,

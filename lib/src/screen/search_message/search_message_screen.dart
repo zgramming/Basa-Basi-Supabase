@@ -9,9 +9,9 @@ import '../../utils/utils.dart';
 
 import '../search_new_friend/search_new_friend.dart';
 
-class SearchMessage extends StatelessWidget {
+class SearchMessageScreen extends StatelessWidget {
   static const routeNamed = '/search-message';
-  const SearchMessage({Key? key}) : super(key: key);
+  const SearchMessageScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

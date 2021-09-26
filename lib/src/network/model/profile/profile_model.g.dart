@@ -3,6 +3,80 @@
 part of 'profile_model.dart';
 
 // **************************************************************************
+// TypeAdapterGenerator
+// **************************************************************************
+
+class ProfileModelAdapter extends TypeAdapter<ProfileModel> {
+  @override
+  final int typeId = 0;
+
+  @override
+  ProfileModel read(BinaryReader reader) {
+    final numOfFields = reader.readByte();
+    final fields = <int, dynamic>{
+      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
+    };
+    return ProfileModel(
+      id: fields[0] as int,
+      fullname: fields[1] as String,
+      email: fields[2] as String,
+      password: fields[3] as String,
+      username: fields[4] as String,
+      pictureProfile: fields[5] as String?,
+      description: fields[6] as String?,
+      isOnline: fields[7] as bool?,
+      isNewUser: fields[8] as bool?,
+      createdAt: fields[9] as DateTime?,
+      updatedAt: fields[10] as DateTime?,
+      updatedUsernameAt: fields[11] as DateTime?,
+      tokenFirebase: fields[12] as String?,
+    );
+  }
+
+  @override
+  void write(BinaryWriter writer, ProfileModel obj) {
+    writer
+      ..writeByte(13)
+      ..writeByte(0)
+      ..write(obj.id)
+      ..writeByte(1)
+      ..write(obj.fullname)
+      ..writeByte(2)
+      ..write(obj.email)
+      ..writeByte(3)
+      ..write(obj.password)
+      ..writeByte(4)
+      ..write(obj.username)
+      ..writeByte(5)
+      ..write(obj.pictureProfile)
+      ..writeByte(6)
+      ..write(obj.description)
+      ..writeByte(7)
+      ..write(obj.isOnline)
+      ..writeByte(8)
+      ..write(obj.isNewUser)
+      ..writeByte(9)
+      ..write(obj.createdAt)
+      ..writeByte(10)
+      ..write(obj.updatedAt)
+      ..writeByte(11)
+      ..write(obj.updatedUsernameAt)
+      ..writeByte(12)
+      ..write(obj.tokenFirebase);
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is ProfileModelAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}
+
+// **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
 
@@ -22,6 +96,7 @@ ProfileModel _$ProfileModelFromJson(Map<String, dynamic> json) => ProfileModel(
           json['updated_at'] as int?),
       updatedUsernameAt: GlobalFunction.fromJsonMilisecondToDateTime(
           json['updated_username_at'] as int?),
+      tokenFirebase: json['token_firebase'] as String?,
     );
 
 Map<String, dynamic> _$ProfileModelToJson(ProfileModel instance) =>
@@ -41,4 +116,5 @@ Map<String, dynamic> _$ProfileModelToJson(ProfileModel instance) =>
           GlobalFunction.toJsonMilisecondFromDateTime(instance.updatedAt),
       'updated_username_at': GlobalFunction.toJsonMilisecondFromDateTime(
           instance.updatedUsernameAt),
+      'token_firebase': instance.tokenFirebase,
     };

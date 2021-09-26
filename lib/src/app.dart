@@ -4,17 +4,18 @@ import 'package:global_template/global_template.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import './screen/about_developer/about_developer_screen.dart';
-import './screen/inbox/widgets/inbox_archived.dart';
+import './screen/inbox_archived/inbox_archived_screen.dart';
 import './screen/login/login_screen.dart';
 import './screen/message/message_screen.dart';
-import './screen/message/widgets/message_preview_image.dart';
+import './screen/message_preview_image/message_preview_image_screen.dart';
 import './screen/onboarding/onboarding_screen.dart';
-import './screen/search_message/search_message.dart';
+import './screen/search_message/search_message_screen.dart';
 import './screen/search_new_friend/search_new_friend.dart';
 import './screen/setup_profile/setup_profile_screen.dart';
 import './screen/splash/splash_screen.dart';
 import './screen/update_profile/update_profile_screen.dart';
 import './screen/welcome/welcome_screen.dart';
+
 import './utils/utils.dart';
 
 class MyApp extends StatelessWidget {
@@ -64,23 +65,23 @@ class MyApp extends StatelessWidget {
               screen: (ctx, animation, secondaryAnimation) => const MessageScreen(),
               slidePosition: SlidePosition.fromLeft,
             );
-          case SearchMessage.routeNamed:
+          case SearchMessageScreen.routeNamed:
             return routeAnimation.slideTransition(
-              screen: (ctx, animation, secondaryAnimation) => const SearchMessage(),
+              screen: (ctx, animation, secondaryAnimation) => const SearchMessageScreen(),
             );
           case SearchNewFriendScreen.routeNamed:
             return routeAnimation.fadeTransition(
               screen: (ctx, animation, secondaryAnimation) => const SearchNewFriendScreen(),
             );
-          case MessagePreviewImage.routeNamed:
+          case MessagePreviewImageScreen.routeNamed:
             final String? fileUrl = settings.arguments as String?;
             return routeAnimation.fadeTransition(
               screen: (ctx, animation, secondaryAnimation) =>
-                  MessagePreviewImage(fileUrl: fileUrl ?? ''),
+                  MessagePreviewImageScreen(fileUrl: fileUrl ?? ''),
             );
-          case InboxArchived.routeNamed:
+          case InboxArchivedScreen.routeNamed:
             return routeAnimation.fadeTransition(
-              screen: (ctx, animation, secondaryAnimation) => const InboxArchived(),
+              screen: (ctx, animation, secondaryAnimation) => const InboxArchivedScreen(),
             );
           case UpdateProfileScreen.routeNamed:
             return routeAnimation.slideTransition(

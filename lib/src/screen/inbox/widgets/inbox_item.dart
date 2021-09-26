@@ -30,7 +30,7 @@ class InboxItem extends ConsumerWidget {
 
             if (totalSelectedInbox == 0) {
               /// Initialize pairing
-              ref.read(pairing).state = await userExistsInHive(inbox.pairing.id);
+              ref.read(pairing).state = await Shared.instance.userExistsInHive(inbox.pairing.id);
               await GlobalNavigation.pushNamed(routeName: MessageScreen.routeNamed);
             } else {
               ref.read(SelectedInboxProvider.provider.notifier).add(inbox);

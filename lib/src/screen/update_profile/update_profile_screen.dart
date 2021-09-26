@@ -150,7 +150,7 @@ class _UpdateProfileScreenState extends ConsumerState<UpdateProfileScreen> {
                 children: [
                   InkWell(
                     onTap: () async {
-                      final result = await uploadImage();
+                      final result = await Shared.instance.uploadImage();
                       if (result != null) {
                         setState(() {
                           _pickedImage = File(result);

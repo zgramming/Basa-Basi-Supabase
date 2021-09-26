@@ -1,6 +1,5 @@
 import 'dart:developer';
 
-import 'package:basa_basi_supabase/src/utils/supabase_query.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase/supabase.dart';
@@ -134,7 +133,7 @@ final listenMyInbox = AutoDisposeStreamProvider((ref) async* {
       if (data != null) {
         log('Listen My Inbox Insert/Update: ${events.eventType}');
         log('Listen My Inbox Insert/Update: ${events.newRecord}');
-        final pairing = await userExistsInHive(data['id_pairing'] as int);
+        final pairing = await Shared.instance.userExistsInHive(data['id_pairing'] as int);
 
         InboxModel inbox = const InboxModel();
 

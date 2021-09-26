@@ -29,10 +29,12 @@ class ProfileProvider extends StateNotifier<ProfileState> {
   Future<ProfileModel> signIn({
     required String email,
     required String password,
+    required String tokenFirebase,
   }) async {
     final result = await SupabaseQuery.instance.signIn(
       email: email,
       password: password,
+      tokenFirebase: tokenFirebase,
     );
 
     /// Save Session
@@ -47,8 +49,13 @@ class ProfileProvider extends StateNotifier<ProfileState> {
   Future<ProfileModel> signUp({
     required String email,
     required String password,
+    required String tokenFirebase,
   }) async {
-    final result = await SupabaseQuery.instance.signUp(email: email, password: password);
+    final result = await SupabaseQuery.instance.signUp(
+      email: email,
+      password: password,
+      tokenFirebase: tokenFirebase,
+    );
 
     /// Save Session
     await session.setUserSession(result);

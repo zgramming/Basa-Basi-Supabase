@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -126,6 +127,7 @@ class _SignUpFormState extends State<SignUpForm> {
                       final user = await ref.read(ProfileProvider.provider.notifier).signUp(
                             email: _emailController.text,
                             password: _passwordController.text,
+                            tokenFirebase: (await FirebaseMessaging.instance.getToken()) ?? '',
                           );
 
                       await ref.read(SessionProvider.provider.notifier).setUserSession(user);

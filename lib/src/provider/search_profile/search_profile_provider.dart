@@ -28,7 +28,7 @@ class SearchProfileProvider extends StateNotifier<SearchProfileState> {
 }
 
 final searchUserByEmailOrUsername = AutoDisposeFutureProvider<List<ProfileModel>?>((ref) async {
-  final boxProfile = Hive.box<ProfileHiveModel>(Constant.hiveKeyBoxProfile);
+  final boxProfile = Hive.box<ProfileModel>(Constant.hiveKeyBoxProfile);
   final query = ref.watch(querySearch).state;
   final user = ref.watch(SessionProvider.provider).session.user;
 
@@ -46,7 +46,7 @@ final searchUserByEmailOrUsername = AutoDisposeFutureProvider<List<ProfileModel>
       );
 
   for (final profile in profiles) {
-    boxProfile.put(profile.id, const ProfileHiveModel().convertFromProfileModel(profile));
+    boxProfile.put(profile.id, profile);
   }
 
   return profiles;

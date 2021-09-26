@@ -1,37 +1,53 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:global_template/global_template.dart';
+import 'package:hive/hive.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'profile_model.g.dart';
 
+@HiveType(typeId: 0)
 @immutable
 @JsonSerializable(fieldRename: FieldRename.snake)
 class ProfileModel extends Equatable {
+  @HiveField(0)
   final int id;
+  @HiveField(1)
   final String fullname;
+  @HiveField(2)
   final String email;
+  @HiveField(3)
   final String password;
+  @HiveField(4)
   final String username;
+  @HiveField(5)
   final String? pictureProfile;
+  @HiveField(6)
   final String? description;
+  @HiveField(7)
   final bool? isOnline;
+  @HiveField(8)
   final bool? isNewUser;
   @JsonKey(
     toJson: GlobalFunction.toJsonMilisecondFromDateTime,
     fromJson: GlobalFunction.fromJsonMilisecondToDateTime,
   )
+  @HiveField(9)
   final DateTime? createdAt;
   @JsonKey(
     toJson: GlobalFunction.toJsonMilisecondFromDateTime,
     fromJson: GlobalFunction.fromJsonMilisecondToDateTime,
   )
+  @HiveField(10)
   final DateTime? updatedAt;
   @JsonKey(
     toJson: GlobalFunction.toJsonMilisecondFromDateTime,
     fromJson: GlobalFunction.fromJsonMilisecondToDateTime,
   )
+  @HiveField(11)
   final DateTime? updatedUsernameAt;
+  @HiveField(12)
+  final String? tokenFirebase;
 
   const ProfileModel({
     this.id = 0,
@@ -46,6 +62,7 @@ class ProfileModel extends Equatable {
     this.createdAt,
     this.updatedAt,
     this.updatedUsernameAt,
+    this.tokenFirebase,
   });
 
   factory ProfileModel.fromJson(Map<String, dynamic> json) => _$ProfileModelFromJson(json);
@@ -66,6 +83,7 @@ class ProfileModel extends Equatable {
       createdAt,
       updatedAt,
       updatedUsernameAt,
+      tokenFirebase,
     ];
   }
 
@@ -85,6 +103,7 @@ class ProfileModel extends Equatable {
     DateTime? createdAt,
     DateTime? updatedAt,
     DateTime? updatedUsernameAt,
+    String? tokenFirebase,
   }) {
     return ProfileModel(
       id: id ?? this.id,
@@ -99,6 +118,7 @@ class ProfileModel extends Equatable {
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       updatedUsernameAt: updatedUsernameAt ?? this.updatedUsernameAt,
+      tokenFirebase: tokenFirebase ?? this.tokenFirebase,
     );
   }
 }

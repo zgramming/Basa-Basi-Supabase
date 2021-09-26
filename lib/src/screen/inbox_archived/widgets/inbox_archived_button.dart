@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import './inbox_archived.dart';
 import '../../../provider/provider.dart';
 import '../../../utils/utils.dart';
+
+import '../../inbox_archived/inbox_archived_screen.dart';
 
 class InboxArchivedButton extends ConsumerWidget {
   const InboxArchivedButton({
@@ -20,7 +21,7 @@ class InboxArchivedButton extends ConsumerWidget {
       padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 24.0),
       child: OutlinedButton(
         onPressed: () async {
-          await Navigator.pushNamed(context, InboxArchived.routeNamed);
+          await Navigator.pushNamed(context, InboxArchivedScreen.routeNamed);
         },
         style: OutlinedButton.styleFrom(
           padding: const EdgeInsets.all(16.0),

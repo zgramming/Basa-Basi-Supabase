@@ -31,7 +31,7 @@ class SearchMessageItem extends ConsumerWidget {
         return InkWell(
           onTap: () async {
             /// Initialize pairing;
-            ref.read(pairing).state = await userExistsInHive(inbox.pairing.id);
+            ref.read(pairing).state = await Shared.instance.userExistsInHive(inbox.pairing.id);
             await GlobalNavigation.pushNamed(routeName: MessageScreen.routeNamed);
           },
           child: Ink(

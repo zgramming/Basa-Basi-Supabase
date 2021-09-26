@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:global_template/global_template.dart';
@@ -17,6 +16,7 @@ class SupabaseQuery {
   Future<ProfileModel> signUp({
     required String email,
     required String password,
+    required String tokenFirebase,
   }) async {
     try {
       /// Check if exists email in database
@@ -38,11 +38,6 @@ class SupabaseQuery {
         password: password,
       );
 
-      log('insertProfile 1. ${result.count}');
-      log('insertProfile 2. ${result.data} this return List instead of single object');
-      log('insertProfile 3. ${result.error?.toJson()}');
-      log('insertProfile 4. ${result.status}');
-
       if (result.error?.message != null) {
         throw Exception(result.error?.message);
       }
@@ -59,6 +54,7 @@ class SupabaseQuery {
   Future<ProfileModel> signIn({
     required String email,
     required String password,
+    required String tokenFirebase,
   }) async {
     try {
       final result = await Constant.supabase
@@ -68,22 +64,32 @@ class SupabaseQuery {
           .eq('password', password)
           .execute();
 
-      log('result SignIn Data ${result.data}');
-      log('result SignIn Status ${result.status}');
-      log('result SignIn Count ${result.count}');
-      log('result SignIn Error ${result.error}');
-
       if (result.error?.message != null) {
         throw Exception(result.error?.message);
       }
 
-      final map = List.from(result.data as List);
+      final users = List.from(result.data as List);
 
-      if (map.isEmpty) {
+      if (users.isEmpty) {
         throw Exception('Username / Password tidak valid');
       }
 
-      final user = ProfileModel.fromJson(Map<String, dynamic>.from(map.first as Map));
+      final updateTokenFirebase = await _supabase
+          .from(Constant.tableProfile)
+          .update({
+            'token_firebase': tokenFirebase,
+          })
+          .eq('email', email)
+          .eq('password', password)
+          .single()
+          .execute();
+
+      if (updateTokenFirebase.error?.code != null) {
+        throw Exception(result.error?.message);
+      }
+
+      final user =
+          ProfileModel.fromJson(Map<String, dynamic>.from(updateTokenFirebase.data as Map));
       return user;
     } catch (e) {
       rethrow;
@@ -137,7 +143,6 @@ class SupabaseQuery {
     String? pictureProfileUrl;
     DateTime? updatedUsernameAt;
 
-    log('newUsername $newUsername || oldUsername $oldUsername');
     if (newUsername != oldUsername) {
       /// Check apakah kuota untuk mengganti username masih ada / belum
       final quotaChangeUsernameStillExists = await _supabase
@@ -370,9 +375,6 @@ class SupabaseQuery {
       },
     ).execute();
 
-    log('result increaseTotalUnreadMessage ${result.data}');
-    log('result increaseTotalUnreadMessage ${result.error}');
-
     if (result.error?.code != null) {
       throw Exception(result.error?.message);
     }
@@ -410,7 +412,7 @@ class SupabaseQuery {
     required int you,
     required int idPairing,
   }) async {
-    final inboxChannel = getConversationID(you: you, pairing: idPairing);
+    final inboxChannel = Shared.instance.getConversationID(you: you, pairing: idPairing);
     final result = await _supabase
         .from(Constant.tableInbox)
         .update({'last_typing_date': DateTime.now().millisecondsSinceEpoch})
@@ -474,7 +476,6 @@ class SupabaseQuery {
     required MessagePost post,
   }) async {
     final result = await _supabase.from(Constant.tableMessage).insert(post.toJson()).execute();
-    log('masuk sini');
     if (result.error?.code != null) {
       throw Exception(result.error?.message);
     }
@@ -540,9 +541,6 @@ class SupabaseQuery {
     }
 
     final total = List.from(result.data as List).length;
-
-    log('result Query totalUnreadMessage ${result.data}');
-    log('result Query totalUnreadMessage Length ${result.data}');
 
     return total;
   }

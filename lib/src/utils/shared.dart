@@ -1,5 +1,8 @@
+import 'dart:convert';
 import 'dart:developer';
 
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:global_template/global_template.dart';
 import 'package:hive/hive.dart';
 import 'package:image_picker/image_picker.dart';
@@ -91,5 +94,27 @@ class Shared {
     } else {
       return "${pairing}_$you";
     }
+  }
+
+  Future<void> firebaseShowNotification(RemoteMessage event) async {
+    final payload = json.decode(event.data['payload'] as String);
+    final map = Map<String, dynamic>.from(payload as Map);
+    final pairing = ProfileModel.fromJson(map['me'] as Map<String, dynamic>);
+    final messages = (map['last_messages'] as List)
+        .map((e) => MessageModel.fromJson(Map.from(e as Map)))
+        .toList();
+
+    final person = Person(name: pairing.fullname, key: pairing.id.toString());
+    await NotificationHelper.instance.showSingleConversationNotification(
+      messages.first.inboxChannel.hashCode,
+      pairing: person,
+      messages: [
+        ...messages
+            .map((e) => Message(e.messageContent ?? '', e.messageDate ?? DateTime.now(), person))
+            .toList()
+      ],
+      groupKey: messages.first.inboxChannel ?? '',
+      payload: event.data['payload'] as String,
+    );
   }
 }

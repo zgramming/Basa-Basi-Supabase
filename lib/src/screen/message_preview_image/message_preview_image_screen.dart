@@ -6,24 +6,25 @@ import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:global_template/global_template.dart';
 
-import './message_appbar_title.dart';
-import '../../../network/model/network.dart';
-import '../../../provider/provider.dart';
-import '../../../utils/utils.dart';
+import '../../network/model/network.dart';
+import '../../provider/provider.dart';
+import '../../utils/utils.dart';
 
-class MessagePreviewImage extends ConsumerStatefulWidget {
+import '../message/widgets/message_appbar_title.dart';
+
+class MessagePreviewImageScreen extends ConsumerStatefulWidget {
   static const routeNamed = '/message-preview-image';
   final String fileUrl;
-  const MessagePreviewImage({
+  const MessagePreviewImageScreen({
     Key? key,
     required this.fileUrl,
   }) : super(key: key);
 
   @override
-  _MessagePreviewImageState createState() => _MessagePreviewImageState();
+  _MessagePreviewImageScreenState createState() => _MessagePreviewImageScreenState();
 }
 
-class _MessagePreviewImageState extends ConsumerState<MessagePreviewImage> {
+class _MessagePreviewImageScreenState extends ConsumerState<MessagePreviewImageScreen> {
   final _messageController = TextEditingController();
   @override
   void initState() {
@@ -46,6 +47,7 @@ class _MessagePreviewImageState extends ConsumerState<MessagePreviewImage> {
         GlobalNavigation.pop();
       }
     });
+
     return GestureDetector(
       onTap: () {
         FocusScope.of(context).unfocus();
@@ -124,13 +126,22 @@ class _MessagePreviewImageState extends ConsumerState<MessagePreviewImage> {
 
                               final messageContent = _messageController.text;
                               await ref.read(MessageProvider.provider.notifier).sendMessage(
-                                    messageContent: messageContent,
-                                    status: MessageStatus.send,
-                                    type: messageContent.isEmpty
+                                messageContent: messageContent,
+                                status: MessageStatus.send,
+                                type: messageContent.isEmpty
+                                    ? MessageType.image
+                                    : MessageType.imageWithText,
+                                messageFileUrl: urlImage,
+                                lastMessages: [
+                                  MessageModel(
+                                    messageContent: 'Mengirimkan gambar 📷📷📷',
+                                    messageType: messageContent.isEmpty
                                         ? MessageType.image
                                         : MessageType.imageWithText,
-                                    messageFileUrl: urlImage,
-                                  );
+                                    messageStatus: MessageStatus.send,
+                                  ),
+                                ],
+                              );
 
                               if (mounted) {
                                 GlobalNavigation.pop();

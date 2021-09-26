@@ -11,7 +11,7 @@ class InboxState extends Equatable {
   });
 
   List<InboxModel> get allInboxTyping =>
-      items.where((element) => isStillTyping(element.lastTypingDate)).toList();
+      items.where((element) => Shared.instance.isStillTyping(element.lastTypingDate)).toList();
 
   InboxState addAll(List<InboxModel> values) => copyWith(items: [...values]);
 

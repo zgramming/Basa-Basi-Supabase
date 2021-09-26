@@ -6,11 +6,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:global_template/global_template.dart';
 
-import './widgets/inbox_archived_button.dart';
 import './widgets/inbox_item.dart';
 
 import '../../network/model/network.dart';
 import '../../provider/provider.dart';
+
+import '../inbox_archived/widgets/inbox_archived_button.dart';
 
 class InboxScreen extends ConsumerStatefulWidget {
   const InboxScreen({

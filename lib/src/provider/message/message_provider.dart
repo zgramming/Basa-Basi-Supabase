@@ -1,4 +1,5 @@
 import 'dart:collection';
+import 'dart:convert';
 import 'dart:developer';
 
 import 'package:collection/collection.dart';
@@ -11,25 +12,25 @@ import '../../utils/utils.dart';
 import '../provider.dart';
 
 class MessageProvider extends StateNotifier<MessageState> {
-  final InboxProvider inboxProvider;
   final ProfileModel you;
   final ProfileModel yourPairing;
+  final InboxProvider inboxProvider;
 
   MessageProvider({
-    required this.inboxProvider,
     required this.you,
     required this.yourPairing,
+    required this.inboxProvider,
   }) : super(const MessageState());
 
   static final provider = StateNotifierProvider<MessageProvider, MessageState>((ref) {
-    final inboxProvider = ref.watch(InboxProvider.provider.notifier);
+    final inboxProvider = ref.read(InboxProvider.provider.notifier);
     final you = ref.watch(SessionProvider.provider).session.user;
     final _pairing = ref.watch(pairing).state;
 
     return MessageProvider(
-      inboxProvider: inboxProvider,
-      yourPairing: _pairing,
       you: you,
+      yourPairing: _pairing,
+      inboxProvider: inboxProvider,
     );
   });
 
@@ -44,10 +45,11 @@ class MessageProvider extends StateNotifier<MessageState> {
     required String messageContent,
     required MessageStatus status,
     required MessageType type,
+    required List<MessageModel> lastMessages,
     String? messageFileUrl,
   }) async {
     final now = DateTime.now();
-    final inboxChannel = getConversationID(
+    final inboxChannel = Shared.instance.getConversationID(
       you: you.id,
       pairing: yourPairing.id,
     );
@@ -76,6 +78,18 @@ class MessageProvider extends StateNotifier<MessageState> {
     /// Then Insert into [message]
     final result = await SupabaseQuery.instance.sendMessage(post: post);
 
+    final payload = {
+      'me': you,
+      'last_messages': lastMessages,
+    };
+
+    await NotificationHelper.instance.sendSingleNotificationFirebase(
+      yourPairing.tokenFirebase ?? '',
+      title: yourPairing.fullname,
+      body: post.messageContent ?? '',
+      payload: json.encode(payload),
+    );
+
     upsert(value: result);
   }
 
@@ -89,7 +103,7 @@ class MessageProvider extends StateNotifier<MessageState> {
   Future<void> updateAllMessageStatusToRead({
     required int idUser,
   }) async {
-    final inboxChannel = getConversationID(
+    final inboxChannel = Shared.instance.getConversationID(
       you: you.id,
       pairing: yourPairing.id,
     );
@@ -175,7 +189,7 @@ final getAllMessage = StreamProvider.autoDispose((ref) async* {
   final user = ref.watch(SessionProvider.provider).session.user;
   final _pairing = ref.watch(pairing).state;
 
-  final inboxChannel = getConversationID(you: user.id, pairing: _pairing.id);
+  final inboxChannel = Shared.instance.getConversationID(you: user.id, pairing: _pairing.id);
 
   final messagesNotifier = ref.watch(MessageProvider.provider.notifier);
   final inboxNotifier = ref.watch(InboxProvider.provider.notifier);

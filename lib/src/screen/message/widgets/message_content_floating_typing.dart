@@ -27,7 +27,7 @@ class _MessageContentFloatingTypingState extends ConsumerState<MessageContentFlo
 
     _timer = Timer.periodic(const Duration(milliseconds: 1500), (timer) {
       final inbox = ref.read(myPairingInbox(_pairing?.id ?? 0)).state;
-      final isTyping = isStillTyping(inbox.lastTypingDate);
+      final isTyping = Shared.instance.isStillTyping(inbox.lastTypingDate);
 
       /// Only rebuild widget when !isTyping and flag == 0
       /// it mean avoid uncenessary rebuild
@@ -52,7 +52,7 @@ class _MessageContentFloatingTypingState extends ConsumerState<MessageContentFlo
   @override
   Widget build(BuildContext context) {
     final inbox = ref.watch(myPairingInbox(_pairing?.id ?? 0)).state;
-    final isTyping = isStillTyping(inbox.lastTypingDate);
+    final isTyping = Shared.instance.isStillTyping(inbox.lastTypingDate);
 
     return AnimatedPositioned(
       duration: const Duration(milliseconds: 500),

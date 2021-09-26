@@ -7,11 +7,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:global_template/global_template.dart';
 import 'package:image_picker/image_picker.dart';
 
-import './message_preview_image.dart';
-
 import '../../../network/model/network.dart';
 import '../../../provider/provider.dart';
 import '../../../utils/utils.dart';
+
+import '../../message_preview_image/message_preview_image_screen.dart';
 
 class MessageFooter extends ConsumerStatefulWidget {
   final TextEditingController messageController;
@@ -27,6 +27,8 @@ class _MessageFooterState extends ConsumerState<MessageFooter> {
   final debounce = Debouncer(milliseconds: 500);
   bool _showButtonImage = true;
   int _flagShowButtonImage = 0;
+
+  List<MessageModel> _tempMessages = [];
 
   @override
   void dispose() {
@@ -108,10 +110,11 @@ class _MessageFooterState extends ConsumerState<MessageFooter> {
                   if (_showButtonImage)
                     InkWell(
                       onTap: () async {
-                        final result = await uploadImage(source: ImageSource.camera);
+                        final result =
+                            await Shared.instance.uploadImage(source: ImageSource.camera);
                         if (result != null) {
                           await GlobalNavigation.pushNamed(
-                            routeName: MessagePreviewImage.routeNamed,
+                            routeName: MessagePreviewImageScreen.routeNamed,
                             arguments: result,
                           );
                         }
@@ -131,10 +134,11 @@ class _MessageFooterState extends ConsumerState<MessageFooter> {
                               backgroundColor: colorPallete.primaryColor,
                               foregroundColor: Colors.white,
                               onTap: () async {
-                                final result = await uploadImage(source: ImageSource.camera);
+                                final result =
+                                    await Shared.instance.uploadImage(source: ImageSource.camera);
                                 if (result != null) {
                                   await GlobalNavigation.pushNamed(
-                                    routeName: MessagePreviewImage.routeNamed,
+                                    routeName: MessagePreviewImageScreen.routeNamed,
                                     arguments: result,
                                   );
                                 }
@@ -145,10 +149,10 @@ class _MessageFooterState extends ConsumerState<MessageFooter> {
                               backgroundColor: colorPallete.success,
                               foregroundColor: Colors.white,
                               onTap: () async {
-                                final result = await uploadImage();
+                                final result = await Shared.instance.uploadImage();
                                 if (result != null) {
                                   await GlobalNavigation.pushNamed(
-                                    routeName: MessagePreviewImage.routeNamed,
+                                    routeName: MessagePreviewImageScreen.routeNamed,
                                     arguments: result,
                                   );
                                 }
@@ -178,6 +182,14 @@ class _MessageFooterState extends ConsumerState<MessageFooter> {
 
                     final messageContent = widget.messageController.text;
 
+                    _tempMessages.add(
+                      MessageModel(
+                        messageContent: messageContent,
+                        messageStatus: MessageStatus.send,
+                        messageType: MessageType.text,
+                      ),
+                    );
+
                     /// Reset textfield
                     widget.messageController.clear();
 
@@ -185,6 +197,7 @@ class _MessageFooterState extends ConsumerState<MessageFooter> {
                           messageContent: messageContent,
                           status: MessageStatus.send,
                           type: MessageType.text,
+                          lastMessages: _tempMessages,
                         );
 
                     setState(() {

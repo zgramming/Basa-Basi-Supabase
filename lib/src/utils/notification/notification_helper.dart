@@ -58,12 +58,12 @@ class ReceivedNotification {
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();
 
-class NotificationHelperRevision {
-  static NotificationHelperRevision? _instance;
-  factory NotificationHelperRevision() => _instance ?? NotificationHelperRevision._internal();
-  NotificationHelperRevision._internal() {
-    _instance = this;
-  }
+class NotificationHelper {
+  static final _instance = NotificationHelper._();
+
+  NotificationHelper._();
+
+  static NotificationHelper get instance => _instance;
 
   static const _channelId = "01";
   static const _channelName = "channel_01";
@@ -174,8 +174,7 @@ class NotificationHelperRevision {
   }
 
   ///! 3.
-  void configureSelectNotificationSubject(
-    BuildContext context, {
+  void configureSelectNotificationSubject({
     required Function(String payload) onSelectNotification,
   }) {
     selectNotificationSubject.stream.listen((String? payload) async {
@@ -473,7 +472,9 @@ class NotificationHelperRevision {
     int uniqId, {
     required Person pairing,
     required List<Message> messages,
+    required String groupKey,
     String? payload,
+    String? conversationTitle,
   }) async {
     /// First two person objects will use icons that part of the Android app's
     /// drawable resources
@@ -509,8 +510,9 @@ class NotificationHelperRevision {
 
     final MessagingStyleInformation messagingStyle = MessagingStyleInformation(
       pairing,
+      groupConversation: true,
       // groupConversation: true,
-      // conversationTitle: 'Team lunch',
+      conversationTitle: conversationTitle,
       htmlFormatContent: true,
       htmlFormatTitle: true,
       messages: messages,
@@ -521,7 +523,11 @@ class NotificationHelperRevision {
       'Basa Basi dengan ${pairing.name}',
       'Basa Basi Deskripsi',
       category: 'msg',
+      groupKey: groupKey,
+      priority: Priority.max,
+      importance: Importance.max,
       styleInformation: messagingStyle,
+      setAsGroupSummary: true,
     );
 
     final NotificationDetails platformChannelSpecifics = NotificationDetails(
@@ -578,7 +584,6 @@ class NotificationHelperRevision {
       ...paramData,
     };
 
-    log('defaultParam $defaultParam');
     try {
       final _data = {
         'to': tokenFirebase,
