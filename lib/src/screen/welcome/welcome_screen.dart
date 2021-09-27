@@ -25,6 +25,8 @@ import '../story/story_screen.dart';
 ///
 /// To verify things are working, check out the native platform logs.
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage event) async {
+  log('Catch FCM on BackgroundService || WelcomeScreen');
+
   Shared.instance.firebaseShowNotification(event);
 }
 
@@ -68,6 +70,7 @@ class _WelcomeScreenState extends ConsumerState<WelcomeScreen> {
 
   void _initFirebaseMessaging() {
     FirebaseMessaging.onMessage.listen((event) async {
+      log('Catch FCM on Foreground || WelcomeScreen');
       Shared.instance.firebaseShowNotification(event);
     });
 

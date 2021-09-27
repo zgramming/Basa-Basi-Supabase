@@ -16,6 +16,13 @@ import 'package:timezone/timezone.dart' as tz;
 
 import '../utils.dart';
 
+enum FCMPriority { normal, high }
+
+Map<FCMPriority, String> _fcmPriortyValues = {
+  FCMPriority.high: 'high',
+  FCMPriority.normal: 'normal',
+};
+
 /// Streams are created so that app can respond to notification-related events
 /// since the plugin is initialised in the `main` function
 BehaviorSubject<ReceivedNotification> didReceiveLocalNotificationSubject =
@@ -574,6 +581,7 @@ class NotificationHelper {
     required String body,
     required String payload,
     Map<String, dynamic> paramData = const {},
+    required FCMPriority priority,
   }) async {
     final defaultParam = {
       "title": title,
@@ -587,12 +595,9 @@ class NotificationHelper {
     try {
       final _data = {
         'to': tokenFirebase,
-        'notification': {
-          'title': title,
-          'body': body,
-        },
         'data': defaultParam,
-        'priority': 'high'
+        'content_available': true,
+        'priority': _fcmPriortyValues[priority]
       };
       final response = await _dio.post(
         _firebaseMessagingUrl,
@@ -617,16 +622,14 @@ class NotificationHelper {
     required String title,
     required String body,
     Map<String, dynamic> paramData = const {},
+    FCMPriority priority = FCMPriority.normal,
   }) async {
     try {
       final _data = {
         'registration_ids': tokensFirebase,
-        'notification': {
-          'title': title,
-          'body': body,
-        },
         'data': paramData,
-        'priority': 'high'
+        'content_available': true,
+        'priority': _fcmPriortyValues[priority]
       };
       final response = await _dio.post(
         _firebaseMessagingUrl,

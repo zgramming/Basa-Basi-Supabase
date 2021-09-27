@@ -157,6 +157,35 @@ final listenMyInbox = AutoDisposeStreamProvider((ref) async* {
   });
 });
 
+final listenMyPairingInbox = AutoDisposeStreamProviderFamily<bool, int>((ref, idPairing) async* {
+  final user = ref.watch(SessionProvider.provider).session.user;
+
+  final _subscribe =
+      Constant.supabase.from(Constant.tableInbox).on(SupabaseEventTypes.update, (event) async {
+    final data = event.newRecord;
+    if (data != null && (data['id_user'] as int) != user.id) {
+      log('Listen My Pairing Inbox Update: ${event.newRecord}');
+      final pairing = await Shared.instance.userExistsInHive(data['id_user'] as int);
+
+      InboxModel inbox = const InboxModel();
+
+      /// My own inbox
+      inbox = InboxModel.fromJson(data).copyWith(user: pairing, pairing: user);
+      log('inboxxx $inbox');
+      ref.read(InboxProvider.provider.notifier).upsertInbox(inbox);
+    }
+  }).subscribe(
+    (event, {errorMsg}) {
+      log('START LISTEN MY PAIRING INBOX $event || ERROR LISTEN $errorMsg');
+    },
+  );
+  ref.onDispose(() {
+    Constant.supabase.removeSubscription(_subscribe);
+  });
+
+  yield true;
+});
+
 final myPairingInbox = StateProvider.family<InboxModel, int>((ref, idPairing) {
   final inboxes = ref.watch(InboxProvider.provider).items.firstWhereOrNull((element) {
     return element.user.id == idPairing;

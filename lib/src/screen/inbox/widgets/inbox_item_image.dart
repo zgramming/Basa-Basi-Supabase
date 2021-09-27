@@ -18,7 +18,6 @@ class InboxItemImage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final isSelectedInbox = ref.watch(SelectedInboxProvider.provider).isExists(inbox);
-
     final pairingInbox = ref.watch(myPairingInbox(inbox.pairing.id)).state;
 
     Widget image;
@@ -43,79 +42,88 @@ class InboxItemImage extends ConsumerWidget {
       );
     }
 
-    return Container(
-      width: 80.0,
-      height: 80.0,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(10.0),
-        boxShadow: [
-          BoxShadow(
-            blurRadius: 2.0,
-            color: Colors.black.withOpacity(.25),
-          )
-        ],
-      ),
-      child: Stack(
-        children: [
-          InkWell(
-            onTap: () async {
-              String url;
-              ImageViewType type;
-              if (inbox.pairing.pictureProfile == null ||
-                  (inbox.pairing.pictureProfile?.isEmpty ?? true)) {
-                url = '${appConfig.urlImageAsset}/ob3.png';
-                type = ImageViewType.asset;
-              } else {
-                url = '${inbox.pairing.pictureProfile}';
-                type = ImageViewType.network;
-              }
-              await GlobalFunction.showDetailSingleImage(
-                context,
-                url: url,
-                imageViewType: type,
-              );
-            },
-            child: Padding(
-              padding: const EdgeInsets.all(4.0),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(10.0),
-                child: image,
-              ),
-            ),
-          ),
-          AnimatedPositioned(
-            duration: const Duration(milliseconds: 500),
-            width: (Shared.instance.isStillTyping(pairingInbox.lastTypingDate) || isSelectedInbox)
-                ? 80
-                : 0.0,
-            height: (Shared.instance.isStillTyping(pairingInbox.lastTypingDate) || isSelectedInbox)
-                ? 80
-                : 0.0,
-            child: Container(
+    return ref.watch(listenMyPairingInbox(inbox.pairing.id)).maybeWhen(
+          data: (_) {
+            return Container(
+              width: 80.0,
+              height: 80.0,
               decoration: BoxDecoration(
-                color: colorPallete.accentColor,
+                color: Colors.white,
                 borderRadius: BorderRadius.circular(10.0),
-                boxShadow: [BoxShadow(color: Colors.black.withOpacity(.5), blurRadius: 2.0)],
+                boxShadow: [
+                  BoxShadow(
+                    blurRadius: 2.0,
+                    color: Colors.black.withOpacity(.25),
+                  )
+                ],
               ),
-              child: Builder(
-                builder: (context) {
-                  if (isSelectedInbox) {
-                    return const Icon(FeatherIcons.check, color: Colors.white);
-                  } else if (Shared.instance.isStillTyping(pairingInbox.lastTypingDate)) {
-                    return const JumpingDot(
-                      numberOfDot: 3,
-                      dotColor: Colors.white,
-                    );
-                  } else {
-                    return const SizedBox();
-                  }
-                },
+              child: Stack(
+                children: [
+                  InkWell(
+                    onTap: () async {
+                      String url;
+                      ImageViewType type;
+                      if (inbox.pairing.pictureProfile == null ||
+                          (inbox.pairing.pictureProfile?.isEmpty ?? true)) {
+                        url = '${appConfig.urlImageAsset}/ob3.png';
+                        type = ImageViewType.asset;
+                      } else {
+                        url = '${inbox.pairing.pictureProfile}';
+                        type = ImageViewType.network;
+                      }
+                      await GlobalFunction.showDetailSingleImage(
+                        context,
+                        url: url,
+                        imageViewType: type,
+                      );
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.all(4.0),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(10.0),
+                        child: image,
+                      ),
+                    ),
+                  ),
+                  AnimatedPositioned(
+                    duration: const Duration(milliseconds: 500),
+                    width: (Shared.instance.isStillTyping(pairingInbox.lastTypingDate) ||
+                            isSelectedInbox)
+                        ? 80
+                        : 0.0,
+                    height: (Shared.instance.isStillTyping(pairingInbox.lastTypingDate) ||
+                            isSelectedInbox)
+                        ? 80
+                        : 0.0,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: colorPallete.accentColor,
+                        borderRadius: BorderRadius.circular(10.0),
+                        boxShadow: [
+                          BoxShadow(color: Colors.black.withOpacity(.5), blurRadius: 2.0)
+                        ],
+                      ),
+                      child: Builder(
+                        builder: (context) {
+                          if (isSelectedInbox) {
+                            return const Icon(FeatherIcons.check, color: Colors.white);
+                          } else if (Shared.instance.isStillTyping(pairingInbox.lastTypingDate)) {
+                            return const JumpingDot(
+                              numberOfDot: 3,
+                              dotColor: Colors.white,
+                            );
+                          } else {
+                            return const SizedBox();
+                          }
+                        },
+                      ),
+                    ),
+                  ),
+                ],
               ),
-            ),
-          ),
-        ],
-      ),
-    );
+            );
+          },
+          orElse: () => SizedBox(),
+        );
   }
 }

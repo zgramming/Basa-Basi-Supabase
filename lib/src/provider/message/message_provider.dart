@@ -88,6 +88,7 @@ class MessageProvider extends StateNotifier<MessageState> {
       title: yourPairing.fullname,
       body: post.messageContent ?? '',
       payload: json.encode(payload),
+      priority: FCMPriority.normal,
     );
 
     upsert(value: result);
