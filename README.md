@@ -22,34 +22,32 @@ Use **Riverpod** as State Management and **Firebase Messaging** for sending noti
 ## Preview 
 
 <table>
-<thead>
-  <tr>
-    <th>Onboarding</th>
-    <th>Sign In/Up</th>
-    <th>Setup Profile</th>
-    <th>Profile</th>
-  </tr>
-  <tr>
-    <th>Inbox</th>
-    <th>Message</th>
-    <th>Archived</th>
-    <th>Search Friend</th>
-  </tr>
-</thead>
-<tbody>
-  <tr>
-    <td><img src="screenshot/preview/1.png" height="250"><td>
-    <td><img src="screenshot/preview/2.png" height="250"><td>
-    <td><img src="screenshot/preview/3.png" height="250"><td>
-    <td><img src="screenshot/preview/4.png" height="250"><td>
-  </tr>
-  <tr>
-    <td><img src="screenshot/preview/5.png" height="250"><td>
-    <td><img src="screenshot/preview/6.png" height="250"><td>
-    <td><img src="screenshot/preview/7.png" height="250"><td>
-    <td><img src="screenshot/preview/8.png" height="250"><td>
-  </tr>
-</tbody>
+  <tbody>
+    <tr>
+      <th>Onboarding</th>
+      <th>Sign In/Up</th>
+      <th>Setup Profile</th>
+      <th>Profile</th>
+    </tr>
+    <tr>
+      <td><img src="screenshot/preview/1.png" height="300" width="150"></td>
+      <td><img src="screenshot/preview/2.png" height="300" width="150"></td>
+      <td><img src="screenshot/preview/3.png" height="300" width="150"></td>
+      <td><img src="screenshot/preview/4.png" height="300" width="150"></td>
+    </tr>
+    <tr>
+      <th>Inbox</th>
+      <th>Message</th>
+      <th>Archive</th>
+      <th>Search Friend</th>
+    </tr>
+    <tr>
+      <td><img src="screenshot/preview/5.png" height="300" width="150"></td>
+      <td><img src="screenshot/preview/6.png" height="300" width="150"></td>
+      <td><img src="screenshot/preview/7.png" height="300" width="150"></td>
+      <td><img src="screenshot/preview/8.png" height="300" width="150"></td>
+    </tr>
+  </tbody>
 <table>
 
 ## Design Database
